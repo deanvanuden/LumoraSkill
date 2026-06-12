@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lumora"
+  short_description: "Premium website prompt synthesis"
+  default_prompt: "Use $lumora to design and build a high-quality website for this company."
