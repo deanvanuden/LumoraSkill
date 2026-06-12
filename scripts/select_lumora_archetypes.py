@@ -261,12 +261,29 @@ def score_entry(entry: Archetype, query_tokens: set[str], categories: set[str]) 
 
 
 def role_hint(entry: Archetype) -> str:
-    text = entry.searchable.lower()
-    if any(term in text for term in ["waitlist", "signup", "contact", "booking", "404", "presentation"]):
+    text = " ".join([entry.title, entry.type_label, *entry.groups]).lower()
+    if any(term in text for term in ["waitlist", "signup", "contact", "booking", "pricing", "shop", "ecommerce"]):
         return "conversion"
     if any(term in text for term in ["3d", "cinematic", "interactive", "animation", "scroll", "cursor", "portal", "depth"]):
         return "visual engine"
-    if any(term in text for term in ["saas", "agency", "portfolio", "fintech", "web3", "ecommerce", "travel", "security"]):
+    if any(term in text for term in ["about", "features", "process", "services", "tabs", "faq", "presentation"]):
+        return "information architecture"
+    if any(
+        term in text
+        for term in [
+            "agency",
+            "ai",
+            "beauty",
+            "botanical",
+            "fintech",
+            "portfolio",
+            "product",
+            "saas",
+            "security",
+            "travel",
+            "web3",
+        ]
+    ):
         return "market fit"
     return "support"
 

@@ -12,6 +12,8 @@ Choose 3-6 archetypes. Assign each a role:
 - **Conversion pattern**: supplies signup, waitlist, booking, contact, ecommerce, pricing, demo, or trust behavior.
 - **Restraint counterweight**: keeps the page usable when the visual engine is dramatic.
 
+When the bundled prompt-body library is present, prefer running `scripts/compose_lumora_brief.py` before choosing manually. Use its source-pack output to see which prompt bodies contribute layout, visual, motion, conversion, and implementation atoms.
+
 Example mix:
 - For an AI automation agency: Modern Agency for service clarity, AI Workflow Hero for system orchestration, Scroll Landing Page for controlled motion, Build With Us for contact conversion.
 - For a luxury real estate brokerage: Luxury Real Estate for market fit, SkyElite Private Jets for luxury pacing, Layered Depth for cinematic depth, Build With Us for lead capture.
@@ -30,6 +32,15 @@ Write a short design brief with these fields:
 7. **Responsive behavior**: mobile navigation, hero crop/stack, media constraints, touch targets, and text wrapping rules.
 8. **Implementation notes**: stack-specific components, asset plan, performance constraints, and verification steps.
 
+For deeper builds, add a **Source pack** field before the hero field:
+
+- Market fit source and the industry/proof language it contributes.
+- Visual engine source and the dominant media/composition idea it contributes.
+- Information architecture source and the section rhythm it contributes.
+- Conversion source and the functional UI state it contributes.
+- Motion source and the reason motion belongs in the experience.
+- Restraint source and the readability/accessibility guardrail it contributes.
+
 ## Common Prompt Atoms
 
 Use these atoms to build original implementation briefs:
@@ -42,6 +53,8 @@ Use these atoms to build original implementation briefs:
 - **Technical trust**: diagrams, metrics, security proof, architecture cards, code/data artifacts.
 - **Organic premium**: natural materials, soft motion, tactile imagery, asymmetric layout, low saturation.
 - **Launch conversion**: single promise, social proof, waitlist/demo form, concise FAQ, repeated CTA.
+- **Ecommerce ritual**: inspectable product media, package selector, usage steps, ingredient/proof detail, cart or checkout state.
+- **Prompt-body extraction**: source prompt bodies are mined for reusable structure and implementation patterns, then rewritten for the current company.
 
 ## Section Patterns
 
@@ -91,4 +104,4 @@ Before finishing a Lumora build:
 - Verify CTAs are visible, enabled, and aligned with the requested business goal.
 - Verify images/video/canvas/3D assets render and are not decorative noise.
 - Revise CSS color balance if the page reads as a generic purple/blue SaaS gradient, beige luxury template, or dark slate dashboard by default.
-
+- If the first pass is good but shallow, run `compose_lumora_brief.py` again with more specific industry, audience, conversion, and visual constraints, then add or replace one source atom at a time.

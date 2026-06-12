@@ -19,6 +19,7 @@ The bundled MotionSites prompt library is included under owner-approved commerci
    - Read `references/archetype-catalog.md` for the visible MotionSites archetype index.
    - If `references/motionsites-prompt-library.json` exists, use it as the bundled prompt-body library. Search it locally for matching industries, page types, and visual patterns; do not paste large prompt bodies into the chat unless the user explicitly asks for a specific prompt.
    - Optionally run `python scripts/select_lumora_archetypes.py "<brief text>"` to get a first-pass shortlist.
+   - For substantial websites, run `python scripts/compose_lumora_brief.py "<brief text>"` and use the source pack as the main planning artifact. It mines prompt bodies into roles and reusable atoms without dumping full source prompts.
    - To refresh the bundled prompt-body library, run `python scripts/scrape_motionsites_prompts.py`. Premium bodies require an authenticated MotionSites access token in `MOTIONSITES_ACCESS_TOKEN`.
    - Pick 3-6 archetypes with distinct roles:
      - **Market fit**: closest industry/page type.
@@ -28,8 +29,10 @@ The bundled MotionSites prompt library is included under owner-approved commerci
 
 3. Compose an original Lumora brief:
    - Read `references/composition-system.md` before major builds.
+   - Read `references/deep-library-workflow.md` when the build should use the full bundled prompt library or when the first output feels good but not deep enough.
    - Name the chosen archetypes and explain what each contributes in one sentence.
-   - Convert those influences into original instructions for layout, hierarchy, assets, motion, color, type, components, responsive behavior, and conversion flow.
+   - Convert source-pack atoms into original instructions for layout, hierarchy, assets, motion, color, type, components, responsive behavior, and conversion flow.
+   - Assign every major section a job and at least one source atom before coding.
    - Prefer one strong visual idea over a collage of effects.
 
 4. Build the website:
@@ -63,6 +66,7 @@ Every Lumora build should include:
 
 - A clear concept sentence that can guide implementation.
 - A selected archetype mix with each archetype's purpose.
+- A source-pack summary for substantial builds: market fit, visual engine, information architecture, conversion, motion, and restraint roles.
 - A high-fidelity page structure with section-by-section intent.
 - A concrete visual system: type scale, palette, layout rhythm, imagery/media, motion behavior, and component shape language.
 - Responsive and interaction behavior.
