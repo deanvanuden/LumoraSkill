@@ -6,15 +6,11 @@ Use this guide after selecting archetypes from `archetype-catalog.md`.
 
 Choose 3-6 archetypes. Assign each a role:
 
-- **Primary prompt blueprint**: dominates layout, media direction, typography, pacing, and section style.
-- **Conversion support**: supplies signup, waitlist, booking, contact, ecommerce, pricing, demo, cart, or trust behavior.
-- **Proof/detail support**: supplies ingredient, feature, benefit, case study, testimonial, metric, or tab structure.
-- **Motion/restraint support**: supplies only the motion and restraint needed by the primary prompt.
-- **Objection/final CTA support**: supplies FAQ, guarantee, trust, comparison, or final CTA handling.
-
-When the bundled prompt-body library is present, run `scripts/compose_lumora_brief.py` before coding every new full website or landing page unless the user explicitly asks for a quick draft. Use its source-pack output to see which prompt bodies contribute layout, visual, motion, conversion, and implementation atoms.
-
-Use prompt-first composition. The primary prompt blueprint controls the page. Support prompts are not equal creative directions; they only fill explicit gaps. Do not import unrelated 3D, SaaS, dashboard, glass, or cinematic patterns unless the brief asks for them or the primary prompt requires them.
+- **Market fit**: proves the page understands the industry, audience, and conversion context.
+- **Visual engine**: supplies the main visual metaphor, such as object focus, cinematic media, depth, scroll, 3D, glass, editorial type, or organic texture.
+- **Information architecture**: supplies the section rhythm and narrative order.
+- **Conversion pattern**: supplies signup, waitlist, booking, contact, ecommerce, pricing, demo, or trust behavior.
+- **Restraint counterweight**: keeps the page usable when the visual engine is dramatic.
 
 Example mix:
 - For an AI automation agency: Modern Agency for service clarity, AI Workflow Hero for system orchestration, Scroll Landing Page for controlled motion, Build With Us for contact conversion.
@@ -34,34 +30,6 @@ Write a short design brief with these fields:
 7. **Responsive behavior**: mobile navigation, hero crop/stack, media constraints, touch targets, and text wrapping rules.
 8. **Implementation notes**: stack-specific components, asset plan, performance constraints, and verification steps.
 
-For deeper builds, add a **Source pack** field before the hero field:
-
-- Market fit source and the industry/proof language it contributes.
-- Visual engine source and the dominant media/composition idea it contributes.
-- Information architecture source and the section rhythm it contributes.
-- Conversion source and the functional UI state it contributes.
-- Motion source and the reason motion belongs in the experience.
-- Restraint source and the readability/accessibility guardrail it contributes.
-
-If the source pack provides a primary prompt blueprint, collapse market fit, visual engine, and information architecture into that one dominant source. Keep support sources narrowly scoped.
-
-Then add a **Source-to-section map** before creating files:
-
-- Hero: source pair, section job, visual/media crop, proof, CTA.
-- Mechanism/details: source pair, section job, content density.
-- Proof: source pair, evidence type, restraint rule.
-- Conversion: conversion source, functional UI state.
-- Motion: motion source, where motion appears and why.
-- Final CTA/objections: source pair, objection handled, action repeated.
-
-Before creating files, the working notes must include three visible planning blocks:
-
-1. **Source mix**: selected sources, role, and contribution.
-2. **Merged atoms**: layout, visual, motion, conversion, and implementation atoms.
-3. **Source-to-section map + media plan**: section jobs, source atoms, existing-media check, and media generation plan.
-
-If no suitable images, video, or product media are available, use the imagegen skill for project-bound assets. The image prompt must come from the source pack and specify subject, composition, negative space, mobile crop, overlay contrast, material texture, lighting, and avoid list.
-
 ## Common Prompt Atoms
 
 Use these atoms to build original implementation briefs:
@@ -74,8 +42,6 @@ Use these atoms to build original implementation briefs:
 - **Technical trust**: diagrams, metrics, security proof, architecture cards, code/data artifacts.
 - **Organic premium**: natural materials, soft motion, tactile imagery, asymmetric layout, low saturation.
 - **Launch conversion**: single promise, social proof, waitlist/demo form, concise FAQ, repeated CTA.
-- **Ecommerce ritual**: inspectable product media, package selector, usage steps, ingredient/proof detail, cart or checkout state.
-- **Prompt-body extraction**: source prompt bodies are mined for reusable structure and implementation patterns, then rewritten for the current company.
 
 ## Section Patterns
 
@@ -125,4 +91,4 @@ Before finishing a Lumora build:
 - Verify CTAs are visible, enabled, and aligned with the requested business goal.
 - Verify images/video/canvas/3D assets render and are not decorative noise.
 - Revise CSS color balance if the page reads as a generic purple/blue SaaS gradient, beige luxury template, or dark slate dashboard by default.
-- If the first pass is good but shallow, run `compose_lumora_brief.py` again with more specific industry, audience, conversion, and visual constraints, then add or replace one source atom at a time.
+

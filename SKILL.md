@@ -19,7 +19,6 @@ The bundled MotionSites prompt library is included under owner-approved commerci
    - Read `references/archetype-catalog.md` for the visible MotionSites archetype index.
    - If `references/motionsites-prompt-library.json` exists, use it as the bundled prompt-body library. Search it locally for matching industries, page types, and visual patterns; do not paste large prompt bodies into the chat unless the user explicitly asks for a specific prompt.
    - Optionally run `python scripts/select_lumora_archetypes.py "<brief text>"` to get a first-pass shortlist.
-   - For every new full website or landing page, run `python scripts/compose_lumora_brief.py "<brief text>"` before coding unless the user explicitly asks for a quick draft. Use the source pack as the main planning artifact. It mines prompt bodies into roles and reusable atoms without dumping full source prompts.
    - To refresh the bundled prompt-body library, run `python scripts/scrape_motionsites_prompts.py`. Premium bodies require an authenticated MotionSites access token in `MOTIONSITES_ACCESS_TOKEN`.
    - Pick 3-6 archetypes with distinct roles:
      - **Market fit**: closest industry/page type.
@@ -29,14 +28,8 @@ The bundled MotionSites prompt library is included under owner-approved commerci
 
 3. Compose an original Lumora brief:
    - Read `references/composition-system.md` before major builds.
-   - Read `references/deep-library-workflow.md` when the build should use the full bundled prompt library or when the first output feels good but not deep enough.
-   - Do not create or edit website files until these three visible planning blocks exist in the working notes: **Source mix**, **Merged atoms**, and **Source-to-section map + media plan**.
-   - Use prompt-first composition: one **primary prompt blueprint** must dominate layout, media direction, typography, pacing, and section style. Support prompts may only fill explicit gaps such as commerce, proof, FAQ, or restraint.
-   - Do not pull in unrelated 3D, SaaS, dashboard, glass, or cinematic patterns unless the user asked for them or the source pack selected them as primary.
    - Name the chosen archetypes and explain what each contributes in one sentence.
-   - Convert source-pack atoms into original instructions for layout, hierarchy, assets, motion, color, type, components, responsive behavior, and conversion flow.
-   - Before creating files, write a short source-to-section map. Assign every major section a job and at least one source atom.
-   - If no suitable user/repo images, video, or product media are available, use the imagegen skill to create project-bound website assets. Derive the image prompt from the source pack: subject, composition, negative space, mobile crop, overlay needs, material texture, and avoid text/watermarks unless exact text is required.
+   - Convert those influences into original instructions for layout, hierarchy, assets, motion, color, type, components, responsive behavior, and conversion flow.
    - Prefer one strong visual idea over a collage of effects.
 
 4. Build the website:
@@ -69,11 +62,7 @@ Use these default mappings when the request is underspecified:
 Every Lumora build should include:
 
 - A clear concept sentence that can guide implementation.
-- A selected archetype mix with one primary prompt blueprint and tightly scoped support prompts.
-- A source-pack summary for full websites and landing pages: market fit, visual engine, information architecture, conversion, motion, and restraint roles.
-- A merged-atoms summary covering layout, visual, motion, conversion, and implementation atoms.
-- A source-to-section map before file creation.
-- A media plan before file creation, including existing-media check and imagegen fallback prompt inputs when needed.
+- A selected archetype mix with each archetype's purpose.
 - A high-fidelity page structure with section-by-section intent.
 - A concrete visual system: type scale, palette, layout rhythm, imagery/media, motion behavior, and component shape language.
 - Responsive and interaction behavior.
