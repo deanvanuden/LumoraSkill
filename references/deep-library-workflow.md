@@ -26,10 +26,13 @@ If these blocks are not present, the Lumora planning step is incomplete.
 
 Treat source prompts as a pattern library:
 
+- Use prompt-first composition. One primary prompt blueprint must dominate the page. It controls layout, media direction, typography, pacing, and section style.
+- Support prompts only fill explicit gaps such as ecommerce controls, proof/detail structure, FAQ, conversion, or restraint. They do not get equal creative weight.
+- Do not import unrelated 3D, SaaS, dashboard, glass, or cinematic patterns unless the brief explicitly asks for them or the primary prompt requires them.
 - Extract reusable atoms: hero structure, section rhythm, motion technique, visual metaphor, asset direction, conversion component, responsive rule, and QA requirement.
 - Transform atoms into a new brief matched to the current company. Do not copy source names, fake brands, or full prompt prose into the final website.
 - Prefer a small source mix with clear roles over many half-used influences.
-- Let one source drive market fit, one drive visual atmosphere, one drive information architecture, one drive conversion, and one or two fill motion or restraint gaps.
+- Let the primary source drive market fit, visual atmosphere, and page rhythm. Let one or two support sources fill conversion, proof, or objection-handling gaps.
 - If a source is only relevant for one atom, use only that atom.
 
 ## Source Mix Matrix
@@ -38,12 +41,11 @@ Before coding, decide:
 
 | Role | What It Contributes | What To Avoid |
 | --- | --- | --- |
-| Market fit | Industry language, audience, offer framing, proof type | Borrowing the source company or claims |
-| Visual engine | Main media idea, composition, type mood, color temperature | Combining multiple dominant visual metaphors |
-| Information architecture | Section order and narrative pacing | Decorative sections with no job |
-| Conversion pattern | CTA, form, package selector, booking, pricing, or cart behavior | Static buttons that imply unavailable flows |
-| Motion system | Scroll, hover, reveal, cursor, or 3D behavior with purpose | Motion applied equally to everything |
-| Restraint counterweight | Readability, whitespace, calmer components, accessibility | Flattening the one memorable visual idea |
+| Primary prompt blueprint | Dominant page structure, media direction, typography, pacing, section style | Treating support prompts as equal creative direction |
+| Conversion support | CTA, form, package selector, booking, pricing, or cart behavior | Static buttons that imply unavailable flows |
+| Proof/detail support | Ingredient, feature, benefit, testimonial, case study, metric, or tab structure | Decorative detail sections with no job |
+| Motion/restraint support | Only the motion and restraint needed by the primary prompt | Importing unrelated 3D/SaaS/cinematic effects |
+| Objection support | FAQ, guarantee, process, trust, comparison, or final CTA handling | Letting FAQ/CTA prompts drive the whole page |
 
 ## Section-Level Composition
 

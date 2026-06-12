@@ -236,16 +236,15 @@ Lumora runs as a design/build pipeline inside Codex.
 
 ## Source Pack Roles
 
-A deep Lumora build usually mixes 3 to 6 prompt sources:
+A deep Lumora build uses prompt-first composition. One primary prompt blueprint should dominate the page, and support prompts should only fill explicit gaps:
 
-- Market fit: closest industry, audience, and proof style.
-- Visual engine: main media idea, mood, composition, depth, or 3D/cinematic direction.
-- Information architecture: section rhythm and story order.
-- Conversion pattern: signup, contact, booking, ecommerce, pricing, cart, or trust flow.
-- Motion system: scroll, reveal, hover, parallax, 3D, or transition behavior.
-- Restraint counterweight: a calmer reference that keeps the page usable.
+- Primary prompt blueprint: dominant layout, media direction, typography, pacing, and section style.
+- Conversion support: signup, contact, booking, ecommerce, pricing, cart, or trust flow.
+- Proof/detail support: ingredients, features, benefits, case studies, testimonials, metrics, or tabs.
+- Motion/restraint support: only the motion and restraint needed by the primary prompt.
+- Objection/final CTA support: FAQ, guarantee, trust, comparison, or final CTA handling.
 
-This role system prevents the output from becoming a collage of effects. One source can provide market language, another can provide product framing, another can provide motion, and another can provide conversion behavior.
+This role system prevents the output from becoming a collage of effects. Support prompts do not get equal creative weight, and unrelated 3D, SaaS, dashboard, glass, or cinematic patterns should not be used unless the brief asks for them.
 
 ## Scripts
 

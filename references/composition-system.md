@@ -6,13 +6,15 @@ Use this guide after selecting archetypes from `archetype-catalog.md`.
 
 Choose 3-6 archetypes. Assign each a role:
 
-- **Market fit**: proves the page understands the industry, audience, and conversion context.
-- **Visual engine**: supplies the main visual metaphor, such as object focus, cinematic media, depth, scroll, 3D, glass, editorial type, or organic texture.
-- **Information architecture**: supplies the section rhythm and narrative order.
-- **Conversion pattern**: supplies signup, waitlist, booking, contact, ecommerce, pricing, demo, or trust behavior.
-- **Restraint counterweight**: keeps the page usable when the visual engine is dramatic.
+- **Primary prompt blueprint**: dominates layout, media direction, typography, pacing, and section style.
+- **Conversion support**: supplies signup, waitlist, booking, contact, ecommerce, pricing, demo, cart, or trust behavior.
+- **Proof/detail support**: supplies ingredient, feature, benefit, case study, testimonial, metric, or tab structure.
+- **Motion/restraint support**: supplies only the motion and restraint needed by the primary prompt.
+- **Objection/final CTA support**: supplies FAQ, guarantee, trust, comparison, or final CTA handling.
 
 When the bundled prompt-body library is present, run `scripts/compose_lumora_brief.py` before coding every new full website or landing page unless the user explicitly asks for a quick draft. Use its source-pack output to see which prompt bodies contribute layout, visual, motion, conversion, and implementation atoms.
+
+Use prompt-first composition. The primary prompt blueprint controls the page. Support prompts are not equal creative directions; they only fill explicit gaps. Do not import unrelated 3D, SaaS, dashboard, glass, or cinematic patterns unless the brief asks for them or the primary prompt requires them.
 
 Example mix:
 - For an AI automation agency: Modern Agency for service clarity, AI Workflow Hero for system orchestration, Scroll Landing Page for controlled motion, Build With Us for contact conversion.
@@ -40,6 +42,8 @@ For deeper builds, add a **Source pack** field before the hero field:
 - Conversion source and the functional UI state it contributes.
 - Motion source and the reason motion belongs in the experience.
 - Restraint source and the readability/accessibility guardrail it contributes.
+
+If the source pack provides a primary prompt blueprint, collapse market fit, visual engine, and information architecture into that one dominant source. Keep support sources narrowly scoped.
 
 Then add a **Source-to-section map** before creating files:
 

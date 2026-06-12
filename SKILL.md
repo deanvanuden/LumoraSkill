@@ -31,6 +31,8 @@ The bundled MotionSites prompt library is included under owner-approved commerci
    - Read `references/composition-system.md` before major builds.
    - Read `references/deep-library-workflow.md` when the build should use the full bundled prompt library or when the first output feels good but not deep enough.
    - Do not create or edit website files until these three visible planning blocks exist in the working notes: **Source mix**, **Merged atoms**, and **Source-to-section map + media plan**.
+   - Use prompt-first composition: one **primary prompt blueprint** must dominate layout, media direction, typography, pacing, and section style. Support prompts may only fill explicit gaps such as commerce, proof, FAQ, or restraint.
+   - Do not pull in unrelated 3D, SaaS, dashboard, glass, or cinematic patterns unless the user asked for them or the source pack selected them as primary.
    - Name the chosen archetypes and explain what each contributes in one sentence.
    - Convert source-pack atoms into original instructions for layout, hierarchy, assets, motion, color, type, components, responsive behavior, and conversion flow.
    - Before creating files, write a short source-to-section map. Assign every major section a job and at least one source atom.
@@ -67,7 +69,7 @@ Use these default mappings when the request is underspecified:
 Every Lumora build should include:
 
 - A clear concept sentence that can guide implementation.
-- A selected archetype mix with each archetype's purpose.
+- A selected archetype mix with one primary prompt blueprint and tightly scoped support prompts.
 - A source-pack summary for full websites and landing pages: market fit, visual engine, information architecture, conversion, motion, and restraint roles.
 - A merged-atoms summary covering layout, visual, motion, conversion, and implementation atoms.
 - A source-to-section map before file creation.

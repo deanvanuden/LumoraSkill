@@ -202,14 +202,82 @@ ROLE_TERMS: dict[str, set[str]] = {
     },
 }
 
-ROLE_ORDER = [
-    "market fit",
-    "visual engine",
-    "information architecture",
+SUPPORT_ROLE_ORDER = [
     "conversion pattern",
-    "motion system",
-    "restraint counterweight",
+    "proof/detail pattern",
+    "motion/restraint pattern",
+    "objection/final CTA pattern",
 ]
+
+INTENT_KEYWORDS = {
+    "product_ecommerce": {
+        "beauty",
+        "botanical",
+        "bundle",
+        "cart",
+        "checkout",
+        "commerce",
+        "ecommerce",
+        "hair",
+        "ingredient",
+        "oil",
+        "product",
+        "purchase",
+        "ritual",
+        "shop",
+    },
+    "saas": {"ai", "automation", "b2b", "dashboard", "demo", "saas", "software", "workflow"},
+    "agency": {"agency", "creative", "design", "services", "studio"},
+    "portfolio": {"case", "portfolio", "projects", "work"},
+}
+
+PRODUCT_ECOMMERCE_ALLOWED = {
+    "about",
+    "beauty",
+    "benefits",
+    "botanical",
+    "commerce",
+    "cta",
+    "ecommerce",
+    "faq",
+    "feature",
+    "features",
+    "landing",
+    "product",
+    "products",
+    "shop",
+    "tabs",
+    "testimonial",
+    "testimonials",
+    "why",
+}
+
+PRODUCT_ECOMMERCE_OFF_INTENT = {
+    "3d",
+    "agency",
+    "ai",
+    "automotive",
+    "dashboard",
+    "defi",
+    "finance",
+    "fintech",
+    "portfolio",
+    "saas",
+    "security",
+    "web3",
+}
+
+EXPLICIT_VISUAL_TERMS = {
+    "3d",
+    "animation",
+    "cinematic",
+    "interactive",
+    "motion",
+    "parallax",
+    "scroll",
+    "video",
+    "webgl",
+}
 
 
 @dataclass
@@ -337,40 +405,100 @@ def score_entry(entry: PromptEntry, brief: str, brief_tokens: set[str]) -> int:
 
 
 def role_score(entry: PromptEntry, role: str, signals: dict[str, Counter[str]], base_score: int) -> int:
+    scoring_role = {
+        "proof/detail pattern": "information architecture",
+        "motion/restraint pattern": "restraint counterweight",
+        "objection/final CTA pattern": "conversion pattern",
+    }.get(role, role)
     surface_tokens = entry.surface_tokens
     body_tokens = entry.body_tokens
-    terms = ROLE_TERMS[role]
+    terms = ROLE_TERMS.get(scoring_role, set())
     surface = entry.surface_text.lower()
-    score = min(base_score, 120)
+    score = min(base_score, 120) * 3
     score += len(surface_tokens & terms) * 22
-    score += len(body_tokens & terms) * 2
+    score += min(len(body_tokens & terms), 8) * 2
 
-    if role == "visual engine":
+    if scoring_role == "visual engine":
         score += min(sum(signals["visual"].values()), 16) * 6
         score += min(sum(signals["motion"].values()), 12) * 2
         score += phrase_count(surface, ("3d", "cinematic", "interactive", "motion", "product", "video")) * 16
-    elif role == "information architecture":
+    elif scoring_role == "information architecture":
         score += min(sum(signals["layout"].values()), 14) * 6
         score += len(surface_tokens & {"about", "features", "process", "services", "website", "landing"}) * 12
-    elif role == "conversion pattern":
+    elif scoring_role == "conversion pattern":
         score += min(sum(signals["conversion"].values()), 14) * 7
         score += phrase_count(
             surface,
             ("ecommerce", "shop", "pricing", "signup", "waitlist", "booking", "contact", "form", "cta"),
         ) * 24
-    elif role == "motion system":
+    elif scoring_role == "motion system":
         score += min(sum(signals["motion"].values()), 14) * 9
         score += phrase_count(surface, ("motion", "animation", "cinematic", "3d", "interactive", "scroll")) * 18
-    elif role == "restraint counterweight":
+    elif scoring_role == "restraint counterweight":
         score += phrase_count(surface, ("minimal", "clean", "simple", "subtle", "white", "editorial")) * 26
         score += phrase_count(surface, ("minimal", "workflow", "saas", "utility")) * 18
         restraint_body_hits = phrase_count(entry.prompt_text, ("minimal", "clean", "simple", "subtle", "white", "editorial"))
         score += min(restraint_body_hits, 8) * 3
         score -= phrase_count(entry.searchable, ("neon", "maximal", "chaotic", "cyberpunk")) * 8
-    elif role == "market fit":
+    elif scoring_role == "market fit":
         score += len(surface_tokens & terms) * 12
         score += phrase_count(surface, ("botanical", "beauty", "ecommerce", "saas", "agency", "security", "portfolio")) * 18
+
+    if role == "proof/detail pattern":
+        score += len(surface_tokens & {"about", "benefits", "feature", "features", "ingredient", "ingredients", "product", "products", "tabs", "why"}) * 28
+    elif role == "motion/restraint pattern":
+        score += len(surface_tokens & {"clean", "editorial", "landing", "luxury", "minimal", "simple", "subtle"}) * 20
+    elif role == "objection/final CTA pattern":
+        score += len(surface_tokens & {"faq", "questions", "cta", "contact", "testimonial", "testimonials"}) * 34
     return score
+
+
+def infer_intents(brief_tokens: set[str]) -> set[str]:
+    return {
+        intent
+        for intent, keywords in INTENT_KEYWORDS.items()
+        if brief_tokens & keywords
+    }
+
+
+def surface_has(entry: PromptEntry, terms: set[str]) -> bool:
+    return bool(entry.surface_tokens & terms)
+
+
+def allowed_for_intent(entry: PromptEntry, intents: set[str], brief_tokens: set[str]) -> bool:
+    if "product_ecommerce" not in intents:
+        return True
+
+    surface_tokens = entry.surface_tokens
+    if surface_tokens & PRODUCT_ECOMMERCE_OFF_INTENT and not (brief_tokens & surface_tokens & PRODUCT_ECOMMERCE_OFF_INTENT):
+        return False
+
+    if surface_tokens & PRODUCT_ECOMMERCE_ALLOWED:
+        return True
+
+    # Keep genuinely close body matches, but do not let generic prompt bodies dominate.
+    close_body_terms = {"beauty", "botanical", "ecommerce", "hair", "ingredient", "oil", "product", "shop"}
+    return bool(entry.body_tokens & close_body_terms and (brief_tokens & entry.body_tokens & close_body_terms))
+
+
+def role_allowed(entry: PromptEntry, role: str, intents: set[str], brief_tokens: set[str]) -> bool:
+    if not allowed_for_intent(entry, intents, brief_tokens):
+        return False
+
+    surface_tokens = entry.surface_tokens
+    if "product_ecommerce" in intents:
+        if role == "conversion pattern":
+            return surface_has(entry, {"commerce", "ecommerce", "product", "products", "shop"}) or (
+                "faq" in brief_tokens and surface_has(entry, {"faq", "cta"})
+            )
+        if role == "proof/detail pattern":
+            close_terms = {"about", "beauty", "botanical", "ingredient", "ingredients", "product", "products"}
+            return surface_has(entry, close_terms) or bool(entry.body_tokens & close_terms & brief_tokens)
+        if role == "motion/restraint pattern" and not (brief_tokens & EXPLICIT_VISUAL_TERMS):
+            return surface_has(entry, {"botanical", "ecommerce", "landing", "luxury", "product", "shop"})
+        if role == "objection/final CTA pattern":
+            return surface_has(entry, {"faq", "cta", "ecommerce", "shop", "testimonial", "testimonials"})
+    return True
 
 
 def pick_source_mix(
@@ -380,27 +508,37 @@ def pick_source_mix(
     selected: list[tuple[str, int, PromptEntry, dict[str, Counter[str]]]] = []
     used: set[int] = set()
     pool = scored[:48]
-    top_score = pool[0][0] if pool else 0
-    relevance_floor = max(10, int(top_score * 0.18))
-    explicit_motion_or_visual = bool(
-        brief_tokens
-        & {
-            "3d",
-            "animation",
-            "cinematic",
-            "interactive",
-            "motion",
-            "parallax",
-            "scroll",
-            "video",
-            "webgl",
-        }
-    )
-    for role in ROLE_ORDER:
+    if not pool:
+        return selected
+
+    intents = infer_intents(brief_tokens)
+    filtered_pool = [item for item in pool if allowed_for_intent(item[1], intents, brief_tokens)] or pool[:12]
+    top_score = filtered_pool[0][0]
+    relevance_floor = max(10, int(top_score * 0.4))
+
+    primary_score, primary_entry, primary_signals = filtered_pool[0]
+    selected.append(("primary prompt blueprint", primary_score, primary_entry, primary_signals))
+    used.add(primary_entry.index)
+
+    for role in SUPPORT_ROLE_ORDER:
         best: tuple[int, PromptEntry, dict[str, Counter[str]]] | None = None
-        role_pool = pool
-        if not (explicit_motion_or_visual and role in {"visual engine", "motion system"}):
-            role_pool = [item for item in pool if item[0] >= relevance_floor] or pool[:12]
+        role_pool = [
+            item
+            for item in filtered_pool
+            if item[0] >= relevance_floor and role_allowed(item[1], role, intents, brief_tokens)
+        ] or [
+            item
+            for item in filtered_pool[:16]
+            if role_allowed(item[1], role, intents, brief_tokens)
+        ]
+        if role == "objection/final CTA pattern" and "faq" in brief_tokens:
+            faq_pool = [
+                item
+                for item in filtered_pool[:32]
+                if "faq" in item[1].surface_tokens or "faq" in item[1].body_tokens
+            ]
+            if faq_pool:
+                role_pool = faq_pool
 
         for base_score, entry, signals in role_pool:
             if entry.index in used:
@@ -415,15 +553,44 @@ def pick_source_mix(
     return selected
 
 
-def top_atoms(selected: list[tuple[str, int, PromptEntry, dict[str, Counter[str]]]]) -> dict[str, list[str]]:
+def top_atoms(
+    selected: list[tuple[str, int, PromptEntry, dict[str, Counter[str]]]],
+    intents: set[str] | None = None,
+    brief_tokens: set[str] | None = None,
+) -> dict[str, list[str]]:
+    intents = intents or set()
+    brief_tokens = brief_tokens or set()
     merged: dict[str, Counter[str]] = defaultdict(Counter)
-    for _role, _score, _entry, signals in selected:
+    for role, _score, _entry, signals in selected:
+        weight = 5 if role == "primary prompt blueprint" else 1
         for group, counter in signals.items():
-            merged[group].update(counter)
+            for label, count in counter.items():
+                merged[group][label] += count * weight
 
     atoms: dict[str, list[str]] = {}
+    blocked: dict[str, set[str]] = defaultdict(set)
+    preferred_defaults: dict[str, list[str]] = {}
+    if "product_ecommerce" in intents and not (brief_tokens & EXPLICIT_VISUAL_TERMS):
+        blocked["layout"] |= {"dense dashboard/tool surface"}
+        blocked["visual"] |= {
+            "3D hero object or scene",
+            "bold high-contrast studio identity",
+            "glass and translucent surfaces",
+            "technical data aesthetic",
+        }
+        preferred_defaults = {
+            "layout": ["fullscreen object-led hero", "accordion/tabs for detail disclosure", "marquee or proof strip"],
+            "visual": ["premium product photography direction", "organic premium texture", "warm luxury neutrals", "oversized editorial typography"],
+            "motion": ["smooth page transitions", "magnetic or tactile buttons", "reduced-motion fallback"],
+            "conversion": ["shop or package selector", "clear primary CTA above the fold", "FAQ before final CTA"],
+            "implementation": ["asset-first build plan", "CSS variables and responsive constraints", "accessible semantic HTML"],
+        }
+
     for group in ("layout", "visual", "motion", "conversion", "implementation"):
-        labels = [label for label, _count in merged[group].most_common(6)]
+        labels = [label for label, _count in merged[group].most_common(8) if label not in blocked[group]]
+        for default_label in preferred_defaults.get(group, []):
+            if default_label not in labels:
+                labels.append(default_label)
         atoms[group] = labels
     return atoms
 
@@ -457,6 +624,11 @@ def source_to_section_map(
     atoms: dict[str, list[str]],
 ) -> list[dict[str, str]]:
     titles = selected_title_by_role(selected)
+    primary = titles.get("primary prompt blueprint", "primary prompt")
+    conversion = titles.get("conversion pattern", primary)
+    proof = titles.get("proof/detail pattern", primary)
+    motion = titles.get("motion/restraint pattern", primary)
+    objection = titles.get("objection/final CTA pattern", conversion)
     visual_atom = atoms.get("visual", ["one dominant media idea"])[0]
     motion_atom = atoms.get("motion", ["purposeful reveal motion"])[0]
     conversion_atom = atoms.get("conversion", ["clear primary CTA above the fold"])[0]
@@ -465,32 +637,32 @@ def source_to_section_map(
     return [
         {
             "section": "Hero",
-            "sources": f"{titles.get('market fit', 'market fit source')} + {titles.get('visual engine', 'visual engine source')}",
+            "sources": f"{primary} + {motion}",
             "job": f"Make the offer recognizable immediately, anchor it with {visual_atom}, include proof and one primary CTA.",
         },
         {
             "section": "Mechanism / offer detail",
-            "sources": f"{titles.get('market fit', 'market fit source')} + {titles.get('information architecture', 'information architecture source')}",
+            "sources": f"{primary} + {proof}",
             "job": f"Explain how the product or service creates the outcome using {layout_atom}.",
         },
         {
             "section": "Proof / product evidence",
-            "sources": f"{titles.get('information architecture', 'information architecture source')} + {titles.get('restraint counterweight', 'restraint source')}",
+            "sources": f"{proof} + {primary}",
             "job": "Show concrete ingredients, features, metrics, testimonials, work samples, compliance, or before/after evidence.",
         },
         {
             "section": "Conversion module",
-            "sources": titles.get("conversion pattern", "conversion source"),
+            "sources": conversion,
             "job": f"Build a functional conversion state around {conversion_atom}: selector, form, booking, cart, waitlist, pricing, or contact.",
         },
         {
             "section": "Motion layer",
-            "sources": titles.get("motion system", "motion source"),
+            "sources": motion,
             "job": f"Apply {motion_atom} only where it clarifies hierarchy, product behavior, or scene depth; include reduced-motion behavior.",
         },
         {
             "section": "Final CTA / objections",
-            "sources": f"{titles.get('conversion pattern', 'conversion source')} + {titles.get('restraint counterweight', 'restraint source')}",
+            "sources": f"{objection} + {conversion}",
             "job": "Handle final doubts with FAQ, guarantees, process, trust, or care notes, then repeat one low-friction action.",
         },
     ]
@@ -501,12 +673,14 @@ def media_plan(
     atoms: dict[str, list[str]],
 ) -> dict[str, object]:
     titles = selected_title_by_role(selected)
+    primary = titles.get("primary prompt blueprint", "primary prompt")
+    motion = titles.get("motion/restraint pattern", primary)
     visual_atom = atoms.get("visual", ["one dominant media idea"])[0]
     layout_atom = atoms.get("layout", ["hero with proof and primary CTA"])[0]
     return {
         "existing_media_rule": "Use existing user/repo images, video, product media, or brand assets first.",
         "imagegen_fallback_rule": "If no suitable media exists and visual credibility matters, use the imagegen skill before final layout tuning.",
-        "source_basis": f"{titles.get('market fit', 'market fit source')} + {titles.get('visual engine', 'visual engine source')}",
+        "source_basis": f"{primary} + {motion}",
         "asset_direction": f"Generate or select media that supports {visual_atom} and {layout_atom}.",
         "imagegen_prompt_inputs": [
             "subject/product/place/person",
@@ -531,6 +705,7 @@ def render_markdown(
         "",
         f"Brief: {brief}",
         f"Library: {len(entries)} prompts, {body_count} with prompt bodies.",
+        "Mode: prompt-first. The primary prompt blueprint should control the page; support prompts only fill explicit gaps.",
         "",
         "## Required Pre-File Planning Blocks",
         "",
@@ -548,6 +723,13 @@ def render_markdown(
                 f"  - Match score: {score}; source id: {compact_source_id(entry)}; body length: {entry.prompt_length}.",
             ]
         )
+
+    lines.extend(
+        [
+            "",
+            "Prompt lock: keep the primary prompt blueprint dominant across layout, media, typography, and pacing. Do not import unrelated 3D, SaaS, dashboard, glass, or cinematic patterns unless they are selected above or explicitly requested in the brief.",
+        ]
+    )
 
     lines.extend(["", "### 2. Merged Atoms"])
     for group in ("layout", "visual", "motion", "conversion", "implementation"):
@@ -602,6 +784,8 @@ def render_json(
     body_count = sum(1 for entry in entries if entry.prompt_text)
     payload = {
         "brief": brief,
+        "mode": "prompt-first",
+        "prompt_lock": "The primary prompt blueprint controls layout, media, typography, and pacing. Support prompts only fill explicit gaps. Avoid unrelated 3D, SaaS, dashboard, glass, or cinematic patterns unless explicitly selected or requested.",
         "library": {"prompts": len(entries), "with_prompt_bodies": body_count},
         "selected_source_mix": [
             {
@@ -662,7 +846,7 @@ def main() -> int:
     scored.sort(key=lambda item: (-item[0], item[1].title.lower()))
     scored = scored[: max(args.limit, 24)]
     selected = pick_source_mix(scored, brief_tokens)
-    atoms = fallback_atoms(top_atoms(selected))
+    atoms = fallback_atoms(top_atoms(selected, infer_intents(brief_tokens), brief_tokens))
 
     if args.format == "json":
         print(render_json(brief, entries, selected, atoms))
