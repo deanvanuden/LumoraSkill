@@ -12,7 +12,7 @@ Choose 3-6 archetypes. Assign each a role:
 - **Conversion pattern**: supplies signup, waitlist, booking, contact, ecommerce, pricing, demo, or trust behavior.
 - **Restraint counterweight**: keeps the page usable when the visual engine is dramatic.
 
-When the bundled prompt-body library is present, prefer running `scripts/compose_lumora_brief.py` before choosing manually. Use its source-pack output to see which prompt bodies contribute layout, visual, motion, conversion, and implementation atoms.
+When the bundled prompt-body library is present, run `scripts/compose_lumora_brief.py` before coding every new full website or landing page unless the user explicitly asks for a quick draft. Use its source-pack output to see which prompt bodies contribute layout, visual, motion, conversion, and implementation atoms.
 
 Example mix:
 - For an AI automation agency: Modern Agency for service clarity, AI Workflow Hero for system orchestration, Scroll Landing Page for controlled motion, Build With Us for contact conversion.
@@ -40,6 +40,17 @@ For deeper builds, add a **Source pack** field before the hero field:
 - Conversion source and the functional UI state it contributes.
 - Motion source and the reason motion belongs in the experience.
 - Restraint source and the readability/accessibility guardrail it contributes.
+
+Then add a **Source-to-section map** before creating files:
+
+- Hero: source pair, section job, visual/media crop, proof, CTA.
+- Mechanism/details: source pair, section job, content density.
+- Proof: source pair, evidence type, restraint rule.
+- Conversion: conversion source, functional UI state.
+- Motion: motion source, where motion appears and why.
+- Final CTA/objections: source pair, objection handled, action repeated.
+
+If no suitable images, video, or product media are available, use the imagegen skill for project-bound assets. The image prompt must come from the source pack and specify subject, composition, negative space, mobile crop, overlay contrast, material texture, lighting, and avoid list.
 
 ## Common Prompt Atoms
 

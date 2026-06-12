@@ -214,7 +214,7 @@ Lumora runs as a design/build pipeline inside Codex.
    This gives a fast shortlist of relevant website archetypes.
 
 3. Build a deep source pack.
-   For substantial websites, Codex runs:
+   For new full websites and landing pages, Codex runs this before coding unless the user explicitly asks for a quick draft:
 
    ```bash
    python scripts/compose_lumora_brief.py "<brief text>"
@@ -222,13 +222,16 @@ Lumora runs as a design/build pipeline inside Codex.
 
    This script searches the bundled prompt library, assigns source prompts to roles, and extracts normalized prompt atoms.
 
-4. Compose an original brief.
-   Codex uses `references/composition-system.md` and `references/deep-library-workflow.md` to turn the source pack into a page-specific plan.
+4. Compose an original brief and source-to-section map.
+   Codex uses `references/composition-system.md` and `references/deep-library-workflow.md` to turn the source pack into a page-specific plan. Before files are created, each major section should have a job and at least one source atom.
 
-5. Build the website.
+5. Plan or generate media.
+   Codex uses existing user/repo media first. If no suitable images, video, or product media are available, Lumora should use imagegen to create project-bound assets from the source pack before final layout tuning.
+
+6. Build the website.
    Codex follows the repo's existing stack and conventions. If there is no existing app, it creates the simplest viable site that supports the requested experience.
 
-6. Verify and iterate.
+7. Verify and iterate.
    Lumora expects desktop and mobile browser checks, console checks, asset checks, text-fit checks, responsive checks, and interaction checks before the work is considered done.
 
 ## Source Pack Roles

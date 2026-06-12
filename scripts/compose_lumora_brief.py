@@ -448,6 +448,54 @@ def compact_source_id(entry: PromptEntry) -> str:
     return entry.id or str(entry.index + 1)
 
 
+def selected_title_by_role(selected: list[tuple[str, int, PromptEntry, dict[str, Counter[str]]]]) -> dict[str, str]:
+    return {role: entry.title for role, _score, entry, _signals in selected}
+
+
+def source_to_section_map(
+    selected: list[tuple[str, int, PromptEntry, dict[str, Counter[str]]]],
+    atoms: dict[str, list[str]],
+) -> list[dict[str, str]]:
+    titles = selected_title_by_role(selected)
+    visual_atom = atoms.get("visual", ["one dominant media idea"])[0]
+    motion_atom = atoms.get("motion", ["purposeful reveal motion"])[0]
+    conversion_atom = atoms.get("conversion", ["clear primary CTA above the fold"])[0]
+    layout_atom = atoms.get("layout", ["section sequence with clear jobs"])[0]
+
+    return [
+        {
+            "section": "Hero",
+            "sources": f"{titles.get('market fit', 'market fit source')} + {titles.get('visual engine', 'visual engine source')}",
+            "job": f"Make the offer recognizable immediately, anchor it with {visual_atom}, include proof and one primary CTA.",
+        },
+        {
+            "section": "Mechanism / offer detail",
+            "sources": f"{titles.get('market fit', 'market fit source')} + {titles.get('information architecture', 'information architecture source')}",
+            "job": f"Explain how the product or service creates the outcome using {layout_atom}.",
+        },
+        {
+            "section": "Proof / product evidence",
+            "sources": f"{titles.get('information architecture', 'information architecture source')} + {titles.get('restraint counterweight', 'restraint source')}",
+            "job": "Show concrete ingredients, features, metrics, testimonials, work samples, compliance, or before/after evidence.",
+        },
+        {
+            "section": "Conversion module",
+            "sources": titles.get("conversion pattern", "conversion source"),
+            "job": f"Build a functional conversion state around {conversion_atom}: selector, form, booking, cart, waitlist, pricing, or contact.",
+        },
+        {
+            "section": "Motion layer",
+            "sources": titles.get("motion system", "motion source"),
+            "job": f"Apply {motion_atom} only where it clarifies hierarchy, product behavior, or scene depth; include reduced-motion behavior.",
+        },
+        {
+            "section": "Final CTA / objections",
+            "sources": f"{titles.get('conversion pattern', 'conversion source')} + {titles.get('restraint counterweight', 'restraint source')}",
+            "job": "Handle final doubts with FAQ, guarantees, process, trust, or care notes, then repeat one low-friction action.",
+        },
+    ]
+
+
 def render_markdown(
     brief: str,
     entries: list[PromptEntry],
@@ -480,14 +528,24 @@ def render_markdown(
     for group in ("layout", "visual", "motion", "conversion", "implementation"):
         lines.append(f"- {group.title()}: " + "; ".join(atoms[group]))
 
+    lines.extend(["", "## Source-To-Section Map"])
+    for item in source_to_section_map(selected, atoms):
+        lines.extend(
+            [
+                f"- {item['section']}: {item['sources']}",
+                f"  - Job: {item['job']}",
+            ]
+        )
+
     lines.extend(
         [
             "",
             "## Build Brief Template",
             "- Concept: write one sentence that makes the site feel like a product experience, not an aesthetic label.",
             "- Hero: combine the strongest market-fit source with one visual-engine atom; include proof and one primary CTA.",
-            "- Sections: assign every major section a job: explain mechanism, show proof, compare options, handle objections, or convert.",
-            "- Assets: choose or generate media before polishing layout when credibility depends on product/place/person imagery.",
+            "- Sections: use the source-to-section map above before creating files; every major section needs a job and at least one source atom.",
+            "- Assets: choose existing media first; if no suitable images/video/product media are available, use the imagegen skill to generate project-bound assets before final layout tuning.",
+            "- Imagegen prompt: derive the asset brief from the selected visual and market sources, including subject, composition, negative space, mobile crop, overlay needs, material texture, and avoid text/watermarks unless exact text is required.",
             "- Motion: use the selected motion atoms to clarify hierarchy or product behavior; avoid ambient motion that competes with reading.",
             "- Conversion: wire the selected conversion pattern into functional controls, form states, or ecommerce/package states.",
             "- Responsive: specify hero crop, navigation behavior, touch targets, and text wrap limits before final CSS.",
@@ -524,6 +582,18 @@ def render_json(
             for role, score, entry, signals in selected
         ],
         "merged_prompt_atoms": atoms,
+        "source_to_section_map": source_to_section_map(selected, atoms),
+        "media_fallback": {
+            "rule": "Use existing client/repo media first. If no suitable media exist, use imagegen to create project-bound website assets before final layout tuning.",
+            "prompt_inputs": [
+                "selected market-fit source",
+                "selected visual-engine source",
+                "subject/product/place/person",
+                "composition and negative-space needs",
+                "mobile crop and overlay constraints",
+                "materials, texture, lighting, and avoid list",
+            ],
+        },
     }
     return json.dumps(payload, indent=2)
 

@@ -4,13 +4,15 @@ Use this when a website should draw deeply from the bundled MotionSites prompt l
 
 ## Required Source Pack
 
-For substantial builds, run:
+For every new full website or landing page, run this before coding unless the user explicitly asks for a quick draft:
 
 ```bash
 python scripts/compose_lumora_brief.py "<company and website brief>"
 ```
 
 Use the output as the planning artifact. It selects source prompts, assigns them roles, and extracts normalized prompt atoms for layout, visual system, motion, conversion, implementation, and verification. It does not need to print full prompt bodies.
+
+The source-pack step is not optional for normal Lumora website builds. If a run skips it, pause before coding and run the command.
 
 ## Prompt-Body Use
 
@@ -47,9 +49,21 @@ Each major section should have a job and at least one source atom:
 6. Objection handling: FAQ, comparison, process, guarantee, security, or care notes.
 7. Final CTA: compressed promise with one low-friction action.
 
+Before creating files, write a short source-to-section map. Use this shape:
+
+```text
+Hero: <market fit source> + <visual engine source> -> recognition, proof, primary CTA, media crop.
+Mechanism: <market fit source> + <information architecture source> -> explain how the outcome happens.
+Proof: <information architecture source> + <restraint source> -> concrete evidence without clutter.
+Conversion: <conversion source> -> functional selector/form/cart/booking/pricing state.
+Motion: <motion source> -> only the interactions that clarify hierarchy or product behavior.
+Final CTA: <conversion source> + <restraint source> -> objection handling and one low-friction action.
+```
+
 ## Build-Time Rules
 
-- Start with asset direction. If the site needs product credibility, generate or source the primary image before final layout tuning.
+- Start with asset direction. Use existing user/repo media first. If no suitable images, video, or product media are available and visual credibility matters, use the imagegen skill to generate project-bound assets before final layout tuning.
+- Derive imagegen prompts from the source pack: subject, composition, negative space for copy, mobile crop, overlay contrast, material texture, lighting, aspect ratio, and avoid list. Avoid in-image text and watermarks unless the user provides exact required text.
 - Encode interactions as real UI states: selected plan, open drawer, submitted form, active tab, expanded FAQ, paused motion, or hover/touch state.
 - Keep the visual system specific: named type relationship, palette role, component geometry, spacing rhythm, image treatment, and motion timing.
 - Use the prompt atoms to fill gaps after the first screenshot, not only before the first code pass.
