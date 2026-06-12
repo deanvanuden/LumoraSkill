@@ -14,6 +14,14 @@ Use the output as the planning artifact. It selects source prompts, assigns them
 
 The source-pack step is not optional for normal Lumora website builds. If a run skips it, pause before coding and run the command.
 
+Before creating or editing website files, produce these three visible planning blocks from the source pack:
+
+1. **Source mix**: selected sources, their roles, and what each contributes.
+2. **Merged atoms**: layout, visual, motion, conversion, and implementation atoms used for this build.
+3. **Source-to-section map + media plan**: section jobs, source atoms per section, existing-media check, and imagegen fallback prompt inputs when needed.
+
+If these blocks are not present, the Lumora planning step is incomplete.
+
 ## Prompt-Body Use
 
 Treat source prompts as a pattern library:
@@ -58,6 +66,17 @@ Proof: <information architecture source> + <restraint source> -> concrete eviden
 Conversion: <conversion source> -> functional selector/form/cart/booking/pricing state.
 Motion: <motion source> -> only the interactions that clarify hierarchy or product behavior.
 Final CTA: <conversion source> + <restraint source> -> objection handling and one low-friction action.
+```
+
+Add the media plan directly after the section map:
+
+```text
+Media plan:
+- Existing media: <what repo/user media exists, or "none found">
+- Imagegen fallback: <yes/no and why>
+- Source basis: <market fit source> + <visual engine source>
+- Asset direction: <subject, composition, negative space, desktop/mobile crop, overlay needs>
+- Avoid: <text/watermarks/clutter/incorrect materials/etc>
 ```
 
 ## Build-Time Rules

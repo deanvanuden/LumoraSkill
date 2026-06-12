@@ -223,7 +223,7 @@ Lumora runs as a design/build pipeline inside Codex.
    This script searches the bundled prompt library, assigns source prompts to roles, and extracts normalized prompt atoms.
 
 4. Compose an original brief and source-to-section map.
-   Codex uses `references/composition-system.md` and `references/deep-library-workflow.md` to turn the source pack into a page-specific plan. Before files are created, each major section should have a job and at least one source atom.
+   Codex uses `references/composition-system.md` and `references/deep-library-workflow.md` to turn the source pack into a page-specific plan. Before files are created, Lumora should produce three visible planning blocks: source mix, merged atoms, and source-to-section map plus media plan.
 
 5. Plan or generate media.
    Codex uses existing user/repo media first. If no suitable images, video, or product media are available, Lumora should use imagegen to create project-bound assets from the source pack before final layout tuning.

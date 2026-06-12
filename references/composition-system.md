@@ -50,6 +50,12 @@ Then add a **Source-to-section map** before creating files:
 - Motion: motion source, where motion appears and why.
 - Final CTA/objections: source pair, objection handled, action repeated.
 
+Before creating files, the working notes must include three visible planning blocks:
+
+1. **Source mix**: selected sources, role, and contribution.
+2. **Merged atoms**: layout, visual, motion, conversion, and implementation atoms.
+3. **Source-to-section map + media plan**: section jobs, source atoms, existing-media check, and media generation plan.
+
 If no suitable images, video, or product media are available, use the imagegen skill for project-bound assets. The image prompt must come from the source pack and specify subject, composition, negative space, mobile crop, overlay contrast, material texture, lighting, and avoid list.
 
 ## Common Prompt Atoms

@@ -496,6 +496,29 @@ def source_to_section_map(
     ]
 
 
+def media_plan(
+    selected: list[tuple[str, int, PromptEntry, dict[str, Counter[str]]]],
+    atoms: dict[str, list[str]],
+) -> dict[str, object]:
+    titles = selected_title_by_role(selected)
+    visual_atom = atoms.get("visual", ["one dominant media idea"])[0]
+    layout_atom = atoms.get("layout", ["hero with proof and primary CTA"])[0]
+    return {
+        "existing_media_rule": "Use existing user/repo images, video, product media, or brand assets first.",
+        "imagegen_fallback_rule": "If no suitable media exists and visual credibility matters, use the imagegen skill before final layout tuning.",
+        "source_basis": f"{titles.get('market fit', 'market fit source')} + {titles.get('visual engine', 'visual engine source')}",
+        "asset_direction": f"Generate or select media that supports {visual_atom} and {layout_atom}.",
+        "imagegen_prompt_inputs": [
+            "subject/product/place/person",
+            "composition and negative-space needs",
+            "desktop and mobile crop",
+            "overlay contrast and text-safe areas",
+            "materials, texture, lighting, and mood",
+            "avoid text, logos, watermarks, and clutter unless exact text is required",
+        ],
+    }
+
+
 def render_markdown(
     brief: str,
     entries: list[PromptEntry],
@@ -509,7 +532,9 @@ def render_markdown(
         f"Brief: {brief}",
         f"Library: {len(entries)} prompts, {body_count} with prompt bodies.",
         "",
-        "## Selected Source Mix",
+        "## Required Pre-File Planning Blocks",
+        "",
+        "### 1. Source Mix",
     ]
     for role, score, entry, signals in selected:
         detected = []
@@ -524,11 +549,11 @@ def render_markdown(
             ]
         )
 
-    lines.extend(["", "## Merged Prompt Atoms"])
+    lines.extend(["", "### 2. Merged Atoms"])
     for group in ("layout", "visual", "motion", "conversion", "implementation"):
         lines.append(f"- {group.title()}: " + "; ".join(atoms[group]))
 
-    lines.extend(["", "## Source-To-Section Map"])
+    lines.extend(["", "### 3. Source-To-Section Map + Media Plan"])
     for item in source_to_section_map(selected, atoms):
         lines.extend(
             [
@@ -536,6 +561,19 @@ def render_markdown(
                 f"  - Job: {item['job']}",
             ]
         )
+
+    plan = media_plan(selected, atoms)
+    lines.extend(
+        [
+            "",
+            "#### Media Plan",
+            f"- Existing media: {plan['existing_media_rule']}",
+            f"- Imagegen fallback: {plan['imagegen_fallback_rule']}",
+            f"- Source basis: {plan['source_basis']}",
+            f"- Asset direction: {plan['asset_direction']}",
+            "- Imagegen prompt inputs: " + "; ".join(str(item) for item in plan["imagegen_prompt_inputs"]),
+        ]
+    )
 
     lines.extend(
         [
@@ -583,15 +621,13 @@ def render_json(
         ],
         "merged_prompt_atoms": atoms,
         "source_to_section_map": source_to_section_map(selected, atoms),
-        "media_fallback": {
-            "rule": "Use existing client/repo media first. If no suitable media exist, use imagegen to create project-bound website assets before final layout tuning.",
-            "prompt_inputs": [
-                "selected market-fit source",
-                "selected visual-engine source",
-                "subject/product/place/person",
-                "composition and negative-space needs",
-                "mobile crop and overlay constraints",
-                "materials, texture, lighting, and avoid list",
+        "media_plan": media_plan(selected, atoms),
+        "required_pre_file_planning_blocks": {
+            "source_mix": "selected_source_mix",
+            "merged_atoms": "merged_prompt_atoms",
+            "source_to_section_map_plus_media_plan": [
+                "source_to_section_map",
+                "media_plan",
             ],
         },
     }
