@@ -8,7 +8,7 @@ Lumora selects existing JSON prompt entries and applies their `prompt_text` bodi
 
 ## Scrape-First Blueprint
 
-Before prompt selection, inspect the supplied URL or business brief and create a source inventory. Capture navigation, services/products, pricing, guarantees, booking rules, address, phone, opening hours, proof, reviews, images, tone, and operational constraints.
+Before prompt selection, inspect the supplied URL or business brief and create a source inventory. Capture navigation, page hierarchy, whether the source is onepage or multipage, services/products, pricing, guarantees, booking rules, address, phone, opening hours, proof, reviews, images, tone, and operational constraints.
 
 Then define a niche-specific section blueprint. Do not let a nice-looking prompt decide completeness. Local service businesses usually need 8-14 meaningful sections. A local photo studio, for example, normally needs Hero, trust facts, service overview, E-pass/pass photo detail, application/business photo detail, portrait/family gallery, products such as albums or frames when sourced, pricing, process, reviews, location/hours/contact, FAQ, and Footer.
 
@@ -21,6 +21,21 @@ Create a coverage matrix before building:
 - Status
 
 Target at least 85% blueprint coverage. If coverage is lower, scrape more, select a richer complete base, add compatible sections, or report the gap instead of shipping a thin page.
+
+## Functional Interactions And Multipage
+
+Every clickable element must work. Do not ship dead UI.
+
+- Do not leave `href="#"`, empty `href`, `javascript:void(0)`, placeholder routes, or buttons without actions.
+- Navigation, footer, card, CTA, icon, social, legal, and utility links must point to real section IDs, real app routes, or real external URLs.
+- Internal onepage links must scroll to existing sections.
+- Internal multipage links must load existing routes/pages without 404s.
+- Phone links use `tel:`, email links use `mailto:`, route links use a real map URL, and social links use real profiles when available.
+- If no real target exists for a visually required link, use the closest truthful internal target or convert it to non-clickable text only when that preserves the selected prompt structure. Do not invent fake external URLs.
+- Buttons must perform concrete actions such as route, scroll, call, mail, submit with feedback, open a modal/menu, change carousel state, or toggle an accordion.
+- Forms must validate and show useful feedback or submit to a real available endpoint/action.
+
+When the source website is multipage, the Lumora build must also be multipage unless the user explicitly requests a onepage redesign. Preserve the main source routes/pages, and build each generated page from selected library prompt entries with design and section structure locked 1:1.
 
 ## Source
 
@@ -124,6 +139,7 @@ For generated test websites, add `data-prompt-id="<id>"` to each section when pr
 Before finishing:
 
 - Confirm the supplied URL or brief was inventoried before prompt selection.
+- Confirm onepage vs multipage source structure was identified.
 - Confirm a niche-specific section blueprint and coverage matrix were created.
 - Confirm at least 85% of required blueprint sections are covered, or report why coverage is lower.
 - Confirm all selected entries came from `references/motionsites-prompt-library.json`.
@@ -139,3 +155,6 @@ Before finishing:
 - Confirm visible website copy localization stayed inside the selected prompt's existing text roles and component slots.
 - Confirm any background/media adaptation stayed within the selected prompt's layout footprint.
 - Confirm desktop/mobile layout, copy fit, media loading, interactions, responsive behavior, and console errors.
+- Confirm every clickable link/button/form/menu/accordion/carousel works.
+- Confirm no dead links, placeholder links, empty buttons, or internal 404 routes remain.
+- Confirm multipage routes load when the source was multipage.

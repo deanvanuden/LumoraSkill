@@ -1,4 +1,4 @@
 interface:
   display_name: "Lumora"
-  short_description: "1:1 prompt sites, German copy"
-  default_prompt: "Use $lumora to scrape the target business, create a niche section blueprint, then build a complete website from exact JSON prompt_text entries with design and section structure 100% 1:1, localizing visible copy to the requested language only inside the prompt's existing slots."
+  short_description: "1:1 sites with working links"
+  default_prompt: "Use $lumora to scrape the target business, preserve multipage structure when present, then build a complete website from exact JSON prompt_text entries with design and section structure 100% 1:1, localized copy, and fully working links/buttons/routes."

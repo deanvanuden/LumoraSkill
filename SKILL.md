@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text design, layout, structure, components, section order, and motion 100% 1:1 with no design interpretation, while allowing visible copy to be localized to the user's requested language and company facts.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text design, layout, structure, components, section order, and motion 100% 1:1 with no design interpretation, localize visible copy only inside prompt slots, make every clickable link/button work, and preserve multipage source sites as multipage builds.
 ---
 
 # Lumora
@@ -20,6 +20,7 @@ Before selecting prompts or coding, Lumora must build a **source inventory** and
 When a URL is provided, inspect the live or supplied website first. Scrape or browse enough pages to capture:
 
 - navigation labels and page hierarchy
+- whether the existing site is a onepager or multipage site, including all main routes/pages
 - services, products, packages, pricing, guarantees, and booking rules
 - contact data, address, opening hours, route, and location details
 - proof points, reviews, testimonials, ratings, years, certifications, or guarantees
@@ -50,6 +51,25 @@ For a local photo studio, the default blueprint includes:
 Create a coverage matrix before coding with: `Required section`, `Source facts`, `Selected prompt id`, `Prompt family`, and `Status`. Aim for at least 85% of required niche sections covered. If coverage is lower, scrape more pages, pick a richer complete base, add compatible prompt sections, or report the missing source data instead of shipping a thin page.
 
 Complete Landing Page / Website prompts are allowed only after the blueprint. A complete base may stand alone only if it covers the blueprint for that niche. A compact base such as `prisma-landing` is automatically incomplete for content-rich local businesses unless the blueprint proves otherwise.
+
+## Functional Interaction And Multipage Rule
+
+Every element that looks clickable must work. Do not ship dead UI.
+
+For links and buttons:
+
+- Do not leave `href="#"`, empty `href`, `javascript:void(0)`, placeholder routes, or buttons without actions.
+- Navigation, footer, card, CTA, icon, social, legal, and utility links must point to real section IDs, real app routes, or real external URLs.
+- Internal onepage links must scroll to existing sections.
+- Internal multipage links must load existing routes/pages.
+- Phone links use `tel:`, email links use `mailto:`, route links use a real map URL, and social links use real profiles when available.
+- If a prompt visually requires a link but no real target exists, use the closest truthful internal target or convert it to non-clickable text only when that does not violate the selected prompt structure. Do not invent fake external URLs.
+- Buttons must perform a concrete action such as route, scroll, call, mail, submit with feedback, open a modal/menu, change carousel state, or toggle an accordion.
+- Forms must validate and show useful feedback or submit to a real available endpoint/action. They must not silently do nothing.
+
+When the source website is multipage, the Lumora build must also be multipage. Preserve the main page structure discovered in the source inventory, such as `/passbilder`, `/bewerbung`, `/portrait`, `/kontakt`, or equivalent routes/pages. Each generated page must still be built from selected library prompt entries, with design and section structure locked 1:1. Do not collapse a real multipage source into a onepager unless the user explicitly requests a onepage redesign.
+
+Multipage routing must be verified. All nav, footer, CTA, and card links between generated pages must resolve without 404s.
 
 ## Non-Negotiable Verbatim Rule
 
@@ -238,19 +258,21 @@ Company context must not change:
 ## Workflow
 
 1. Inspect the supplied URL or brief and create a source inventory before prompt selection.
-2. Infer the niche-specific completeness blueprint, including required section count and section roles.
-3. Create a coverage matrix with `Required section`, `Source facts`, `Selected prompt id`, `Prompt family`, and `Status`.
-4. Read `references/motionsites-prompt-library.json`.
-5. Filter to entries with `prompt_text`.
-6. Select either a complete Landing Page / Website base, a page base plus missing diverse sections, or a diverse Hero/Main/Closing section assembly that satisfies the coverage matrix. Selected added sections must use distinct prompt IDs and should come from different prompt families when practical.
-7. Record each selected entry's `id`, title, role, prompt family, and why it was selected.
-8. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
-9. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
-10. Implement the website section by section. Each section remains locked to its selected prompt entry.
-11. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
-12. Add `data-prompt-id` to sections when practical.
-13. Verify that the JSON library and prompt bodies did not change.
-14. Verify source coverage, desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, and console errors required by the selected prompt_text.
+2. Determine whether the source is onepage or multipage, including required routes/pages.
+3. Infer the niche-specific completeness blueprint, including required section count and section roles.
+4. Create a coverage matrix with `Required section/page`, `Source facts`, `Selected prompt id`, `Prompt family`, and `Status`.
+5. Read `references/motionsites-prompt-library.json`.
+6. Filter to entries with `prompt_text`.
+7. Select either a complete Landing Page / Website base, a page base plus missing diverse sections, or a diverse Hero/Main/Closing section assembly that satisfies the coverage matrix. Selected added sections must use distinct prompt IDs and should come from different prompt families when practical.
+8. Record each selected entry's `id`, title, role, prompt family, and why it was selected.
+9. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
+10. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
+11. Implement the website section by section and page by page. Each section remains locked to its selected prompt entry.
+12. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
+13. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
+14. Add `data-prompt-id` to sections when practical.
+15. Verify that the JSON library and prompt bodies did not change.
+16. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, links/buttons/forms, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -259,11 +281,13 @@ User: "Benutze den Lumora Skill und baue eine Website fuer Rheine's Greenhouse."
 Expected behavior:
 
 - Lumora inspects the supplied business context or existing website first.
+- Lumora preserves multipage source sites as multipage builds.
 - Lumora creates a niche-specific section blueprint and coverage matrix before picking prompts.
 - Lumora opens `references/motionsites-prompt-library.json`.
 - Lumora automatically selects either a complete page base or existing prompt entries for Hero, required content sections, proof, conversion, and Closing.
 - Lumora loads and follows those selected entries' `prompt_text` bodies 1:1.
 - Lumora localizes visible copy to Rheine's Greenhouse in German while preserving the selected prompt's exact design, section order, components, text roles, and layout footprint.
+- Lumora wires every visible link and button to a real target/action and verifies routes, footer links, CTAs, forms, accordions, and carousels.
 - Lumora reports the selected prompt IDs, prompt families, and coverage status.
 - Lumora does not modify prompt bodies or the prompt library.
 
