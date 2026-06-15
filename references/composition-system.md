@@ -2,9 +2,9 @@
 
 Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-**Prompt bodies copied 1:1. Design locked. Section structure locked. Copy may be localized to the requested language. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains exact.**
+**Prompt bodies copied 1:1. Design locked. Section structure locked. Copy may be localized to the requested language. A single site-wide typography/color/background token layer is mandatory for cohesion. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains structurally exact.**
 
-Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis.
+Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis. When multiple prompts are composed, Lumora must apply a site-wide cohesion layer so the final website feels like one brand instead of unrelated sections.
 
 ## Scrape-First Blueprint
 
@@ -37,6 +37,30 @@ Every clickable element must work. Do not ship dead UI.
 
 When the source website is multipage, the Lumora build must also be multipage unless the user explicitly requests a onepage redesign. Preserve the main source routes/pages, and build each generated page from selected library prompt entries with design and section structure locked 1:1.
 
+## Site-Wide Visual Cohesion
+
+Every generated website must feel like one coherent product, even when sections come from different prompt families. This is a mandatory token-mapping pass, not permission to invent new section designs.
+
+After prompt selection and before coding, create a site cohesion sheet:
+
+- one global heading font family and one global body/UI font family, or one unified family when that fits better
+- one shared type scale for headings, body, captions, buttons, numbers, and navigation
+- one shared color token system for canvas, surface, ink, muted text, border, primary accent, secondary accent, focus, and status states when needed
+- one background rhythm across the page or routes, including how light/dark/image sections transition
+- one media treatment for overlays, image contrast, tint, grain, borders, or masks when those roles exist in the selected prompts
+
+Apply the cohesion sheet globally:
+
+- Do not let different sections import or use unrelated font families.
+- Do not let each selected section keep an unrelated standalone palette.
+- Map prompt-specified colors to the closest global color token by role, such as ink, surface, muted, accent, border, or canvas.
+- Map prompt-specified font choices to the global font system while preserving hierarchy, weight contrast, size relationships, and text rhythm.
+- Harmonize section background colors or background media so adjacent sections feel intentional.
+- Use shared CSS variables or equivalent theme tokens for fonts, colors, backgrounds, borders, shadows, focus states, and repeated surfaces.
+- Use the same cohesion sheet across every route in a multipage build.
+
+The cohesion sheet may change font family names, exact color values, and section background colors/media. It may not change layout, section structure, component structure, spacing logic, CTA placement, motion concept, responsive behavior, effects, or the selected prompt's content roles. If a selected prompt depends on a distinctive font/color treatment that cannot be mapped into the shared site identity without breaking its visual role, select a more compatible prompt instead of forcing the mismatch.
+
 ## Source
 
 The prompt library is `references/motionsites-prompt-library.json`.
@@ -65,7 +89,7 @@ Selected entries must use different prompt IDs across the page. Added sections s
 
 Avoid using most of the page from one prompt family such as all `arceage-*` when other compatible families exist. Use at most two entries from the same family unless there is no compatible alternative, and explain the exception.
 
-A complete Landing Page / Website prompt may be the whole site only when it satisfies the coverage matrix by itself. If it is incomplete, add missing compatible sections from other families. If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, select a different compatible base or diverse section set, or stop and explain why. Do not invent missing sections.
+A complete Landing Page / Website prompt may be the whole site only when it satisfies the coverage matrix by itself. If it is incomplete, add missing compatible sections from other families. If exact prompts conflict in stack, global CSS, page shell, animation model, layout assumptions, or cannot share one coherent font/color/background token layer, select a different compatible base or diverse section set, or stop and explain why. Do not invent missing sections.
 
 ## Selection Signals
 
@@ -89,7 +113,7 @@ Compact landing pages such as `prisma-landing` may be used as a base only after 
 
 Each selected entry remains locked for its own section.
 
-The selected entry determines that section's design, layout, structure, motion, components, visual direction, spacing, colors, typography direction, CTA placement, responsive behavior, and implementation style.
+The selected entry determines that section's design, layout, structure, motion, components, visual direction, spacing, color roles, typography direction, CTA placement, responsive behavior, and implementation style. Color roles and font family choices are later mapped through the required site cohesion sheet.
 
 The selected entry's `prompt_text` is the direct prompt. Do not replace it with a summary, transformed brief, archetype interpretation, or house style.
 
@@ -106,14 +130,14 @@ Do not:
 - create new archetypes
 - invent a creative direction
 - alter design based on company type
-- harmonize designs by inventing new colors, typography, spacing, motion, effects, or layouts
+- harmonize designs by inventing new layouts, components, spacing, motion, effects, or arbitrary styles
 - implement from memory, title, category, or metadata when `prompt_text` exists
 
-Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed. A single landing-page prompt is acceptable only when it already satisfies the requested site shape.
+Section assembly is allowed only when every selected prompt can remain structurally exact and can share the required site cohesion sheet. Prompt-body remixing is never allowed. A single landing-page prompt is acceptable only when it already satisfies the requested site shape.
 
-## Copy Localization And Background Adaptation
+## Copy Localization, Background, And Cohesion Adaptation
 
-Company context may guide prompt selection, visible copy localization, and section background/media replacement only. It must not change design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt.
+Company context may guide prompt selection, visible copy localization, section background/media replacement, and site-wide font/color token selection only. It must not change design, layout, visual style beyond the allowed cohesion layer, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt.
 
 Allowed copy localization:
 
@@ -125,10 +149,16 @@ Allowed copy localization:
 Allowed background changes:
 
 - replace a prompt-specified background image or video with a company-relevant image or video of the same role and layout footprint
-- change a section background color or background media when needed for brand relevance or asset availability
+- change a section background color or background media when needed for brand relevance, asset availability, or whole-site cohesion
 - keep overlays, contrast behavior, dimensions, border radii, layout, motion, and responsive behavior from the selected prompt intact
 
-Forbidden changes include section structure, spacing, typography, component hierarchy, motion, and any visual concept not present in the selected prompt.
+Allowed cohesion changes:
+
+- use one global font system across every selected prompt section and route
+- map prompt-specific colors into shared site tokens while keeping color roles, contrast, hierarchy, and component states intact
+- normalize repeated surfaces, borders, focus rings, and background transitions through global CSS variables or equivalent theme tokens
+
+Forbidden changes include section structure, spacing logic, typography hierarchy beyond global font-family mapping, component hierarchy, motion, effects, and any visual concept not present in the selected prompt.
 
 ## Traceability
 
@@ -145,6 +175,8 @@ Before finishing:
 - Confirm all selected entries came from `references/motionsites-prompt-library.json`.
 - Confirm every selected entry has `prompt_text`.
 - Confirm every selected `prompt_text` was loaded and followed 1:1.
+- Confirm a site cohesion sheet was created before coding.
+- Confirm all sections and routes share one font system, color token system, and background rhythm.
 - Confirm selected website sections use different prompt IDs.
 - Confirm added sections avoid overusing one prompt family when compatible alternatives exist.
 - If a complete Landing Page / Website prompt was used alone, confirm it already included enough content and a clear closing/conversion end.
@@ -154,6 +186,7 @@ Before finishing:
 - Confirm no prompt files or `references/prompts` folder were created.
 - Confirm visible website copy localization stayed inside the selected prompt's existing text roles and component slots.
 - Confirm any background/media adaptation stayed within the selected prompt's layout footprint.
+- Confirm any font/color changes were only role-preserving site-wide cohesion token mapping.
 - Confirm desktop/mobile layout, copy fit, media loading, interactions, responsive behavior, and console errors.
 - Confirm every clickable link/button/form/menu/accordion/carousel works.
 - Confirm no dead links, placeholder links, empty buttons, or internal 404 routes remain.

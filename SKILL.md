@@ -1,15 +1,15 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text design, layout, structure, components, section order, and motion 100% 1:1 with no design interpretation, localize visible copy only inside prompt slots, make every clickable link/button work, and preserve multipage source sites as multipage builds.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text design, layout, structure, components, section order, and motion 100% 1:1 with no design interpretation, localize visible copy only inside prompt slots, apply one coherent site-wide font/color/background token layer, make every clickable link/button work, and preserve multipage source sites as multipage builds.
 ---
 
 # Lumora
 
 Lumora's default workflow is **Locked Verbatim Page + Diverse Section Composition Mode**.
 
-**Prompt bodies copied 1:1. Design locked. Section structure locked. Copy may be localized to the requested language. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains exact.**
+**Prompt bodies copied 1:1. Design locked. Section structure locked. Copy may be localized to the requested language. A single site-wide typography/color/background token layer is mandatory for cohesion. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains structurally exact.**
 
-Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its page or section. Lumora may select one complete Landing Page / Website entry as the base when it is the strongest fit. If that base page is incomplete for a real website, add missing sections from other families only when every selected prompt can remain exact without bridging, interpretation, or harmonization. Lumora may also assemble a page from section-level prompts. It does not mean inventing a new design, creating new archetypes, interpreting sections, inventing layout, or merging prompt bodies into a new prompt. Visible website copy may be localized to German or another requested language, but the prompt's text roles, rhythm, hierarchy, section order, and component slots stay locked.
+Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its page or section. Lumora may select one complete Landing Page / Website entry as the base when it is the strongest fit. If that base page is incomplete for a real website, add missing sections from other families only when every selected prompt can remain structurally exact without bridging, interpretation, or freeform harmonization. Lumora may also assemble a page from section-level prompts. It does not mean inventing a new design, creating new archetypes, interpreting sections, inventing layout, or merging prompt bodies into a new prompt. Visible website copy may be localized to German or another requested language, but the prompt's text roles, rhythm, hierarchy, section order, and component slots stay locked. When multiple prompts are composed, Lumora must apply the Site-Wide Visual Cohesion Rule so the final website feels like one brand, not a stack of unrelated sections.
 
 The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. During a Lumora build, selected prompt bodies are copied 1:1 into the agent's working instructions and followed exactly. Do not edit, rewrite, summarize, translate, merge, or store prompt bodies in new prompt files.
 
@@ -71,6 +71,30 @@ When the source website is multipage, the Lumora build must also be multipage. P
 
 Multipage routing must be verified. All nav, footer, CTA, and card links between generated pages must resolve without 404s.
 
+## Site-Wide Visual Cohesion Rule
+
+Every generated website must feel like one coherent product, even when sections come from different prompt families. This is a mandatory token-mapping pass, not permission to invent new section designs.
+
+After prompt selection and before coding, create a site cohesion sheet with:
+
+- one global heading font family and one global body/UI font family, or one unified family when that fits better
+- one shared type scale for headings, body, captions, buttons, numbers, and navigation
+- one shared color token system for canvas, surface, ink, muted text, border, primary accent, secondary accent, focus, and destructive/success states when needed
+- one background rhythm across the page or routes, including how light/dark/image sections transition
+- one media treatment for overlays, image contrast, duotone/tint, grain, borders, or masks when those roles exist in the selected prompts
+
+Apply the cohesion sheet globally:
+
+- Do not let different sections import or use unrelated font families.
+- Do not let each selected section keep an unrelated standalone palette.
+- Map prompt-specified colors to the closest global color token by role, such as ink, surface, muted, accent, border, or canvas.
+- Map prompt-specified font choices to the global font system while preserving hierarchy, weight contrast, size relationships, and text rhythm.
+- Harmonize section background colors or background media so adjacent sections feel intentional, not accidental.
+- Use shared CSS variables or equivalent theme tokens for fonts, colors, backgrounds, borders, shadows, focus states, and repeated surfaces.
+- Use the same cohesion sheet across every route in a multipage build.
+
+The cohesion sheet may change font family names, exact color values, and section background colors/media. It may not change layout, section structure, component structure, spacing logic, CTA placement, motion concept, responsive behavior, effects, or the selected prompt's content roles. If a selected prompt depends on a distinctive font/color treatment that cannot be mapped into the shared site identity without breaking its visual role, select a more compatible prompt instead of forcing the mismatch.
+
 ## Non-Negotiable Verbatim Rule
 
 For every selected library entry:
@@ -79,13 +103,14 @@ For every selected library entry:
 - Treat that `prompt_text` as the direct build prompt.
 - Preserve all specified design, layout, stack, component, animation, responsive, asset, and verification instructions exactly.
 - Do not replace the prompt with an archetype summary, Lumora brief, design synthesis, mood board, or interpretation.
-- Do not omit prompt-specified sections, states, interactions, assets, animations, fonts, colors, dimensions, or verification steps.
+- Do not omit prompt-specified sections, states, interactions, assets, animations, dimensions, or verification steps.
 - Do not alter a prompt because another selected prompt has a nicer style or because the company context suggests a different direction.
-- Do not "harmonize" multiple selected prompts by inventing a shared design system.
+- Do not harmonize multiple selected prompts by inventing new layouts, components, effects, motion, spacing, or arbitrary styles. Use only the required Site-Wide Visual Cohesion Rule for fonts, colors, backgrounds, and repeated visual tokens.
 - Do not select a prompt unless its design, layout, structure, components, motion, and section order can be implemented as written.
+- Prompt-specified typography and color roles may be remapped only through the Site-Wide Visual Cohesion Rule.
 - Visible copy, brand names, labels, headings, product names, prices, testimonials, navigation, and CTA text may be localized to the requested language and sourced company facts, but only inside the same text roles and component slots specified by the selected prompt.
 
-If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, do not patch over the conflict. Select a compatible complete page base, select a different compatible diverse section set, or stop and report that no compatible verbatim set exists.
+If exact prompts conflict in stack, global CSS, page shell, animation model, layout assumptions, or cannot share one coherent font/color/background token layer, do not patch over the conflict. Select a compatible complete page base, select a different compatible diverse section set, or stop and report that no compatible verbatim set exists.
 
 ## Page Base And Diverse Section Rule
 
@@ -112,7 +137,7 @@ Do not:
 
 - select the same prompt ID for every section
 - fill all added sections from one prompt family when other compatible families exist
-- add sections that require changing the locked design details of the base prompt
+- add sections that require changing the locked design details of the base prompt beyond the permitted Site-Wide Visual Cohesion Rule
 
 If the library lacks compatible diverse sections for an incomplete base page, report the limitation and use the strongest compatible fallback only when the result is still honest about what was selected.
 
@@ -130,13 +155,13 @@ Each selected JSON entry is the single source of truth for that section's:
 - components
 - visual direction
 - spacing
-- colors
-- typography direction
+- color roles, later mapped through the site cohesion sheet
+- typography direction, later mapped through the site cohesion sheet
 - CTA placement
 - responsive behavior
 - implementation style
 
-Company context may guide prompt selection, visible copy localization, and background/media replacement only. It must not change design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt_text.
+Company context may guide prompt selection, visible copy localization, background/media replacement, and site-wide font/color token selection only. It must not change design, layout, visual style beyond the allowed cohesion layer, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt_text.
 
 ## Standard Composition
 
@@ -208,13 +233,13 @@ Do not:
 - use company type as a reason to change design
 - add missing design ideas from taste or preference
 
-Lumora is allowed to place selected section implementations in sequence only when no glue design, copy rewriting, style translation, or structural interpretation is required. That is section assembly, not prompt-body remixing.
+Lumora is allowed to place selected section implementations in sequence only when no glue design, copy rewriting, style translation beyond the required cohesion token mapping, or structural interpretation is required. That is section assembly, not prompt-body remixing.
 
-Section assembly is allowed only when each selected prompt can remain exact. If assembling prompts requires changing global setup, stack, CSS prefixes, animation timing, media strategy, responsive behavior, or component structure from any selected `prompt_text`, assembly is forbidden.
+Section assembly is allowed only when each selected prompt can remain structurally exact and can share the required site cohesion sheet. If assembling prompts requires changing global setup beyond shared theme tokens, stack, CSS prefixes, animation timing, media strategy, responsive behavior, or component structure from any selected `prompt_text`, assembly is forbidden.
 
-## Copy Localization And Background Adaptation
+## Copy Localization, Background, And Cohesion Adaptation
 
-The only permitted adaptations are visible copy localization and changing section backgrounds/media.
+The only permitted adaptations are visible copy localization, changing section backgrounds/media, and applying the Site-Wide Visual Cohesion Rule.
 
 Allowed copy localization:
 
@@ -226,12 +251,18 @@ Allowed copy localization:
 Allowed background changes:
 
 - replace a prompt-specified background image or video with a company-relevant image or video of the same role and layout footprint
-- change a section background color or background media when needed for brand relevance or asset availability
+- change a section background color or background media when needed for brand relevance, asset availability, or whole-site cohesion
 - keep overlays, contrast behavior, dimensions, border radii, layout, motion, and responsive behavior from the selected prompt intact
+
+Allowed cohesion changes:
+
+- use one global font system across every selected prompt section and route
+- map prompt-specific colors into shared site tokens while keeping color roles, contrast, hierarchy, and component states intact
+- normalize repeated surfaces, borders, focus rings, and background transitions through global CSS variables or equivalent theme tokens
 
 Forbidden background-related changes:
 
-- using background changes as a reason to alter section structure, spacing, typography, component hierarchy, or motion
+- using background changes as a reason to alter section structure, spacing, typography hierarchy, component hierarchy, or motion
 - replacing a required video/canvas/3D/background behavior with a static design unless the selected prompt allows it
 - adding new visual concepts that are not in the selected prompt
 
@@ -250,8 +281,8 @@ Company context must not change:
 - design direction
 - imagery style
 - spacing
-- colors
-- typography direction
+- color roles beyond the permitted site-wide token mapping
+- typography hierarchy or direction beyond the permitted global font-family mapping
 - responsive behavior
 - effects such as 3D, glassmorphism, gradients, bento grids, cards, marquees, glow, noise, blur, or parallax unless the selected prompt entry specifies them
 
@@ -267,12 +298,13 @@ Company context must not change:
 8. Record each selected entry's `id`, title, role, prompt family, and why it was selected.
 9. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
 10. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
-11. Implement the website section by section and page by page. Each section remains locked to its selected prompt entry.
-12. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
-13. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
-14. Add `data-prompt-id` to sections when practical.
-15. Verify that the JSON library and prompt bodies did not change.
-16. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, links/buttons/forms, and console errors required by the selected prompt_text.
+11. Create the site cohesion sheet for global fonts, type scale, color tokens, background rhythm, and repeated visual tokens.
+12. Implement the website section by section and page by page. Each section remains locked to its selected prompt entry.
+13. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
+14. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
+15. Add `data-prompt-id` to sections when practical.
+16. Verify that the JSON library and prompt bodies did not change.
+17. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, links/buttons/forms, global font/color/background cohesion, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -286,6 +318,7 @@ Expected behavior:
 - Lumora opens `references/motionsites-prompt-library.json`.
 - Lumora automatically selects either a complete page base or existing prompt entries for Hero, required content sections, proof, conversion, and Closing.
 - Lumora loads and follows those selected entries' `prompt_text` bodies 1:1.
+- Lumora creates one global cohesion sheet so every section shares the same font system, color tokens, and background rhythm.
 - Lumora localizes visible copy to Rheine's Greenhouse in German while preserving the selected prompt's exact design, section order, components, text roles, and layout footprint.
 - Lumora wires every visible link and button to a real target/action and verifies routes, footer links, CTAs, forms, accordions, and carousels.
 - Lumora reports the selected prompt IDs, prompt families, and coverage status.
