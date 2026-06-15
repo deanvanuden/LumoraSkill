@@ -2,7 +2,7 @@
 
 Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-**Prompt bodies copied 1:1. Design locked. Copy locked. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains exact.**
+**Prompt bodies copied 1:1. Design locked. Section structure locked. Copy may be localized to the requested language. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains exact.**
 
 Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis.
 
@@ -96,9 +96,16 @@ Do not:
 
 Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed. A single landing-page prompt is acceptable only when it already satisfies the requested site shape.
 
-## Background-Only Adaptation
+## Copy Localization And Background Adaptation
 
-Company context may guide prompt selection and section background replacement only. It must not change visible website copy.
+Company context may guide prompt selection, visible copy localization, and section background/media replacement only. It must not change design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt.
+
+Allowed copy localization:
+
+- translate or rewrite visible website copy into the user's requested language
+- replace prompt example copy with source-inventory company facts
+- preserve the same text role, approximate length, hierarchy, rhythm, CTA role, and layout footprint from the selected prompt
+- keep every selected prompt section and component slot present
 
 Allowed background changes:
 
@@ -106,7 +113,7 @@ Allowed background changes:
 - change a section background color or background media when needed for brand relevance or asset availability
 - keep overlays, contrast behavior, dimensions, border radii, layout, motion, and responsive behavior from the selected prompt intact
 
-Forbidden changes include foreground copy, CTA text, navigation labels, product names, prices, testimonials, form labels, footer text, section structure, spacing, typography, component hierarchy, motion, and any visual concept not present in the selected prompt.
+Forbidden changes include section structure, spacing, typography, component hierarchy, motion, and any visual concept not present in the selected prompt.
 
 ## Traceability
 
@@ -129,6 +136,6 @@ Before finishing:
 - Confirm no prompt bodies changed.
 - Confirm `references/motionsites-prompt-library.json` changed only if the user explicitly requested library maintenance.
 - Confirm no prompt files or `references/prompts` folder were created.
-- Confirm no visible website copy changed unless the selected prompt explicitly defined replaceable placeholders.
-- Confirm any adaptation was limited to permitted section background changes.
+- Confirm visible website copy localization stayed inside the selected prompt's existing text roles and component slots.
+- Confirm any background/media adaptation stayed within the selected prompt's layout footprint.
 - Confirm desktop/mobile layout, copy fit, media loading, interactions, responsive behavior, and console errors.
