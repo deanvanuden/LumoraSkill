@@ -2,19 +2,25 @@
 
 Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-**Different section prompts. Prompt bodies copied 1:1. Design locked. Copy adaptive. No single-template fallback.**
+**Prompt bodies copied 1:1. Design locked. Copy adaptive. Complete pages allowed. Incomplete pages get extra diverse sections.**
 
-Lumora selects multiple existing JSON prompt entries and applies their `prompt_text` bodies as exact section prompts. It is not one-template page generation, free design mixing, prompt summarization, or creative synthesis.
+Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis.
 
 ## Source
 
 The prompt library is `references/motionsites-prompt-library.json`.
 
-Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. During a build, copy every selected `prompt_text` 1:1 into the working implementation context and follow it exactly. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source. Do not use `prisma-landing` for ordinary builds.
+Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. During a build, copy every selected `prompt_text` 1:1 into the working implementation context and follow it exactly. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source.
 
 ## Composition Shape
 
-Default website assembly:
+Default website assembly chooses one of three shapes:
+
+1. Complete page base: one Landing Page / Website prompt that already includes Hero, multiple content sections, and a clear closing/conversion end.
+2. Page base plus additions: one Landing Page / Website prompt plus 1 to 3 extra compatible section prompts from other prompt families when the base is incomplete.
+3. Diverse section assembly: no page base; separate Hero, content, and Closing sections.
+
+For a diverse section assembly:
 
 1. One Hero/Header entry.
 2. Two to four main content entries.
@@ -24,9 +30,11 @@ Main content entries can include About, Services, Categories, Features, Product,
 
 If no Footer entry fits, use the strongest Contact, CTA, Signup, Waitlist, Booking, or Closing entry.
 
-Selected entries must use different prompt IDs across the page. Do not select the same entry for every section.
+Selected entries must use different prompt IDs across the page. Added sections should come from different prompt families when practical. Infer family from shared prefix, title, brand, or repeated package pattern, such as `arceage-*`, `nimbus-*`, `rocket-*`, `orbis-*`, `kova-*`, or similar.
 
-Do not use a single complete Landing Page / Website prompt as the whole site. Do not use a complete Landing Page / Website prompt as a fallback when section composition is hard. If a real multi-section composition is not sensible, or if exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, select a different compatible multi-section set or stop and explain why. Do not invent missing sections.
+Avoid using most of the page from one prompt family such as all `arceage-*` when other compatible families exist. Use at most two entries from the same family unless there is no compatible alternative, and explain the exception.
+
+A complete Landing Page / Website prompt may be the whole site only when it is complete enough by itself. If it is incomplete, add missing compatible sections from other families. If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, select a different compatible base or diverse section set, or stop and explain why. Do not invent missing sections.
 
 ## Selection Signals
 
@@ -44,7 +52,7 @@ Use existing JSON metadata only:
 
 When selection is uncertain, list suitable existing entries and choose the technically strongest option. Do not invent a new archetype or creative direction.
 
-Do not choose `prisma-landing`. It is not a valid automatic source for future Lumora builds.
+Compact landing pages such as `prisma-landing` may be used as a base, but they must be extended with missing compatible sections when they are not complete enough for the requested website.
 
 ## Locked Section Rule
 
@@ -70,7 +78,7 @@ Do not:
 - harmonize designs by inventing new colors, typography, spacing, motion, effects, or layouts
 - implement from memory, title, category, or metadata when `prompt_text` exists
 
-Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed. Single-template landing-page generation is not the default escape hatch.
+Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed. A single landing-page prompt is acceptable only when it already satisfies the requested site shape.
 
 ## Copy-Only Adaptation
 
@@ -91,7 +99,10 @@ Before finishing:
 - Confirm all selected entries came from `references/motionsites-prompt-library.json`.
 - Confirm every selected entry has `prompt_text`.
 - Confirm every selected `prompt_text` was loaded and followed 1:1.
-- Confirm selected website sections use multiple different prompt IDs and do not use `prisma-landing`.
+- Confirm selected website sections use different prompt IDs.
+- Confirm added sections avoid overusing one prompt family when compatible alternatives exist.
+- If a complete Landing Page / Website prompt was used alone, confirm it already included enough content and a clear closing/conversion end.
+- If a compact/incomplete page prompt such as `prisma-landing` was used, confirm missing sections were added from other compatible families.
 - Confirm no prompt bodies changed.
 - Confirm `references/motionsites-prompt-library.json` changed only if the user explicitly requested library maintenance.
 - Confirm no prompt files or `references/prompts` folder were created.

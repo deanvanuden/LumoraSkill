@@ -1,4 +1,4 @@
 interface:
   display_name: "Lumora"
-  short_description: "Compose sites from exact section prompts"
-  default_prompt: "Use $lumora to build a website from multiple different existing JSON section prompt_text entries 1:1, adapting only visible copy to the company context."
+  short_description: "Compose sites from exact prompts"
+  default_prompt: "Use $lumora to build a website from exact JSON prompt_text entries 1:1, using a complete page base or diverse added sections while adapting only visible copy."
