@@ -1,10 +1,10 @@
-# Lumora Archetype Catalog
+# Lumora Library Inventory
 
-Source note: this catalog was distilled from visible MotionSites card metadata inspected on 2026-06-12. It stores archetype names, public type labels, and original usage tags only. It does not contain paid prompt bodies.
+Source note: this catalog was distilled from visible MotionSites card metadata inspected on 2026-06-12. It stores prompt card names, public type labels, and original usage tags only. It does not contain paid prompt bodies.
 
-Use this file to choose design influences, not to copy prompts. Combine a market-fit archetype with a visual-engine archetype and a conversion archetype.
+Use this file only as inventory and role orientation for existing entries in `references/motionsites-prompt-library.json`. It is not a remix guide. Do not combine prompt ideas into a new prompt, infer a new design direction, or use company context to alter design. In Lumora, select existing JSON entries by role; each selected entry remains design-locked for its own section.
 
-## Fast Category Map
+## Inventory Category Map
 
 ### SaaS, AI, Workflow, Productivity
 - Minimal Workflow SaaS | SaaS | calm product clarity, workflow proof
@@ -298,13 +298,12 @@ Use this file to choose design influences, not to copy prompts. Combine a market
 - Velorah Focus | Social Media
 - Social Media Posts | Social Media
 
-## Background Library Notes
+## Background Library Inventory Notes
 
-The Backgrounds page exposes animated video backgrounds rather than named prompt cards. Treat it as a direction for:
+The Backgrounds page exposes animated video backgrounds rather than named prompt cards. Treat these notes only as inventory metadata for stored prompt discovery, not as permission to add motion or visual effects outside the selected stored prompt:
 - abstract video texture behind high-contrast hero text
 - cinematic ambient loops with restrained overlays
 - product storytelling backgrounds that support readability
 - motion accents kept subordinate to conversion content
 
 Do not download, hotlink, or embed MotionSites media unless the user explicitly asks and licensing allows it.
-

@@ -1,77 +1,180 @@
 ---
 name: lumora
-description: Premium website and landing-page design/build workflow inspired by a categorized MotionSites archetype catalog. Use when Codex is asked to make, redesign, improve, or generate a high-quality website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; also use when the user asks to mix prompt styles, choose website prompt directions, or create motion-heavy/cinematic web experiences.
+description: Lumora builds premium websites from existing Lumora prompt_text entries in references/motionsites-prompt-library.json. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora automatically selects existing library entries for hero, content sections, and closing while keeping design locked and adapting only visible website copy.
 ---
 
 # Lumora
 
-Use Lumora to turn a company brief into a polished website direction and implementation. Select relevant archetypes from the bundled MotionSites prompt library, synthesize an original design brief, build the site, then verify it visually.
+Lumora's default workflow is **Lumora**.
 
-The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat it as a licensed bundled resource: use it to search, compare, and compose website directions, but prefer transforming selected prompts into an original implementation brief for each website instead of pasting large source prompts into chat.
+**Design locked. Copy adaptive.**
+
+Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Lumora selects existing entries by role and applies them section by section. It does not mean inventing a new design, creating new archetypes, or merging prompt bodies into a new prompt.
+
+The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. Do not edit, rewrite, summarize, translate, merge, or copy prompt bodies into new prompt files.
+
+## Source Of Truth
+
+Use `references/motionsites-prompt-library.json` as the prompt library.
+
+Each selected JSON entry is the single source of truth for that section's:
+
+- design
+- layout
+- section structure
+- section order within its role
+- motion
+- components
+- visual direction
+- spacing
+- colors
+- typography direction
+- CTA placement
+- responsive behavior
+- implementation style
+
+Company context may only change visible website copy. It must not change design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, or creative direction.
+
+## Standard Composition
+
+When the user asks generally to build a website with Lumora, assemble:
+
+- **Hero/Header:** exactly 1 existing library entry with a Hero/Header role or category.
+- **Main Sections:** 2 to 4 existing library entries with roles such as About, Services, Categories, Features, Product, Story, Gallery, Benefits, Testimonials, Pricing, or similar content sections.
+- **Closing:** exactly 1 existing library entry with Contact, Footer, CTA, Closing, Signup, Waitlist, Booking, or similar role.
+
+If no suitable Footer section exists, use the closest Contact, CTA, or Closing entry.
+
+If a real multi-section composition is not sensible because the library only has complete landing-page templates for the requested need, use exactly one existing Landing Page entry and briefly explain why. Do not improvise missing sections.
+
+## Automatic Selection Rules
+
+Select only entries that already exist in `references/motionsites-prompt-library.json`.
+
+Use available JSON fields such as:
+
+- `id`
+- `title`
+- `metadata.title`
+- `metadata.category`
+- `metadata.type`
+- `metadata.page_type`
+- `metadata.types`
+- tags or similar metadata fields when present
+- `prompt_text` content only for understanding the stored design instructions, not for rewriting
+
+Selection rules:
+
+- Choose no entry without `prompt_text`.
+- Use one existing entry per section role.
+- Do not create new prompt entries.
+- Do not create prompt files.
+- Do not use `references/prompts`; it is not the prompt source.
+- Do not merge prompt bodies into a new master prompt.
+- Do not paraphrase, translate, shorten, expand, or summarize prompt bodies.
+- If selection is uncertain, list plausible existing entries and still choose the technically strongest set with a short reason.
+- If no matching entry exists, stop or use one complete Landing Page entry. Do not freely invent a section.
+- In generated test websites, add `data-prompt-id="<id>"` to each section when practical so the source prompt remains traceable.
+
+## Prompt Integrity
+
+Never alter the stored prompt library or prompt bodies.
+
+Do not:
+
+- edit `references/motionsites-prompt-library.json`
+- change any `prompt_text`
+- copy prompt bodies into `.md` files
+- rewrite prompt bodies
+- translate prompt bodies
+- shorten prompt bodies
+- expand prompt bodies
+- merge prompt bodies
+- combine prompt fragments into a new prompt
+- create a new Lumora brief
+- create an original creative direction
+- use company type as a reason to change design
+- add missing design ideas from taste or preference
+
+Lumora is allowed to place selected section implementations in sequence. That is section assembly, not prompt-body remixing.
+
+## Copy Adaptation
+
+The only permitted adaptation is user-facing website copy.
+
+Copy may adapt to the company, offer, audience, location, brand tone, and factual details. Allowed copy fields include:
+
+- Navigation labels
+- Hero headline
+- Hero subheadline
+- CTA labels
+- Section headlines
+- Paragraphs
+- Feature titles
+- Feature descriptions
+- Benefits
+- Category names
+- Product or service copy
+- Form labels
+- Form placeholders
+- Footer copy
+- Meta title
+- Meta description
+- Alt text
+- Microcopy
+- Badge text
+- Testimonial copy, only when clearly treated as example or dummy content
+- Pricing words, but not pricing layout
+
+Copy must preserve the text role, approximate length, rhythm, tone, and layout footprint implied by the selected prompt entry. A short hero line stays short. A compact CTA stays compact. Minimal copy must not become long paragraphs. Copy must not break the intended layout, spacing, rhythm, or visual composition.
+
+## Forbidden Design Changes
+
+Company context must not change:
+
+- layout
+- section count beyond the selected entry roles
+- section order inside an entry
+- visual hierarchy
+- component structure
+- CTA placement
+- conversion flow
+- motion concept
+- design direction
+- imagery style
+- spacing
+- colors
+- typography direction
+- responsive behavior
+- effects such as 3D, glassmorphism, gradients, bento grids, cards, marquees, glow, noise, blur, or parallax unless the selected prompt entry specifies them
 
 ## Workflow
 
-1. Gather the brief:
-   - Company/product name, offer, audience, conversion goal, must-have sections, brand constraints, reference sites/images, target stack, and whether this is a new build or redesign.
-   - If details are missing, make practical assumptions and continue unless the missing detail would change the business goal.
+1. Read `references/motionsites-prompt-library.json`.
+2. Filter to entries with `prompt_text`.
+3. Select a Hero/Header entry, 2 to 4 main section entries, and a Contact/Footer/CTA/Closing entry using existing metadata and role fit.
+4. Record each selected entry's `id`, title, role, and why it was selected.
+5. Read the selected `prompt_text` values as immutable design instructions.
+6. Implement the website section by section. Each section remains locked to its selected prompt entry.
+7. Adapt only visible website copy for the company context.
+8. Add `data-prompt-id` to sections when practical.
+9. Verify that the JSON library and prompt bodies did not change.
+10. Verify desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, and console errors.
 
-2. Select archetypes:
-   - Read `references/archetype-catalog.md` for the visible MotionSites archetype index.
-   - If `references/motionsites-prompt-library.json` exists, use it as the bundled prompt-body library. Search it locally for matching industries, page types, and visual patterns; do not paste large prompt bodies into the chat unless the user explicitly asks for a specific prompt.
-   - Optionally run `python scripts/select_lumora_archetypes.py "<brief text>"` to get a first-pass shortlist.
-   - To refresh the bundled prompt-body library, run `python scripts/scrape_motionsites_prompts.py`. Premium bodies require an authenticated MotionSites access token in `MOTIONSITES_ACCESS_TOKEN`.
-   - Pick 3-6 archetypes with distinct roles:
-     - **Market fit**: closest industry/page type.
-     - **Visual engine**: strongest atmosphere, motion, 3D, cinematic, or image direction.
-     - **Conversion pattern**: signup, contact, waitlist, ecommerce, booking, pricing, trust, or demo flow.
-     - **Restraint counterweight**: a quieter reference that prevents overdesigned pages when the company needs clarity.
+## Example Use
 
-3. Compose an original Lumora brief:
-   - Read `references/composition-system.md` before major builds.
-   - Name the chosen archetypes and explain what each contributes in one sentence.
-   - Convert those influences into original instructions for layout, hierarchy, assets, motion, color, type, components, responsive behavior, and conversion flow.
-   - Prefer one strong visual idea over a collage of effects.
+User: "Benutze den Lumora Skill und baue eine Website fuer Rheine's Greenhouse."
 
-4. Build the website:
-   - Match the existing project stack and conventions when editing a repo.
-   - For new static work, create the simplest viable app that supports the requested experience.
-   - Use real visual assets, generated bitmap assets, video, canvas, WebGL, or code-native visuals when the experience needs them.
-   - Make the first viewport immediately communicate the brand/product/object and leave a hint of the next section visible.
-   - Build complete states and core flows, not a static poster.
+Expected behavior:
 
-5. Quality pass:
-   - Verify desktop and mobile layouts in a browser.
-   - Check text fit, overflow, contrast, responsive navigation, animation performance, asset loading, and console errors.
-   - Revise until the page feels deliberate, not like a generic AI landing page.
+- Lumora opens `references/motionsites-prompt-library.json`.
+- Lumora automatically selects existing prompt entries for Hero, content sections, and Closing.
+- Lumora builds a website from those selected entries.
+- Lumora adapts only visible copy to Rheine's Greenhouse.
+- Lumora does not modify prompt bodies or the prompt library.
 
-## Selection Rules
+## Reference Files
 
-Use these default mappings when the request is underspecified:
-
-- **AI/SaaS/workflow**: start with Minimal Workflow SaaS, AI Workflow Hero, Growth Marketing SaaS, ClearInvoice SaaS Hero, CoderCrest, or AuraMail.
-- **Agency/creative studio**: start with Velorah, Modern Agency, Creative Studio, Bold Studio, Prisma Creative Studio, or Framelix 3D Studios.
-- **Portfolio/personal brand**: start with 3D Portfolio, Portfolio Cosmic, Bold Portfolio Hero, Dark Portfolio Hero, xPortfolio Hero, or Viktor Portfolio.
-- **Luxury/product/real estate/travel**: start with Luxury Real Estate, Luxury Ecommerce Design, SkyElite Private Jets, Yacht Club, Scenic Travel, or Zenith Realty.
-- **Fintech/crypto/Web3**: start with FinFlow, Evergreen Finance, Veloce Finance, RIVR DeFi, Web3 EOS Hero, Orbit Web3, or Orbis NFT.
-- **Security/data/IT**: start with Securify Data Security, Guardnet, Cybersecurity Hero, AKOR Security, Nexus IT Solutions, or VaultShield.
-- **High-drama/cinematic/3D**: layer in Pulse 3D, 3D Collectible Hero, Cinematic Landing Page, Cinematic Brand, Reveal Hero, Layered Depth, or Futuristic Cinematic.
-- **Conversion utility**: layer in No-Code Waitlist, Waitlist Hero, NovaDesk Signup, Aurora Onboard, Build With Us, or Datacore Booking.
-
-## Output Standard
-
-Every Lumora build should include:
-
-- A clear concept sentence that can guide implementation.
-- A selected archetype mix with each archetype's purpose.
-- A high-fidelity page structure with section-by-section intent.
-- A concrete visual system: type scale, palette, layout rhythm, imagery/media, motion behavior, and component shape language.
-- Responsive and interaction behavior.
-- Implementation and verification steps appropriate to the repo.
-
-Avoid:
-
-- Removing the permission/provenance note when redistributing the bundled prompt library.
-- Generic purple SaaS gradients, decorative blobs, nested cards, and vague hero copy.
-- Motion without product meaning.
-- Asset placeholders when the site depends on visual credibility.
-- Overbuilding a marketing landing page when the user asked for an operational tool.
+- Read `references/composition-system.md` for the Lumora system.
+- Use `references/archetype-catalog.md` only as inventory and role orientation for existing library entries.
+- Use `scripts/load_lumora_prompt.py --id <prompt-id>` when an exact `prompt_text` needs to be emitted for inspection or hashing. Keep stdout as prompt text only.

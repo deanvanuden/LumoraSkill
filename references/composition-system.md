@@ -1,94 +1,90 @@
-# Lumora Composition System
+# Lumora System
 
-Use this guide after selecting archetypes from `archetype-catalog.md`.
+Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-## Build The Mix
+**Design locked. Copy adaptive.**
 
-Choose 3-6 archetypes. Assign each a role:
+Lumora selects existing JSON prompt entries and applies them as section sources. It is not free design mixing.
 
-- **Market fit**: proves the page understands the industry, audience, and conversion context.
-- **Visual engine**: supplies the main visual metaphor, such as object focus, cinematic media, depth, scroll, 3D, glass, editorial type, or organic texture.
-- **Information architecture**: supplies the section rhythm and narrative order.
-- **Conversion pattern**: supplies signup, waitlist, booking, contact, ecommerce, pricing, demo, or trust behavior.
-- **Restraint counterweight**: keeps the page usable when the visual engine is dramatic.
+## Source
 
-Example mix:
-- For an AI automation agency: Modern Agency for service clarity, AI Workflow Hero for system orchestration, Scroll Landing Page for controlled motion, Build With Us for contact conversion.
-- For a luxury real estate brokerage: Luxury Real Estate for market fit, SkyElite Private Jets for luxury pacing, Layered Depth for cinematic depth, Build With Us for lead capture.
-- For a security SaaS: Securify Data Security for market fit, VaultShield for visual metaphor, Minimal Workflow SaaS for clarity, Datacore Booking for demo conversion.
+The prompt library is `references/motionsites-prompt-library.json`.
 
-## Convert Archetypes Into Original Directions
+Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source.
 
-Write a short design brief with these fields:
+## Composition Shape
 
-1. **Concept**: one sentence describing the site as a product experience, not an aesthetic label.
-2. **Archetype mix**: list selected archetypes and the specific role each plays.
-3. **Hero**: headline strategy, primary proof point, CTA, visual anchor, motion behavior, and first-viewport composition.
-4. **Sections**: 5-8 sections with clear jobs. Include proof, features, process, outcomes, trust, pricing/contact, and final CTA as needed.
-5. **Visual system**: type scale, color relationship, spacing rhythm, surfaces, image/video/canvas/3D direction, iconography, and component geometry.
-6. **Motion system**: state what moves, why it moves, and when it should stop. Use reduced-motion fallbacks.
-7. **Responsive behavior**: mobile navigation, hero crop/stack, media constraints, touch targets, and text wrapping rules.
-8. **Implementation notes**: stack-specific components, asset plan, performance constraints, and verification steps.
+Default website assembly:
 
-## Common Prompt Atoms
+1. One Hero/Header entry.
+2. Two to four main content entries.
+3. One Contact/Footer/CTA/Closing entry.
 
-Use these atoms to build original implementation briefs:
+Main content entries can include About, Services, Categories, Features, Product, Story, Gallery, Benefits, Testimonials, Pricing, or similar section roles.
 
-- **Editorial authority**: oversized headline, strong grid, restrained copy, confident whitespace.
-- **Product object focus**: one inspectable visual anchor, simple background, measured parallax or rotation.
-- **Cinematic reveal**: dark-to-light transition, video/image reveal, scroll pacing, strong scene composition.
-- **Operational dashboard**: dense but calm panels, real data states, quiet color, repeatable workflow.
-- **Luxury pacing**: fewer sections, larger photography/media, slower motion, high contrast, precise typography.
-- **Technical trust**: diagrams, metrics, security proof, architecture cards, code/data artifacts.
-- **Organic premium**: natural materials, soft motion, tactile imagery, asymmetric layout, low saturation.
-- **Launch conversion**: single promise, social proof, waitlist/demo form, concise FAQ, repeated CTA.
+If no Footer entry fits, use the strongest Contact, CTA, Signup, Waitlist, Booking, or Closing entry.
 
-## Section Patterns
+If a real multi-section composition is not sensible, use exactly one existing Landing Page entry and explain why. Do not invent missing sections.
 
-Default full site sequence:
+## Selection Signals
 
-1. Hero with proof and primary CTA.
-2. Problem or shift in the market.
-3. Product/service mechanism.
-4. Feature or offer grid.
-5. Visual proof: dashboard, process, case study, or interactive demo.
-6. Trust: metrics, logos, testimonials, security, press, or founder proof.
-7. Pricing, package, waitlist, booking, or contact.
-8. Final CTA with a compressed value proposition.
+Use existing JSON metadata only:
 
-For product launches, shorten to hero, product proof, benefits, social proof, waitlist.
+- `id`
+- `title`
+- `metadata.title`
+- `metadata.category`
+- `metadata.type`
+- `metadata.page_type`
+- `metadata.types`
+- tags or similar metadata when present
+- `prompt_text` only to understand the stored section instructions
 
-For service businesses, use hero, outcomes, services, process, case studies, team/proof, contact.
+When selection is uncertain, list suitable existing entries and choose the technically strongest option. Do not invent a new archetype or creative direction.
 
-For portfolios, use hero, selected work, capability stack, process, about proof, contact.
+## Locked Section Rule
 
-## Visual Discipline
+Each selected entry remains locked for its own section.
 
-- Let one media idea dominate: video background, 3D object, editorial photography, data interface, or animated canvas.
-- Use cards only for repeated items or actual framed tools. Do not nest cards.
-- Prefer real or generated image/video/canvas assets when visual credibility matters.
-- Keep text readable over media with deliberate overlays and contrast, not blur-heavy decoration.
-- Avoid single-hue pages unless the brand requires it. Use neutrals plus one accent and one counter-accent.
-- Keep hero-scale typography in the hero. Use compact type inside tool panels, nav, pricing, and dashboards.
-- Define stable dimensions for boards, grids, toolbars, counters, tiles, and media frames.
+The selected entry determines that section's design, layout, structure, motion, components, visual direction, spacing, colors, typography direction, CTA placement, responsive behavior, and implementation style.
 
-## Motion Discipline
+Do not:
 
-- Motion must explain hierarchy, reveal product behavior, or deepen the brand world.
-- Use scroll-linked motion sparingly and verify it does not block reading.
-- Keep continuous ambient motion subtle and pauseable through reduced-motion preferences.
-- Avoid every element animating from opacity/translate at the same time.
-- For 3D or WebGL, verify the canvas is nonblank, correctly framed, interactive or moving, and does not cover essential UI.
+- rewrite prompt bodies
+- translate prompt bodies
+- summarize prompt bodies
+- shorten prompt bodies
+- expand prompt bodies
+- merge prompt bodies into a new prompt
+- combine prompt fragments
+- create a new Lumora brief
+- create new archetypes
+- invent a creative direction
+- alter design based on company type
+- harmonize designs by inventing new colors, typography, spacing, motion, effects, or layouts
 
-## Quality Checklist
+Section assembly is allowed; prompt-body remixing is not.
 
-Before finishing a Lumora build:
+## Copy-Only Adaptation
 
-- Check desktop and mobile in a browser.
-- Check console errors and failed asset requests.
-- Verify hero content fits in the first viewport and hints at the next section.
-- Verify no text overlaps, clips, or becomes unreadable.
-- Verify CTAs are visible, enabled, and aligned with the requested business goal.
-- Verify images/video/canvas/3D assets render and are not decorative noise.
-- Revise CSS color balance if the page reads as a generic purple/blue SaaS gradient, beige luxury template, or dark slate dashboard by default.
+Company context may only change visible website copy.
 
+Allowed copy includes navigation labels, hero headline, hero subheadline, CTA labels, section headlines, paragraphs, feature titles, feature descriptions, benefits, category names, product or service copy, form labels, form placeholders, footer copy, meta title, meta description, alt text, microcopy, badge text, and pricing words.
+
+Copy must preserve the role, approximate length, rhythm, tone, and layout footprint implied by the selected prompt entry. It must not break the original section composition.
+
+## Traceability
+
+For generated test websites, add `data-prompt-id="<id>"` to each section when practical. Report selected IDs, titles, roles, and selection reasons at the end.
+
+## Verification
+
+Before finishing:
+
+- Confirm all selected entries came from `references/motionsites-prompt-library.json`.
+- Confirm every selected entry has `prompt_text`.
+- Confirm no prompt bodies changed.
+- Confirm `references/motionsites-prompt-library.json` changed only if the user explicitly requested library maintenance.
+- Confirm no prompt files or `references/prompts` folder were created.
+- Confirm company context changed only visible copy.
+- Confirm desktop/mobile layout, copy fit, media loading, interactions, responsive behavior, and console errors.

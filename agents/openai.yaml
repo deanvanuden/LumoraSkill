@@ -1,4 +1,4 @@
 interface:
   display_name: "Lumora"
-  short_description: "Premium website prompt synthesis"
-  default_prompt: "Use $lumora to design and build a high-quality website for this company."
+  short_description: "Build locked websites from prompt entries"
+  default_prompt: "Use $lumora to build a website from existing JSON prompt entries, adapting only visible copy to the company context."
