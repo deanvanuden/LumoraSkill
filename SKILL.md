@@ -1,15 +1,15 @@
 ---
 name: lumora
-description: Lumora builds premium websites from exact, verbatim prompt_text entries in references/motionsites-prompt-library.json. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must copy selected library prompt_text bodies 1:1 into the build instructions, keep every design detail locked, and adapt only visible website copy.
+description: Lumora builds premium websites from multiple different exact section prompt_text entries in references/motionsites-prompt-library.json. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must compose pages from distinct section prompts, never use prisma-landing or a single complete landing-page template as the default, copy selected library prompt_text bodies 1:1 into the build instructions, keep every design detail locked, and adapt only visible website copy.
 ---
 
 # Lumora
 
-Lumora's default workflow is **Locked Verbatim Prompt Mode**.
+Lumora's default workflow is **Locked Verbatim Section Composition Mode**.
 
-**Prompt bodies copied 1:1. Design locked. Copy adaptive. No exceptions.**
+**Different section prompts. Prompt bodies copied 1:1. Design locked. Copy adaptive. No single-template fallback.**
 
-Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its section or page. Lumora selects existing entries by role and applies them section by section only when those exact prompts can coexist without changing them. It does not mean inventing a new design, creating new archetypes, paraphrasing prompts, or merging prompt bodies into a new prompt.
+Use Lumora to build a website by selecting multiple existing section-level prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its section. Lumora selects existing entries by role and applies them section by section only when those exact prompts can coexist without changing them. It does not mean selecting one full landing-page prompt, inventing a new design, creating new archetypes, paraphrasing prompts, or merging prompt bodies into a new prompt.
 
 The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. During a Lumora build, selected prompt bodies are copied 1:1 into the agent's working instructions and followed exactly. Do not edit, rewrite, summarize, translate, merge, or store prompt bodies in new prompt files.
 
@@ -26,7 +26,21 @@ For every selected library entry:
 - Do not "harmonize" multiple selected prompts by inventing a shared design system.
 - Do not select a prompt unless it can be implemented as written except for permitted visible copy adaptation.
 
-If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, do not patch over the conflict. Select exactly one complete Landing Page / Website prompt that can be followed 1:1, or stop and report that no compatible verbatim prompt set exists.
+If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, do not patch over the conflict and do not fall back to a complete Landing Page / Website prompt. Select a different compatible multi-section set, or stop and report that no compatible verbatim section set exists.
+
+## No Single Landing-Page Template Rule
+
+For ordinary website builds, Lumora must compose the page from multiple different selected section prompts.
+
+Do not:
+
+- use `prisma-landing`
+- use a single complete Landing Page / Website prompt as the whole site
+- use a Landing Page / Website prompt as a fallback when section composition is hard
+- select the same prompt ID for every section
+- collapse Hero, content, and Closing into one selected library entry
+
+If the library lacks compatible section-level prompts for the requested site, stop and report the incompatibility instead of using one complete landing-page template.
 
 ## Source Of Truth
 
@@ -60,7 +74,7 @@ When the user asks generally to build a website with Lumora, assemble:
 
 If no suitable Footer section exists, use the closest Contact, CTA, or Closing entry.
 
-If a real multi-section composition is not sensible because the library only has complete landing-page templates for the requested need, use exactly one existing Landing Page entry and briefly explain why. Do not improvise missing sections.
+Use different prompt IDs for different sections. Do not use `prisma-landing`. Do not use a complete Landing Page entry as the whole site. If a real multi-section composition is not possible because the library lacks compatible section-level prompts for the requested need, stop and briefly explain why. Do not improvise missing sections.
 
 ## Automatic Selection Rules
 
@@ -90,7 +104,7 @@ Selection rules:
 - Do not paraphrase, translate, shorten, expand, or summarize prompt bodies.
 - Do not implement from memory, title, category, or archetype notes when `prompt_text` exists.
 - If selection is uncertain, list plausible existing entries and still choose the technically strongest set with a short reason.
-- If no matching verbatim-compatible entry exists, stop or use one complete Landing Page entry. Do not freely invent a section.
+- If no matching verbatim-compatible section entry exists, stop and report the missing section role. Do not use one complete Landing Page entry and do not freely invent a section.
 - In generated test websites, add `data-prompt-id="<id>"` to each section when practical so the source prompt remains traceable.
 
 ## Prompt Integrity
@@ -171,7 +185,7 @@ Company context must not change:
 
 1. Read `references/motionsites-prompt-library.json`.
 2. Filter to entries with `prompt_text`.
-3. Select a Hero/Header entry, 2 to 4 main section entries, and a Contact/Footer/CTA/Closing entry using existing metadata and role fit.
+3. Select a Hero/Header entry, 2 to 4 main section entries, and a Contact/Footer/CTA/Closing entry using existing metadata and role fit. Selected entries must be distinct prompt IDs; do not select `prisma-landing`.
 4. Record each selected entry's `id`, title, role, and why it was selected.
 5. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
 6. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.

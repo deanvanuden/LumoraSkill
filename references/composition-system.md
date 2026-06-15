@@ -2,15 +2,15 @@
 
 Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-**Prompt bodies copied 1:1. Design locked. Copy adaptive. No exceptions.**
+**Different section prompts. Prompt bodies copied 1:1. Design locked. Copy adaptive. No single-template fallback.**
 
-Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact section or page prompts. It is not free design mixing, prompt summarization, or creative synthesis.
+Lumora selects multiple existing JSON prompt entries and applies their `prompt_text` bodies as exact section prompts. It is not one-template page generation, free design mixing, prompt summarization, or creative synthesis.
 
 ## Source
 
 The prompt library is `references/motionsites-prompt-library.json`.
 
-Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. During a build, copy every selected `prompt_text` 1:1 into the working implementation context and follow it exactly. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source.
+Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. During a build, copy every selected `prompt_text` 1:1 into the working implementation context and follow it exactly. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source. Do not use `prisma-landing` for ordinary builds.
 
 ## Composition Shape
 
@@ -24,7 +24,9 @@ Main content entries can include About, Services, Categories, Features, Product,
 
 If no Footer entry fits, use the strongest Contact, CTA, Signup, Waitlist, Booking, or Closing entry.
 
-If a real multi-section composition is not sensible, or if exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, use exactly one existing Landing Page / Website entry and explain why. Do not invent missing sections.
+Selected entries must use different prompt IDs across the page. Do not select the same entry for every section.
+
+Do not use a single complete Landing Page / Website prompt as the whole site. Do not use a complete Landing Page / Website prompt as a fallback when section composition is hard. If a real multi-section composition is not sensible, or if exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, select a different compatible multi-section set or stop and explain why. Do not invent missing sections.
 
 ## Selection Signals
 
@@ -41,6 +43,8 @@ Use existing JSON metadata only:
 - `prompt_text` as the exact section or page instructions to copy into the build context and follow verbatim
 
 When selection is uncertain, list suitable existing entries and choose the technically strongest option. Do not invent a new archetype or creative direction.
+
+Do not choose `prisma-landing`. It is not a valid automatic source for future Lumora builds.
 
 ## Locked Section Rule
 
@@ -66,7 +70,7 @@ Do not:
 - harmonize designs by inventing new colors, typography, spacing, motion, effects, or layouts
 - implement from memory, title, category, or metadata when `prompt_text` exists
 
-Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed.
+Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed. Single-template landing-page generation is not the default escape hatch.
 
 ## Copy-Only Adaptation
 
@@ -87,6 +91,7 @@ Before finishing:
 - Confirm all selected entries came from `references/motionsites-prompt-library.json`.
 - Confirm every selected entry has `prompt_text`.
 - Confirm every selected `prompt_text` was loaded and followed 1:1.
+- Confirm selected website sections use multiple different prompt IDs and do not use `prisma-landing`.
 - Confirm no prompt bodies changed.
 - Confirm `references/motionsites-prompt-library.json` changed only if the user explicitly requested library maintenance.
 - Confirm no prompt files or `references/prompts` folder were created.
