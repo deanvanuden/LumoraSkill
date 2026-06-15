@@ -1,4 +1,4 @@
 interface:
   display_name: "Lumora"
-  short_description: "Build locked websites from prompt entries"
-  default_prompt: "Use $lumora to build a website from existing JSON prompt entries, adapting only visible copy to the company context."
+  short_description: "Build from exact prompt_text entries"
+  default_prompt: "Use $lumora to build a website from existing JSON prompt_text entries 1:1, adapting only visible copy to the company context."

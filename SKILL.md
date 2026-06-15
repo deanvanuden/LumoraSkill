@@ -1,17 +1,32 @@
 ---
 name: lumora
-description: Lumora builds premium websites from existing Lumora prompt_text entries in references/motionsites-prompt-library.json. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora automatically selects existing library entries for hero, content sections, and closing while keeping design locked and adapting only visible website copy.
+description: Lumora builds premium websites from exact, verbatim prompt_text entries in references/motionsites-prompt-library.json. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must copy selected library prompt_text bodies 1:1 into the build instructions, keep every design detail locked, and adapt only visible website copy.
 ---
 
 # Lumora
 
-Lumora's default workflow is **Lumora**.
+Lumora's default workflow is **Locked Verbatim Prompt Mode**.
 
-**Design locked. Copy adaptive.**
+**Prompt bodies copied 1:1. Design locked. Copy adaptive. No exceptions.**
 
-Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Lumora selects existing entries by role and applies them section by section. It does not mean inventing a new design, creating new archetypes, or merging prompt bodies into a new prompt.
+Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its section or page. Lumora selects existing entries by role and applies them section by section only when those exact prompts can coexist without changing them. It does not mean inventing a new design, creating new archetypes, paraphrasing prompts, or merging prompt bodies into a new prompt.
 
-The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. Do not edit, rewrite, summarize, translate, merge, or copy prompt bodies into new prompt files.
+The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. During a Lumora build, selected prompt bodies are copied 1:1 into the agent's working instructions and followed exactly. Do not edit, rewrite, summarize, translate, merge, or store prompt bodies in new prompt files.
+
+## Non-Negotiable Verbatim Rule
+
+For every selected library entry:
+
+- Load the entry's exact `prompt_text`.
+- Treat that `prompt_text` as the direct build prompt.
+- Preserve all specified design, layout, stack, component, animation, responsive, asset, and verification instructions exactly.
+- Do not replace the prompt with an archetype summary, Lumora brief, design synthesis, mood board, or interpretation.
+- Do not omit prompt-specified sections, states, interactions, assets, animations, fonts, colors, dimensions, or verification steps.
+- Do not alter a prompt because another selected prompt has a nicer style or because the company context suggests a different direction.
+- Do not "harmonize" multiple selected prompts by inventing a shared design system.
+- Do not select a prompt unless it can be implemented as written except for permitted visible copy adaptation.
+
+If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, do not patch over the conflict. Select exactly one complete Landing Page / Website prompt that can be followed 1:1, or stop and report that no compatible verbatim prompt set exists.
 
 ## Source Of Truth
 
@@ -33,7 +48,7 @@ Each selected JSON entry is the single source of truth for that section's:
 - responsive behavior
 - implementation style
 
-Company context may only change visible website copy. It must not change design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, or creative direction.
+Company context may only change visible website copy. It must not change design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt_text.
 
 ## Standard Composition
 
@@ -61,19 +76,21 @@ Use available JSON fields such as:
 - `metadata.page_type`
 - `metadata.types`
 - tags or similar metadata fields when present
-- `prompt_text` content only for understanding the stored design instructions, not for rewriting
+- `prompt_text` content as the exact design and implementation instructions to copy into the build context and follow verbatim
 
 Selection rules:
 
 - Choose no entry without `prompt_text`.
 - Use one existing entry per section role.
+- Copy every selected `prompt_text` 1:1 into the implementation reasoning/context before coding.
 - Do not create new prompt entries.
 - Do not create prompt files.
 - Do not use `references/prompts`; it is not the prompt source.
 - Do not merge prompt bodies into a new master prompt.
 - Do not paraphrase, translate, shorten, expand, or summarize prompt bodies.
+- Do not implement from memory, title, category, or archetype notes when `prompt_text` exists.
 - If selection is uncertain, list plausible existing entries and still choose the technically strongest set with a short reason.
-- If no matching entry exists, stop or use one complete Landing Page entry. Do not freely invent a section.
+- If no matching verbatim-compatible entry exists, stop or use one complete Landing Page entry. Do not freely invent a section.
 - In generated test websites, add `data-prompt-id="<id>"` to each section when practical so the source prompt remains traceable.
 
 ## Prompt Integrity
@@ -97,6 +114,8 @@ Do not:
 - add missing design ideas from taste or preference
 
 Lumora is allowed to place selected section implementations in sequence. That is section assembly, not prompt-body remixing.
+
+Section assembly is allowed only when each selected prompt can remain exact. If assembling prompts requires changing global setup, stack, CSS prefixes, animation timing, media strategy, responsive behavior, or component structure from any selected `prompt_text`, assembly is forbidden.
 
 ## Copy Adaptation
 
@@ -154,12 +173,13 @@ Company context must not change:
 2. Filter to entries with `prompt_text`.
 3. Select a Hero/Header entry, 2 to 4 main section entries, and a Contact/Footer/CTA/Closing entry using existing metadata and role fit.
 4. Record each selected entry's `id`, title, role, and why it was selected.
-5. Read the selected `prompt_text` values as immutable design instructions.
-6. Implement the website section by section. Each section remains locked to its selected prompt entry.
-7. Adapt only visible website copy for the company context.
-8. Add `data-prompt-id` to sections when practical.
-9. Verify that the JSON library and prompt bodies did not change.
-10. Verify desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, and console errors.
+5. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
+6. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
+7. Implement the website section by section. Each section remains locked to its selected prompt entry.
+8. Adapt only visible website copy for the company context.
+9. Add `data-prompt-id` to sections when practical.
+10. Verify that the JSON library and prompt bodies did not change.
+11. Verify desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -169,7 +189,7 @@ Expected behavior:
 
 - Lumora opens `references/motionsites-prompt-library.json`.
 - Lumora automatically selects existing prompt entries for Hero, content sections, and Closing.
-- Lumora builds a website from those selected entries.
+- Lumora loads and follows those selected entries' `prompt_text` bodies 1:1.
 - Lumora adapts only visible copy to Rheine's Greenhouse.
 - Lumora does not modify prompt bodies or the prompt library.
 

@@ -2,15 +2,15 @@
 
 Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-**Design locked. Copy adaptive.**
+**Prompt bodies copied 1:1. Design locked. Copy adaptive. No exceptions.**
 
-Lumora selects existing JSON prompt entries and applies them as section sources. It is not free design mixing.
+Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact section or page prompts. It is not free design mixing, prompt summarization, or creative synthesis.
 
 ## Source
 
 The prompt library is `references/motionsites-prompt-library.json`.
 
-Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source.
+Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. During a build, copy every selected `prompt_text` 1:1 into the working implementation context and follow it exactly. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source.
 
 ## Composition Shape
 
@@ -24,7 +24,7 @@ Main content entries can include About, Services, Categories, Features, Product,
 
 If no Footer entry fits, use the strongest Contact, CTA, Signup, Waitlist, Booking, or Closing entry.
 
-If a real multi-section composition is not sensible, use exactly one existing Landing Page entry and explain why. Do not invent missing sections.
+If a real multi-section composition is not sensible, or if exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, use exactly one existing Landing Page / Website entry and explain why. Do not invent missing sections.
 
 ## Selection Signals
 
@@ -38,7 +38,7 @@ Use existing JSON metadata only:
 - `metadata.page_type`
 - `metadata.types`
 - tags or similar metadata when present
-- `prompt_text` only to understand the stored section instructions
+- `prompt_text` as the exact section or page instructions to copy into the build context and follow verbatim
 
 When selection is uncertain, list suitable existing entries and choose the technically strongest option. Do not invent a new archetype or creative direction.
 
@@ -47,6 +47,8 @@ When selection is uncertain, list suitable existing entries and choose the techn
 Each selected entry remains locked for its own section.
 
 The selected entry determines that section's design, layout, structure, motion, components, visual direction, spacing, colors, typography direction, CTA placement, responsive behavior, and implementation style.
+
+The selected entry's `prompt_text` is the direct prompt. Do not replace it with a summary, transformed brief, archetype interpretation, or house style.
 
 Do not:
 
@@ -62,8 +64,9 @@ Do not:
 - invent a creative direction
 - alter design based on company type
 - harmonize designs by inventing new colors, typography, spacing, motion, effects, or layouts
+- implement from memory, title, category, or metadata when `prompt_text` exists
 
-Section assembly is allowed; prompt-body remixing is not.
+Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed.
 
 ## Copy-Only Adaptation
 
@@ -83,6 +86,7 @@ Before finishing:
 
 - Confirm all selected entries came from `references/motionsites-prompt-library.json`.
 - Confirm every selected entry has `prompt_text`.
+- Confirm every selected `prompt_text` was loaded and followed 1:1.
 - Confirm no prompt bodies changed.
 - Confirm `references/motionsites-prompt-library.json` changed only if the user explicitly requested library maintenance.
 - Confirm no prompt files or `references/prompts` folder were created.
