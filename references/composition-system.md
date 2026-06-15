@@ -2,7 +2,7 @@
 
 Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-**Prompt bodies copied 1:1. Design locked. Copy adaptive. Complete pages allowed. Incomplete pages get extra diverse sections.**
+**Prompt bodies copied 1:1. Design locked. Copy locked. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains exact.**
 
 Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis.
 
@@ -96,13 +96,17 @@ Do not:
 
 Section assembly is allowed only when every selected prompt can remain exact. Prompt-body remixing is never allowed. A single landing-page prompt is acceptable only when it already satisfies the requested site shape.
 
-## Copy-Only Adaptation
+## Background-Only Adaptation
 
-Company context may only change visible website copy.
+Company context may guide prompt selection and section background replacement only. It must not change visible website copy.
 
-Allowed copy includes navigation labels, hero headline, hero subheadline, CTA labels, section headlines, paragraphs, feature titles, feature descriptions, benefits, category names, product or service copy, form labels, form placeholders, footer copy, meta title, meta description, alt text, microcopy, badge text, and pricing words.
+Allowed background changes:
 
-Copy must preserve the role, approximate length, rhythm, tone, and layout footprint implied by the selected prompt entry. It must not break the original section composition.
+- replace a prompt-specified background image or video with a company-relevant image or video of the same role and layout footprint
+- change a section background color or background media when needed for brand relevance or asset availability
+- keep overlays, contrast behavior, dimensions, border radii, layout, motion, and responsive behavior from the selected prompt intact
+
+Forbidden changes include foreground copy, CTA text, navigation labels, product names, prices, testimonials, form labels, footer text, section structure, spacing, typography, component hierarchy, motion, and any visual concept not present in the selected prompt.
 
 ## Traceability
 
@@ -125,5 +129,6 @@ Before finishing:
 - Confirm no prompt bodies changed.
 - Confirm `references/motionsites-prompt-library.json` changed only if the user explicitly requested library maintenance.
 - Confirm no prompt files or `references/prompts` folder were created.
-- Confirm company context changed only visible copy.
+- Confirm no visible website copy changed unless the selected prompt explicitly defined replaceable placeholders.
+- Confirm any adaptation was limited to permitted section background changes.
 - Confirm desktop/mobile layout, copy fit, media loading, interactions, responsive behavior, and console errors.

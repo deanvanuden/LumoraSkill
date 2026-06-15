@@ -1,15 +1,15 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt plus missing diverse section prompts or a diverse multi-section assembly. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must copy selected library prompt_text bodies 1:1, keep design locked, adapt only visible website copy, avoid using many sections from the same prompt family, and never ship thin pages that ignore available source-site content.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text bodies 100% 1:1 with no interpretation, no copy adaptation, no design adaptation, and no exception except section background changes when explicitly needed.
 ---
 
 # Lumora
 
 Lumora's default workflow is **Locked Verbatim Page + Diverse Section Composition Mode**.
 
-**Prompt bodies copied 1:1. Design locked. Copy adaptive. Complete pages allowed. Incomplete pages get extra diverse sections.**
+**Prompt bodies copied 1:1. Design locked. Copy locked. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains exact.**
 
-Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its page or section. Lumora may select one complete Landing Page / Website entry as the base when it is the strongest fit. If that base page is incomplete for a real website, add missing sections from other prompt families. Lumora may also assemble a page from section-level prompts. It does not mean inventing a new design, creating new archetypes, paraphrasing prompts, or merging prompt bodies into a new prompt.
+Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its page or section. Lumora may select one complete Landing Page / Website entry as the base when it is the strongest fit. If that base page is incomplete for a real website, add missing sections from other families only when every selected prompt can remain exact without bridging, interpretation, or harmonization. Lumora may also assemble a page from section-level prompts. It does not mean inventing a new design, creating new archetypes, paraphrasing prompts, adapting copy, interpreting sections, or merging prompt bodies into a new prompt.
 
 The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. During a Lumora build, selected prompt bodies are copied 1:1 into the agent's working instructions and followed exactly. Do not edit, rewrite, summarize, translate, merge, or store prompt bodies in new prompt files.
 
@@ -62,7 +62,8 @@ For every selected library entry:
 - Do not omit prompt-specified sections, states, interactions, assets, animations, fonts, colors, dimensions, or verification steps.
 - Do not alter a prompt because another selected prompt has a nicer style or because the company context suggests a different direction.
 - Do not "harmonize" multiple selected prompts by inventing a shared design system.
-- Do not select a prompt unless it can be implemented as written except for permitted visible copy adaptation.
+- Do not select a prompt unless it can be implemented as written.
+- Do not adapt visible copy, brand names, labels, headings, product names, prices, testimonials, navigation, or CTA text unless the prompt itself explicitly defines them as placeholders or variable inputs.
 
 If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, do not patch over the conflict. Select a compatible complete page base, select a different compatible diverse section set, or stop and report that no compatible verbatim set exists.
 
@@ -115,7 +116,7 @@ Each selected JSON entry is the single source of truth for that section's:
 - responsive behavior
 - implementation style
 
-Company context may only change visible website copy. It must not change design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt_text.
+Company context may guide prompt selection and background replacement only. It must not change visible website copy, design, layout, visual style, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt_text.
 
 ## Standard Composition
 
@@ -187,39 +188,26 @@ Do not:
 - use company type as a reason to change design
 - add missing design ideas from taste or preference
 
-Lumora is allowed to place selected section implementations in sequence. That is section assembly, not prompt-body remixing.
+Lumora is allowed to place selected section implementations in sequence only when no glue design, copy rewriting, style translation, or structural interpretation is required. That is section assembly, not prompt-body remixing.
 
 Section assembly is allowed only when each selected prompt can remain exact. If assembling prompts requires changing global setup, stack, CSS prefixes, animation timing, media strategy, responsive behavior, or component structure from any selected `prompt_text`, assembly is forbidden.
 
-## Copy Adaptation
+## Background-Only Adaptation
 
-The only permitted adaptation is user-facing website copy.
+The only permitted adaptation is changing section backgrounds.
 
-Copy may adapt to the company, offer, audience, location, brand tone, and factual details. Allowed copy fields include:
+Allowed background changes:
 
-- Navigation labels
-- Hero headline
-- Hero subheadline
-- CTA labels
-- Section headlines
-- Paragraphs
-- Feature titles
-- Feature descriptions
-- Benefits
-- Category names
-- Product or service copy
-- Form labels
-- Form placeholders
-- Footer copy
-- Meta title
-- Meta description
-- Alt text
-- Microcopy
-- Badge text
-- Testimonial copy, only when clearly treated as example or dummy content
-- Pricing words, but not pricing layout
+- replace a prompt-specified background image or video with a company-relevant image or video of the same role and layout footprint
+- change a section background color or background media when needed for brand relevance or asset availability
+- keep overlays, contrast behavior, dimensions, border radii, layout, motion, and responsive behavior from the selected prompt intact
 
-Copy must preserve the text role, approximate length, rhythm, tone, and layout footprint implied by the selected prompt entry. A short hero line stays short. A compact CTA stays compact. Minimal copy must not become long paragraphs. Copy must not break the intended layout, spacing, rhythm, or visual composition.
+Forbidden background-related changes:
+
+- changing foreground copy, CTA text, navigation labels, product names, prices, testimonials, form labels, or footer text
+- using background changes as a reason to alter section structure, spacing, typography, component hierarchy, or motion
+- replacing a required video/canvas/3D/background behavior with a static design unless the selected prompt allows it
+- adding new visual concepts that are not in the selected prompt
 
 ## Forbidden Design Changes
 
@@ -253,7 +241,7 @@ Company context must not change:
 8. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
 9. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
 10. Implement the website section by section. Each section remains locked to its selected prompt entry.
-11. Adapt only visible website copy for the company context.
+11. Do not adapt visible website copy. Apply only permitted section background changes when needed.
 12. Add `data-prompt-id` to sections when practical.
 13. Verify that the JSON library and prompt bodies did not change.
 14. Verify source coverage, desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, and console errors required by the selected prompt_text.
@@ -269,7 +257,7 @@ Expected behavior:
 - Lumora opens `references/motionsites-prompt-library.json`.
 - Lumora automatically selects either a complete page base or existing prompt entries for Hero, required content sections, proof, conversion, and Closing.
 - Lumora loads and follows those selected entries' `prompt_text` bodies 1:1.
-- Lumora adapts only visible copy to Rheine's Greenhouse.
+- Lumora does not adapt visible copy to Rheine's Greenhouse unless the selected prompt explicitly defines replaceable placeholders.
 - Lumora reports the selected prompt IDs, prompt families, and coverage status.
 - Lumora does not modify prompt bodies or the prompt library.
 
