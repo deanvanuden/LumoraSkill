@@ -61,6 +61,25 @@ Apply the cohesion sheet globally:
 
 The cohesion sheet may change font family names, exact color values, and section background colors/media. It may not change layout, section structure, component structure, spacing logic, CTA placement, motion concept, responsive behavior, effects, or the selected prompt's content roles. If a selected prompt depends on a distinctive font/color treatment that cannot be mapped into the shared site identity without breaking its visual role, select a more compatible prompt instead of forcing the mismatch.
 
+## Responsive Containment And Sticky Safety
+
+Every generated website must include a responsive safety pass for sticky, pinned, scroll-linked, stacking, overlapping, and media-heavy sections. This pass prevents visual breakouts; it is not permission to redesign selected prompts.
+
+Before finishing, identify sections that use or imply sticky/pinned layouts, parallax, stacked cards, full-height media, absolute-positioned media, carousels, masonry, wide grids, galleries, `height: 100%`, viewport-height sizing, transforms, negative margins, or absolute/fixed/sticky positioning on major elements.
+
+For those sections:
+
+- Preserve the selected prompt's desktop design and structure whenever it is safe.
+- Add breakpoint-specific containment so images, videos, canvases, iframes, cards, and wrappers cannot spill over adjacent sections.
+- Use stable parent dimensions such as `aspect-ratio`, explicit `min-height`/`max-height`, grid constraints, or container-relative sizing before relying on `height: 100%`.
+- Disable or convert sticky, pinned, stacking, scroll-linked, or overlapping desktop behavior into normal document flow on tablet/mobile when keeping it would cover other content, trap scrolling, or produce oversized media.
+- Use `overflow: hidden` only on bounded framed media/card wrappers, not as page-level clipping to hide broken layout.
+- Ensure no section visually covers previous or next content except prompt-specified intentional overlap that is bounded and verified.
+- Ensure horizontal overflow is eliminated at every tested viewport.
+- If the selected prompt's required effect cannot be made responsive-safe without structural redesign, choose a different compatible prompt or report the incompatibility.
+
+Responsive containment may adjust breakpoint behavior, container constraints, image fitting, overflow bounds, sticky activation, and mobile stacking only to prevent breakage. It may not introduce a new layout concept, component structure, visual effect, or freeform redesign.
+
 ## Source
 
 The prompt library is `references/motionsites-prompt-library.json`.
@@ -137,7 +156,7 @@ Section assembly is allowed only when every selected prompt can remain structura
 
 ## Copy Localization, Background, And Cohesion Adaptation
 
-Company context may guide prompt selection, visible copy localization, section background/media replacement, and site-wide font/color token selection only. It must not change design, layout, visual style beyond the allowed cohesion layer, section structure, animation, component composition, conversion flow, responsive behavior, creative direction, stack, asset requirements, or verification criteria from the selected prompt.
+Company context may guide prompt selection, visible copy localization, section background/media replacement, site-wide font/color token selection, and minimum responsive containment safety adjustments only. It must not change design, layout, visual style beyond the allowed cohesion layer, section structure, animation, component composition, conversion flow, responsive behavior beyond the containment safety rule, creative direction, stack, asset requirements, or verification criteria from the selected prompt.
 
 Allowed copy localization:
 
@@ -187,7 +206,8 @@ Before finishing:
 - Confirm visible website copy localization stayed inside the selected prompt's existing text roles and component slots.
 - Confirm any background/media adaptation stayed within the selected prompt's layout footprint.
 - Confirm any font/color changes were only role-preserving site-wide cohesion token mapping.
-- Confirm desktop/mobile layout, copy fit, media loading, interactions, responsive behavior, and console errors.
+- Confirm desktop/mobile layout, copy fit, media loading, interactions, responsive behavior, responsive containment, sticky/pinned/stacking section safety, and console errors.
+- Confirm `scrollWidth <= clientWidth` at tested viewports and no media/card/section bounding box covers unrelated previous or next content.
 - Confirm every clickable link/button/form/menu/accordion/carousel works.
 - Confirm no dead links, placeholder links, empty buttons, or internal 404 routes remain.
 - Confirm multipage routes load when the source was multipage.

@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text design, layout, structure, components, section order, and motion 100% 1:1 with no design interpretation, localize visible copy only inside prompt slots, apply one coherent site-wide font/color/background token layer, make every clickable link/button work, and preserve multipage source sites as multipage builds.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text design, layout, structure, components, section order, and motion 100% 1:1 with no design interpretation, localize visible copy only inside prompt slots, apply one coherent site-wide font/color/background token layer, make every clickable link/button work, preserve multipage source sites as multipage builds, and verify responsive containment for sticky, pinned, stacking, and media-heavy sections.
 ---
 
 # Lumora
@@ -95,6 +95,30 @@ Apply the cohesion sheet globally:
 
 The cohesion sheet may change font family names, exact color values, and section background colors/media. It may not change layout, section structure, component structure, spacing logic, CTA placement, motion concept, responsive behavior, effects, or the selected prompt's content roles. If a selected prompt depends on a distinctive font/color treatment that cannot be mapped into the shared site identity without breaking its visual role, select a more compatible prompt instead of forcing the mismatch.
 
+## Responsive Containment And Sticky Safety Rule
+
+Every generated website must prevent visual breakouts across desktop, tablet, and mobile. This is a mandatory responsive safety pass, not permission to redesign selected prompts.
+
+Before finishing implementation, identify every selected prompt section that uses or implies:
+
+- sticky, pinned, scroll-linked, parallax, stacking, or overlapping layouts
+- full-height media, absolute-positioned media, carousels, masonry, wide grids, or galleries
+- cards or media wrappers where child images, videos, canvases, or iframes can exceed the parent
+- `height: 100%`, `position: sticky`, `position: fixed`, `position: absolute`, negative margins, transforms, or viewport-height sizing on major section elements
+
+For those sections:
+
+- Preserve the selected prompt's desktop design, structure, and motion as written whenever it is safe.
+- Add breakpoint-specific containment so media and cards cannot spill over adjacent sections.
+- Disable or convert desktop sticky, pinned, stacked, scroll-linked, or overlapping behavior into normal document flow on tablet/mobile when keeping it would cover other sections, trap scrolling, or create oversized media.
+- Give images, videos, canvases, iframes, cards, and their parents stable dimensions with `aspect-ratio`, explicit `min-height`/`max-height`, grid constraints, or container-relative sizing before using `height: 100%`.
+- Use `overflow: hidden` only on framed media/card wrappers where the prompt already treats the content as bounded. Do not use page-level clipping to hide broken content.
+- Ensure no section visually covers, floats above, or obscures previous or next content except for prompt-specified intentional overlap that is bounded and verified.
+- Ensure horizontal overflow is eliminated at every tested viewport.
+- If the selected prompt's required desktop effect cannot be made responsive-safe without structural redesign, choose a different compatible prompt or report the incompatibility instead of shipping the broken section.
+
+Responsive containment may adjust breakpoint behavior, container constraints, image fitting, overflow bounds, sticky activation, and mobile stacking only to prevent breakage. It may not introduce a new layout concept, new component structure, new visual effect, or freeform redesign.
+
 ## Non-Negotiable Verbatim Rule
 
 For every selected library entry:
@@ -105,9 +129,10 @@ For every selected library entry:
 - Do not replace the prompt with an archetype summary, Lumora brief, design synthesis, mood board, or interpretation.
 - Do not omit prompt-specified sections, states, interactions, assets, animations, dimensions, or verification steps.
 - Do not alter a prompt because another selected prompt has a nicer style or because the company context suggests a different direction.
-- Do not harmonize multiple selected prompts by inventing new layouts, components, effects, motion, spacing, or arbitrary styles. Use only the required Site-Wide Visual Cohesion Rule for fonts, colors, backgrounds, and repeated visual tokens.
+- Do not harmonize multiple selected prompts by inventing new layouts, components, effects, motion, spacing, or arbitrary styles. Use only the required Site-Wide Visual Cohesion Rule for fonts, colors, backgrounds, and repeated visual tokens, plus the Responsive Containment And Sticky Safety Rule only where needed to prevent breakpoint breakage.
 - Do not select a prompt unless its design, layout, structure, components, motion, and section order can be implemented as written.
 - Prompt-specified typography and color roles may be remapped only through the Site-Wide Visual Cohesion Rule.
+- Prompt-specified responsive behavior must be preserved unless the minimum breakpoint-specific containment adjustment is required to prevent visual overlap, scroll trapping, horizontal overflow, or media breakout.
 - Visible copy, brand names, labels, headings, product names, prices, testimonials, navigation, and CTA text may be localized to the requested language and sourced company facts, but only inside the same text roles and component slots specified by the selected prompt.
 
 If exact prompts conflict in stack, global CSS, page shell, animation model, layout assumptions, or cannot share one coherent font/color/background token layer, do not patch over the conflict. Select a compatible complete page base, select a different compatible diverse section set, or stop and report that no compatible verbatim set exists.
@@ -283,7 +308,7 @@ Company context must not change:
 - spacing
 - color roles beyond the permitted site-wide token mapping
 - typography hierarchy or direction beyond the permitted global font-family mapping
-- responsive behavior
+- responsive behavior beyond the minimum permitted responsive containment safety adjustments
 - effects such as 3D, glassmorphism, gradients, bento grids, cards, marquees, glow, noise, blur, or parallax unless the selected prompt entry specifies them
 
 ## Workflow
@@ -302,9 +327,10 @@ Company context must not change:
 12. Implement the website section by section and page by page. Each section remains locked to its selected prompt entry.
 13. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
 14. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
-15. Add `data-prompt-id` to sections when practical.
-16. Verify that the JSON library and prompt bodies did not change.
-17. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, links/buttons/forms, global font/color/background cohesion, and console errors required by the selected prompt_text.
+15. Apply the responsive containment and sticky safety pass to sticky, pinned, stacking, overlapping, and media-heavy sections without changing the selected prompt's structure.
+16. Add `data-prompt-id` to sections when practical.
+17. Verify that the JSON library and prompt bodies did not change.
+18. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, sticky/pinned/media containment, interactions, links/buttons/forms, global font/color/background cohesion, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -321,6 +347,7 @@ Expected behavior:
 - Lumora creates one global cohesion sheet so every section shares the same font system, color tokens, and background rhythm.
 - Lumora localizes visible copy to Rheine's Greenhouse in German while preserving the selected prompt's exact design, section order, components, text roles, and layout footprint.
 - Lumora wires every visible link and button to a real target/action and verifies routes, footer links, CTAs, forms, accordions, and carousels.
+- Lumora verifies sticky, pinned, stacking, and media-heavy sections cannot overlap, spill out of their containers, or create horizontal overflow on desktop or mobile.
 - Lumora reports the selected prompt IDs, prompt families, and coverage status.
 - Lumora does not modify prompt bodies or the prompt library.
 
