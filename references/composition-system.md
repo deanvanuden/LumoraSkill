@@ -6,6 +6,22 @@ Use this reference when Lumora builds a website from `references/motionsites-pro
 
 Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis.
 
+## Scrape-First Blueprint
+
+Before prompt selection, inspect the supplied URL or business brief and create a source inventory. Capture navigation, services/products, pricing, guarantees, booking rules, address, phone, opening hours, proof, reviews, images, tone, and operational constraints.
+
+Then define a niche-specific section blueprint. Do not let a nice-looking prompt decide completeness. Local service businesses usually need 8-14 meaningful sections. A local photo studio, for example, normally needs Hero, trust facts, service overview, E-pass/pass photo detail, application/business photo detail, portrait/family gallery, products such as albums or frames when sourced, pricing, process, reviews, location/hours/contact, FAQ, and Footer.
+
+Create a coverage matrix before building:
+
+- Required section
+- Source facts
+- Selected prompt id
+- Prompt family
+- Status
+
+Target at least 85% blueprint coverage. If coverage is lower, scrape more, select a richer complete base, add compatible sections, or report the gap instead of shipping a thin page.
+
 ## Source
 
 The prompt library is `references/motionsites-prompt-library.json`.
@@ -16,14 +32,14 @@ Prompt bodies live in each entry's `prompt_text` field. Select only entries that
 
 Default website assembly chooses one of three shapes:
 
-1. Complete page base: one Landing Page / Website prompt that already includes Hero, multiple content sections, and a clear closing/conversion end.
-2. Page base plus additions: one Landing Page / Website prompt plus 1 to 3 extra compatible section prompts from other prompt families when the base is incomplete.
+1. Complete page base: one Landing Page / Website prompt that already covers the niche blueprint and clear closing/conversion end.
+2. Page base plus additions: one Landing Page / Website prompt plus as many compatible section prompts as needed to cover the blueprint.
 3. Diverse section assembly: no page base; separate Hero, content, and Closing sections.
 
 For a diverse section assembly:
 
 1. One Hero/Header entry.
-2. Two to four main content entries.
+2. Enough main content entries to cover the blueprint, usually 4 to 10 for full websites.
 3. One Contact/Footer/CTA/Closing entry.
 
 Main content entries can include About, Services, Categories, Features, Product, Story, Gallery, Benefits, Testimonials, Pricing, or similar section roles.
@@ -34,7 +50,7 @@ Selected entries must use different prompt IDs across the page. Added sections s
 
 Avoid using most of the page from one prompt family such as all `arceage-*` when other compatible families exist. Use at most two entries from the same family unless there is no compatible alternative, and explain the exception.
 
-A complete Landing Page / Website prompt may be the whole site only when it is complete enough by itself. If it is incomplete, add missing compatible sections from other families. If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, select a different compatible base or diverse section set, or stop and explain why. Do not invent missing sections.
+A complete Landing Page / Website prompt may be the whole site only when it satisfies the coverage matrix by itself. If it is incomplete, add missing compatible sections from other families. If exact prompts conflict in stack, global CSS, page shell, animation model, or layout assumptions, select a different compatible base or diverse section set, or stop and explain why. Do not invent missing sections.
 
 ## Selection Signals
 
@@ -52,7 +68,7 @@ Use existing JSON metadata only:
 
 When selection is uncertain, list suitable existing entries and choose the technically strongest option. Do not invent a new archetype or creative direction.
 
-Compact landing pages such as `prisma-landing` may be used as a base, but they must be extended with missing compatible sections when they are not complete enough for the requested website.
+Compact landing pages such as `prisma-landing` may be used as a base only after the blueprint, and they must be extended with missing compatible sections when they are not complete enough for the requested niche.
 
 ## Locked Section Rule
 
@@ -96,6 +112,9 @@ For generated test websites, add `data-prompt-id="<id>"` to each section when pr
 
 Before finishing:
 
+- Confirm the supplied URL or brief was inventoried before prompt selection.
+- Confirm a niche-specific section blueprint and coverage matrix were created.
+- Confirm at least 85% of required blueprint sections are covered, or report why coverage is lower.
 - Confirm all selected entries came from `references/motionsites-prompt-library.json`.
 - Confirm every selected entry has `prompt_text`.
 - Confirm every selected `prompt_text` was loaded and followed 1:1.

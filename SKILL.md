@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Lumora builds premium websites from exact prompt_text entries in references/motionsites-prompt-library.json, using either a complete landing-page prompt plus missing diverse section prompts or a diverse multi-section assembly. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must copy selected library prompt_text bodies 1:1, keep design locked, adapt only visible website copy, and avoid using many sections from the same prompt family.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt plus missing diverse section prompts or a diverse multi-section assembly. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must copy selected library prompt_text bodies 1:1, keep design locked, adapt only visible website copy, avoid using many sections from the same prompt family, and never ship thin pages that ignore available source-site content.
 ---
 
 # Lumora
@@ -12,6 +12,44 @@ Lumora's default workflow is **Locked Verbatim Page + Diverse Section Compositio
 Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its page or section. Lumora may select one complete Landing Page / Website entry as the base when it is the strongest fit. If that base page is incomplete for a real website, add missing sections from other prompt families. Lumora may also assemble a page from section-level prompts. It does not mean inventing a new design, creating new archetypes, paraphrasing prompts, or merging prompt bodies into a new prompt.
 
 The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. During a Lumora build, selected prompt bodies are copied 1:1 into the agent's working instructions and followed exactly. Do not edit, rewrite, summarize, translate, merge, or store prompt bodies in new prompt files.
+
+## Scrape-First Completeness Rule
+
+Before selecting prompts or coding, Lumora must build a **source inventory** and a **niche completeness blueprint**.
+
+When a URL is provided, inspect the live or supplied website first. Scrape or browse enough pages to capture:
+
+- navigation labels and page hierarchy
+- services, products, packages, pricing, guarantees, and booking rules
+- contact data, address, opening hours, route, and location details
+- proof points, reviews, testimonials, ratings, years, certifications, or guarantees
+- imagery and media that can make the new site credible
+- recurring copy tone, audience, and conversion intent
+- legal, appointment, availability, or operational constraints that affect the website
+
+When no URL is provided, build the inventory from the user's brief and clearly mark missing facts.
+
+Then infer the required section blueprint for the niche before prompt selection. Do not let the prompt library decide site completeness by itself. Local service businesses usually need 8-14 meaningful sections, not a compact 3-section landing page. Ecommerce, SaaS, portfolios, venues, practices, agencies, restaurants, real estate, and local shops each need their own section count and section roles.
+
+For a local photo studio, the default blueprint includes:
+
+- Hero with primary service, location, rating/proof, and contact CTA
+- Trust strip or fast facts
+- Service overview
+- E-passport/pass photo detail
+- Application/business photo detail
+- Portrait/family/baby/children detail or gallery
+- Products such as albums, frames, prints, or gifts when sourced
+- Pricing or package overview when sourced
+- Process/how it works
+- Reviews/testimonials or proof
+- Location, opening hours, route, and phone
+- FAQ
+- Footer
+
+Create a coverage matrix before coding with: `Required section`, `Source facts`, `Selected prompt id`, `Prompt family`, and `Status`. Aim for at least 85% of required niche sections covered. If coverage is lower, scrape more pages, pick a richer complete base, add compatible prompt sections, or report the missing source data instead of shipping a thin page.
+
+Complete Landing Page / Website prompts are allowed only after the blueprint. A complete base may stand alone only if it covers the blueprint for that niche. A compact base such as `prisma-landing` is automatically incomplete for content-rich local businesses unless the blueprint proves otherwise.
 
 ## Non-Negotiable Verbatim Rule
 
@@ -35,10 +73,10 @@ Complete Landing Page / Website prompts are allowed. Treat them as a **base page
 Use the base page alone only when it already feels complete for the requested website, including:
 
 - a strong Hero/Header
-- at least two meaningful content sections
+- the required niche-specific content sections from the coverage blueprint
 - a clear closing, CTA, Contact, Footer, signup, booking, or equivalent conversion/ending
 
-If a base page is not complete enough, such as a compact 3-section page like `prisma-landing`, keep its prompt body locked and add missing sections from other compatible prompt entries.
+If a base page is not complete enough, such as a compact 3-section page like `prisma-landing`, keep its prompt body locked and add the missing blueprint sections from other compatible prompt entries.
 
 For added sections, prefer variety:
 
@@ -83,19 +121,19 @@ Company context may only change visible website copy. It must not change design,
 
 When the user asks generally to build a website with Lumora, choose one of these shapes:
 
-1. **Complete page base:** exactly 1 Landing Page / Website entry that already contains Hero, multiple content sections, and a closing/conversion end.
-2. **Page base + additions:** exactly 1 Landing Page / Website entry, plus 1 to 3 extra compatible section entries from other prompt families when the base is missing enough content or a closing.
+1. **Complete page base:** exactly 1 Landing Page / Website entry that already covers the niche blueprint, source inventory, and closing/conversion need.
+2. **Page base + additions:** exactly 1 Landing Page / Website entry, plus as many compatible section entries as needed to cover the blueprint. Use the smallest set that reaches complete coverage; for content-rich local businesses this can be more than 3 added sections.
 3. **Diverse section assembly:** no page base; assemble sections from multiple different prompt entries and families.
 
 For a diverse section assembly, use:
 
 - **Hero/Header:** exactly 1 existing library entry with a Hero/Header role or category.
-- **Main Sections:** 2 to 4 existing library entries with roles such as About, Services, Categories, Features, Product, Story, Gallery, Benefits, Testimonials, Pricing, or similar content sections.
+- **Main Sections:** enough existing library entries to cover the blueprint, usually 4 to 10 for full websites, with roles such as About, Services, Categories, Features, Product, Story, Gallery, Benefits, Testimonials, Pricing, Process, Location, or similar content sections.
 - **Closing:** exactly 1 existing library entry with Contact, Footer, CTA, Closing, Signup, Waitlist, Booking, or similar role.
 
 If no suitable Footer section exists, use the closest Contact, CTA, or Closing entry.
 
-Use different prompt IDs and prefer different prompt families. A complete Landing Page entry may be the whole site only when it is complete enough by itself. If it is incomplete, add missing compatible sections from other families. Do not improvise missing sections.
+Use different prompt IDs and prefer different prompt families. A complete Landing Page entry may be the whole site only when it satisfies the coverage matrix by itself. If it is incomplete, add missing compatible sections from other families. Do not improvise missing sections.
 
 ## Automatic Selection Rules
 
@@ -205,17 +243,20 @@ Company context must not change:
 
 ## Workflow
 
-1. Read `references/motionsites-prompt-library.json`.
-2. Filter to entries with `prompt_text`.
-3. Select either a complete Landing Page / Website base, a page base plus missing diverse sections, or a diverse Hero/Main/Closing section assembly using existing metadata and role fit. Selected added sections must use distinct prompt IDs and should come from different prompt families when practical.
-4. Record each selected entry's `id`, title, role, and why it was selected.
-5. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
-6. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
-7. Implement the website section by section. Each section remains locked to its selected prompt entry.
-8. Adapt only visible website copy for the company context.
-9. Add `data-prompt-id` to sections when practical.
-10. Verify that the JSON library and prompt bodies did not change.
-11. Verify desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, and console errors required by the selected prompt_text.
+1. Inspect the supplied URL or brief and create a source inventory before prompt selection.
+2. Infer the niche-specific completeness blueprint, including required section count and section roles.
+3. Create a coverage matrix with `Required section`, `Source facts`, `Selected prompt id`, `Prompt family`, and `Status`.
+4. Read `references/motionsites-prompt-library.json`.
+5. Filter to entries with `prompt_text`.
+6. Select either a complete Landing Page / Website base, a page base plus missing diverse sections, or a diverse Hero/Main/Closing section assembly that satisfies the coverage matrix. Selected added sections must use distinct prompt IDs and should come from different prompt families when practical.
+7. Record each selected entry's `id`, title, role, prompt family, and why it was selected.
+8. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
+9. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
+10. Implement the website section by section. Each section remains locked to its selected prompt entry.
+11. Adapt only visible website copy for the company context.
+12. Add `data-prompt-id` to sections when practical.
+13. Verify that the JSON library and prompt bodies did not change.
+14. Verify source coverage, desktop/mobile layout, copy fit, media loading, responsive behavior, interactions, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -223,10 +264,13 @@ User: "Benutze den Lumora Skill und baue eine Website fuer Rheine's Greenhouse."
 
 Expected behavior:
 
+- Lumora inspects the supplied business context or existing website first.
+- Lumora creates a niche-specific section blueprint and coverage matrix before picking prompts.
 - Lumora opens `references/motionsites-prompt-library.json`.
-- Lumora automatically selects either a complete page base or existing prompt entries for Hero, content sections, and Closing.
+- Lumora automatically selects either a complete page base or existing prompt entries for Hero, required content sections, proof, conversion, and Closing.
 - Lumora loads and follows those selected entries' `prompt_text` bodies 1:1.
 - Lumora adapts only visible copy to Rheine's Greenhouse.
+- Lumora reports the selected prompt IDs, prompt families, and coverage status.
 - Lumora does not modify prompt bodies or the prompt library.
 
 ## Reference Files
