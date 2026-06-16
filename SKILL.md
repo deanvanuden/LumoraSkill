@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, make all clickable UI work, preserve multipage source sites, and verify responsive containment.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, prepare fit-for-slot media or generated assets, enforce brand color tokens, make all clickable UI work, preserve multipage source sites, and verify responsive containment.
 ---
 
 # Lumora
@@ -119,6 +119,54 @@ Apply the cohesion sheet globally:
 - Use the same cohesion sheet across every route in a multipage build.
 
 The cohesion sheet may change font family names, exact color values, and section background colors/media. It may not change layout, section structure, component structure, spacing logic, CTA placement, motion concept, responsive behavior, effects, or the selected prompt's content roles. If a selected prompt depends on a distinctive font/color treatment that cannot be mapped into the shared site identity without breaking its visual role, select a more compatible prompt instead of forcing the mismatch.
+
+## Brand Token Discipline Rule
+
+Before coding, extract a brand palette from the source website, logo, photos, visible signage, or user brief. If the source clearly has brand colors, those colors must dominate the site-wide cohesion sheet.
+
+Create brand token evidence with:
+
+- `brand_primary`, `brand_secondary`, `brand_neutral_dark`, `brand_neutral_light`, `canvas`, `surface`, `border`, `muted`, `focus`, and status colors when needed
+- source evidence for each major brand color, such as logo, signage, existing CSS, or user statement
+- allowed accent exceptions, with a reason tied to the selected prompt role or source brand
+
+Apply the brand tokens globally:
+
+- Use CSS variables or equivalent theme tokens for repeated colors. Avoid section-local hard-coded colors except when they directly reference a global token or are documented one-off states.
+- Map prompt-specific colors into the brand token system by role. A prompt's warm, green, blue, purple, gold, or cream accent should become the closest brand role unless the source brand actually uses that color.
+- Do not let imported prompt sections keep unrelated standalone palettes. If a section still reads as a different brand after token mapping, revise the token mapping or choose a more compatible prompt.
+- For businesses with a clear two-color identity, such as white/red, make that identity visible across hero accents, CTAs, focus states, section transitions, media overlays, icons, and repeated surfaces.
+- Neutral backgrounds should support the brand colors. Avoid drifting into unrelated cream, green, orange, blue, purple, or brown themes unless the source brand or selected prompt role requires it and the exception is documented.
+
+Brand token discipline may change exact colors and backgrounds through the cohesion layer. It may not change section layout, component hierarchy, spacing logic, motion, or prompt-defined visual roles.
+
+## Media Asset Discipline And Generation Rule
+
+Prompt selection is design-led. Do not reject a strong, compatible, media-heavy prompt only because the scraped source images are too small, blurry, duplicated, or poorly cropped. Solve asset limitations through a required media preparation pass.
+
+After prompt selection and before coding, create `lumora-media-plan.json` in the generated site root with one entry for every hero, card, gallery, background, video poster, or major decorative image. Each media slot must include:
+
+- `id`, `prompt_id`, `section_id`, `role`, and `src`
+- target render size or maximum expected render size: `target_width`, `target_height`
+- required `aspect_ratio`, `fit`, and `focal_point`
+- `source_type`: `source`, `enhanced`, `generated`, `icon`, `logo`, or `texture`
+- whether the asset is meant to represent a real company place/person/product
+- the asset treatment, such as crop, tint, overlay, grain, blur level, or duotone
+- reuse policy, such as `allow_reuse: true` only for logos, icons, textures, repeated patterns, or an intentional prompt-specified repetition
+
+Asset rules:
+
+- Final bitmap media used in large cards or heroes should be at least 1.5x the target render width and height. Use 2x when practical for hero and full-bleed slots.
+- Never stretch tiny source images into premium hero or card media. If a source image fails the size or sharpness requirement, find a larger original, enhance/upscale it, or generate a fit-for-slot replacement.
+- Generated assets are allowed and preferred over downgrading prompt choice when source images cannot satisfy the selected media slots.
+- Generated assets must be created for the exact slot role, aspect ratio, target size, focal point, and brand palette. Generate separate assets for materially different slots instead of reusing one image everywhere.
+- Do not generate images that falsely imply they are real photos of the exact business premises, employees, customers, vehicles, certificates, or products unless the user provided those references or explicitly approved that representation. Use generic, staged, abstract, texture, or brand-world imagery for generated support visuals.
+- Avoid embedded text, fake logos, fake signage, watermarks, distorted vehicles, warped tools, and unreadable UI inside generated images unless the slot explicitly requires a graphic texture and the artifacts are visually acceptable.
+- Do not reuse the same non-logo image in adjacent prominent cards or multiple first-viewport media slots unless the selected prompt intentionally repeats it and the reuse is documented.
+- Every `object-fit: cover` image must have a deliberate `object-position` or equivalent focal-point crop. Faces, vehicles, signs, logos, and primary tools should not be accidentally cut off.
+- For contact pages and route heroes, verify that the image crop leaves room for forms, CTA buttons, and text on the tested desktop and mobile viewports.
+
+Run `scripts/audit_lumora_visuals.py --site-root <site-root> --media-plan <site-root>/lumora-media-plan.json` before reporting a Lumora build. Treat failures as build failures unless the user explicitly accepts the visual risk.
 
 ## Responsive Containment And Sticky Safety Rule
 
@@ -356,15 +404,17 @@ Company context must not change:
 9. Load every selected `prompt_text` with `scripts/load_lumora_prompt.py --id <prompt-id> --sha256` before coding. This is mandatory for every selected prompt, not optional.
 10. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
 11. Create `lumora-manifest.json` in the generated site root with `selected_prompts` entries containing each prompt `id`, `sha256`, `role`, `source`, and `loaded: true`.
-12. Create the site cohesion sheet for global fonts, type scale, color tokens, background rhythm, and repeated visual tokens.
-13. Implement the website section by section and page by page. Each section remains locked to its selected loaded prompt entry.
-14. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
-15. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
-16. Apply the responsive containment and sticky safety pass to sticky, pinned, stacking, overlapping, and media-heavy sections without changing the selected prompt's structure.
-17. Add `data-prompt-id` to sections when practical.
-18. Run `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` and treat failure as a failed build.
-19. Verify that the JSON library and prompt bodies did not change.
-20. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, sticky/pinned/media containment, interactions, links/buttons/forms, global font/color/background cohesion, and console errors required by the selected prompt_text.
+12. Create the site cohesion sheet for global fonts, type scale, brand color tokens, background rhythm, and repeated visual tokens.
+13. Create `lumora-media-plan.json` and prepare source, enhanced, or generated assets for every major media slot. Do not downgrade prompt selection because source images are weak; make the assets fit the selected prompt.
+14. Implement the website section by section and page by page. Each section remains locked to its selected loaded prompt entry.
+15. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
+16. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
+17. Apply the responsive containment and sticky safety pass to sticky, pinned, stacking, overlapping, and media-heavy sections without changing the selected prompt's structure.
+18. Add `data-prompt-id` to sections when practical.
+19. Run `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` and treat failure as a failed build.
+20. Run `scripts/audit_lumora_visuals.py --site-root <site-root> --media-plan <site-root>/lumora-media-plan.json` and treat failure as a failed build unless the user explicitly accepts the visual risk.
+21. Verify that the JSON library and prompt bodies did not change.
+22. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, sticky/pinned/media containment, interactions, links/buttons/forms, global font/color/background cohesion, media slot sharpness/cropping/duplication, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -379,6 +429,7 @@ Expected behavior:
 - Lumora automatically selects either a complete page base or existing prompt entries for Hero, required content sections, proof, conversion, and Closing.
 - Lumora loads and follows those selected entries' `prompt_text` bodies 1:1 before coding, records hashes in `lumora-manifest.json`, and rejects any section that only has a prompt ID label.
 - Lumora creates one global cohesion sheet so every section shares the same font system, color tokens, and background rhythm.
+- Lumora creates a media plan, uses fit-for-slot source/enhanced/generated assets, avoids duplicated prominent images, and preserves deliberate image focal points.
 - Lumora localizes visible copy to Rheine's Greenhouse in German while preserving the selected prompt's exact design, section order, components, text roles, and layout footprint.
 - Lumora wires every visible link and button to a real target/action and verifies routes, footer links, CTAs, forms, accordions, and carousels.
 - Lumora verifies sticky, pinned, stacking, and media-heavy sections cannot overlap, spill out of their containers, or create horizontal overflow on desktop or mobile.
@@ -392,3 +443,4 @@ Expected behavior:
 - Use `references/archetype-catalog.md` only as inventory and role orientation for existing library entries.
 - Use `scripts/load_lumora_prompt.py --id <prompt-id>` when an exact `prompt_text` needs to be emitted for inspection or hashing. Keep stdout as prompt text only.
 - Use `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` before reporting any generated site as Lumora-built.
+- Use `scripts/audit_lumora_visuals.py --site-root <site-root> --media-plan <site-root>/lumora-media-plan.json` to enforce media slot size, duplicate media, focal point, generated-asset disclosure, and off-brand saturated color checks.

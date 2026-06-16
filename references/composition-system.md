@@ -81,6 +81,29 @@ Apply the cohesion sheet globally:
 
 The cohesion sheet may change font family names, exact color values, and section background colors/media. It may not change layout, section structure, component structure, spacing logic, CTA placement, motion concept, responsive behavior, effects, or the selected prompt's content roles. If a selected prompt depends on a distinctive font/color treatment that cannot be mapped into the shared site identity without breaking its visual role, select a more compatible prompt instead of forcing the mismatch.
 
+## Brand Tokens And Media Assets
+
+Before coding, extract source-backed brand colors from the logo, source CSS, signage, images, or user brief. Make those colors visible through shared tokens for primary, secondary, neutral dark, neutral light, canvas, surface, border, muted text, focus, and status states. Use CSS variables or equivalent theme tokens for repeated colors. Do not let selected prompt sections keep unrelated standalone palettes; map prompt-specific colors into the site brand roles while preserving hierarchy and contrast.
+
+For clear two-color identities, such as white/red, the identity must show in hero accents, CTAs, focus states, section transitions, media overlays, icons, and repeated surfaces. Avoid unrelated cream, green, orange, blue, purple, or brown themes unless the source brand or selected prompt role requires them and the exception is documented.
+
+Prompt selection is design-led. Do not reject a strong, compatible, media-heavy prompt only because scraped source images are too small, blurry, duplicated, or poorly cropped. Solve asset limitations with a media preparation pass.
+
+Create `lumora-media-plan.json` in the generated site root with one entry for every hero, card, gallery, background, video poster, or major decorative image. Each slot must record `id`, `prompt_id`, `section_id`, `role`, `src`, `target_width`, `target_height`, `aspect_ratio`, `fit`, `focal_point`, `source_type`, real-place/person/product representation, asset treatment, and reuse policy.
+
+Asset rules:
+
+- Final bitmap media used in large cards or heroes should be at least 1.5x the target render width and height; use 2x when practical for hero/full-bleed slots.
+- Never stretch tiny source images into premium hero or card media. If source media fails size or sharpness requirements, find a larger original, enhance/upscale it, or generate a fit-for-slot replacement.
+- Generated assets are allowed and preferred over downgrading prompt choice when source images cannot satisfy the selected media slots.
+- Generated assets must be created for the exact slot role, aspect ratio, target size, focal point, and brand palette. Generate separate assets for materially different slots instead of reusing one image everywhere.
+- Do not generate images that falsely imply they are real photos of the exact business premises, employees, customers, vehicles, certificates, or products unless the user provided those references or explicitly approved that representation.
+- Do not reuse the same non-logo image in adjacent prominent cards or multiple first-viewport media slots unless the selected prompt intentionally repeats it and the reuse is documented.
+- Every `object-fit: cover` image must have a deliberate `object-position` or equivalent focal-point crop.
+- Contact-page and route-hero crops must leave room for forms, CTA buttons, and text on tested desktop and mobile viewports.
+
+Run `scripts/audit_lumora_visuals.py --site-root <site-root> --media-plan <site-root>/lumora-media-plan.json` before reporting a Lumora build.
+
 ## Responsive Containment And Sticky Safety
 
 Every generated website must include a responsive safety pass for sticky, pinned, scroll-linked, stacking, overlapping, and media-heavy sections. This pass prevents visual breakouts; it is not permission to redesign selected prompts.
@@ -223,6 +246,10 @@ Before finishing:
 - Confirm no section is merely labeled with `data-prompt-id` without manifest-backed prompt evidence.
 - Confirm a site cohesion sheet was created before coding.
 - Confirm all sections and routes share one font system, color token system, and background rhythm.
+- Confirm brand colors were extracted, mapped to global tokens, and applied across CTAs, focus states, section transitions, overlays, icons, and repeated surfaces.
+- Confirm `lumora-media-plan.json` exists and `scripts/audit_lumora_visuals.py --site-root <site-root> --media-plan <site-root>/lumora-media-plan.json` passed or every accepted visual risk was explicitly reported.
+- Confirm media-heavy prompt selection was not downgraded merely because source images were weak; source images were enhanced or generated fit-for-slot instead.
+- Confirm large media slots use sufficiently large assets, deliberate focal points, no accidental duplicated prominent images, and no generated asset falsely claims real company premises/people/products.
 - Confirm selected website sections use different prompt IDs.
 - Confirm added sections avoid overusing one prompt family when compatible alternatives exist.
 - If a complete Landing Page / Website prompt was used alone, confirm it already included enough content and a clear closing/conversion end.
