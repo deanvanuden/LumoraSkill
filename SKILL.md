@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, prepare fit-for-slot media or generated assets, enforce brand color tokens, make all clickable UI work, preserve multipage source sites, and verify responsive containment.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, prepare fit-for-slot media or generated assets, enforce brand color tokens, make all clickable UI work, preserve multipage source sites, verify responsive containment, and pass a required prompt-fidelity audit before any build may be called valid.
 ---
 
 # Lumora
@@ -37,6 +37,31 @@ Hard stops:
 - Do not call an output a Lumora test if any section was invented, approximated, rebuilt from taste, or merely inspired by a prompt.
 - If a selected prompt cannot be implemented 1:1 after loading it, discard it and select another loaded prompt. Do not bridge the gap with original design.
 - If time, context, tooling, or compatibility prevents exact prompt loading and implementation, stop and report that Lumora cannot honestly complete the build in that state.
+
+## Prompt Fidelity Audit Gate
+
+After implementation, Lumora must prove that every used prompt remains 1:1 with its loaded `prompt_text`. Manifest hashes and `data-prompt-id` labels are not enough.
+
+Before reporting a Lumora build as successful:
+
+- Create `<site-root>/lumora-prompt-fidelity.json`.
+- Compare each loaded prompt_text against the implemented section or page, not against screenshots, titles, summaries, or intended roles.
+- For every selected and used prompt, check: `layout`, `component_structure`, `motion`, `responsive_behavior`, `media_behavior`, `cta_placement`, and `verification_requirements`.
+- Mark a prompt `pass` only when its design, layout, component hierarchy, motion concept, responsive behavior, media role, CTA placement, and required verification behavior are preserved exactly except for allowed copy localization, brand token mapping, and same-role media replacement.
+- Mark `partial`, `fail`, `risk`, or stop entirely when the implementation is only inspired by the prompt, visually similar, role-matched, or structurally changed.
+- Run `scripts/audit_lumora_prompt_fidelity.py --site-root <site-root>` and treat failure as a failed Lumora build.
+
+The JSON report must include:
+
+- top-level `audit_type: "prompt_fidelity"`, `overall_status: "pass"`, `all_sections_prompt_verbatim: true`, and `no_partial_or_inspired_sections: true`
+- a `sections` array with one entry per used prompt id
+- each section entry must include `prompt_id`, `status: "pass"`, `implementation_files`, `prompt_requirements_checked`, `loaded_prompt_text_compared: true`, `structure_layout_components_motion_1_to_1: true`, `only_allowed_adaptations_used: true`, `no_unlisted_prompt_deviations: true`, `fidelity_summary`, and empty `deviations`
+
+Hard stops:
+
+- Do not present a build as Lumora-valid when the prompt fidelity report is missing or does not pass the script.
+- Do not repair a failed fidelity audit by changing the report wording. Rebuild the section to match the selected prompt, or discard the prompt and select another loaded prompt that can be implemented verbatim.
+- Do not let media rescue, brand palette mapping, responsive containment, or source-company fit change prompt structure, component hierarchy, motion, CTA placement, or layout. If those needs conflict, choose another prompt or stop.
 
 ## Scrape-First Completeness Rule
 
@@ -208,6 +233,7 @@ For every selected library entry:
 - Do not harmonize multiple selected prompts by inventing new layouts, components, effects, motion, spacing, or arbitrary styles. Use only the required Site-Wide Visual Cohesion Rule for fonts, colors, backgrounds, and repeated visual tokens, plus the Responsive Containment And Sticky Safety Rule only where needed to prevent breakpoint breakage.
 - Do not select a prompt unless its design, layout, structure, components, motion, and section order can be implemented as written.
 - Do not keep a selected prompt in the report if the implementation is not actually built from that loaded `prompt_text`.
+- Do not mark prompt fidelity as `pass` unless the loaded prompt_text has been compared against the final implementation after all responsive, media, and brand-token adjustments.
 - Prompt-specified typography and color roles may be remapped only through the Site-Wide Visual Cohesion Rule.
 - Prompt-specified responsive behavior must be preserved unless the minimum breakpoint-specific containment adjustment is required to prevent visual overlap, scroll trapping, horizontal overflow, or media breakout.
 - Visible copy, brand names, labels, headings, product names, prices, testimonials, navigation, and CTA text may be localized to the requested language and sourced company facts, but only inside the same text roles and component slots specified by the selected prompt.
@@ -413,8 +439,10 @@ Company context must not change:
 18. Add `data-prompt-id` to sections when practical.
 19. Run `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` and treat failure as a failed build.
 20. Run `scripts/audit_lumora_visuals.py --site-root <site-root> --media-plan <site-root>/lumora-media-plan.json` and treat failure as a failed build unless the user explicitly accepts the visual risk.
-21. Verify that the JSON library and prompt bodies did not change.
-22. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, sticky/pinned/media containment, interactions, links/buttons/forms, global font/color/background cohesion, media slot sharpness/cropping/duplication, and console errors required by the selected prompt_text.
+21. Create `lumora-prompt-fidelity.json`, compare every used prompt_text against the final implementation, and mark only exact verbatim-compatible sections as `pass`.
+22. Run `scripts/audit_lumora_prompt_fidelity.py --site-root <site-root>` and treat failure as a failed Lumora build.
+23. Verify that the JSON library and prompt bodies did not change.
+24. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, sticky/pinned/media containment, interactions, links/buttons/forms, global font/color/background cohesion, media slot sharpness/cropping/duplication, prompt fidelity, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -435,6 +463,7 @@ Expected behavior:
 - Lumora verifies sticky, pinned, stacking, and media-heavy sections cannot overlap, spill out of their containers, or create horizontal overflow on desktop or mobile.
 - Lumora reports the selected prompt IDs, prompt families, and coverage status.
 - Lumora reports manifest verification status and never presents a fake traceability label as prompt usage.
+- Lumora creates and passes `lumora-prompt-fidelity.json`; if any section is partial, inspired, or structurally changed, Lumora reports the build as invalid instead of calling it successful.
 - Lumora does not modify prompt bodies or the prompt library.
 
 ## Reference Files
@@ -444,3 +473,4 @@ Expected behavior:
 - Use `scripts/load_lumora_prompt.py --id <prompt-id>` when an exact `prompt_text` needs to be emitted for inspection or hashing. Keep stdout as prompt text only.
 - Use `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` before reporting any generated site as Lumora-built.
 - Use `scripts/audit_lumora_visuals.py --site-root <site-root> --media-plan <site-root>/lumora-media-plan.json` to enforce media slot size, duplicate media, focal point, generated-asset disclosure, and off-brand saturated color checks.
+- Use `scripts/audit_lumora_prompt_fidelity.py --site-root <site-root>` to enforce that a final `lumora-prompt-fidelity.json` exists and declares pass-level 1:1 prompt fidelity for every used prompt id.

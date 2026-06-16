@@ -26,6 +26,21 @@ Hard stops:
 - Do not call an output a Lumora test if any section was invented, approximated, rebuilt from taste, or merely inspired by a prompt.
 - If exact prompt loading or implementation is not possible, stop and report that Lumora cannot honestly complete the build.
 
+## Prompt Fidelity Audit Gate
+
+Every Lumora build must include a final prompt-vs-implementation audit. The manifest proves that prompt bodies were selected and hashed; it does not prove that the final page followed them.
+
+Before reporting success:
+
+- Create `<site-root>/lumora-prompt-fidelity.json`.
+- Compare each final section or page against its loaded `prompt_text`.
+- For every used prompt id, check layout, component structure, motion, responsive behavior, media behavior, CTA placement, and verification requirements.
+- Mark `pass` only when the prompt's structure, layout, components, motion, media role, CTA placement, and responsive behavior remain 1:1 except for allowed copy localization, brand token mapping, and same-role media replacement.
+- Treat `partial`, `fail`, `risk`, "inspired by", "role matched", or "visually similar" as invalid Lumora output.
+- Run `scripts/audit_lumora_prompt_fidelity.py --site-root <site-root>` and treat failure as a failed build.
+
+If a prompt fails this audit, rebuild that section verbatim, discard the prompt and select another loaded prompt, or stop. Do not make the report wording more optimistic to pass the gate.
+
 ## Scrape-First Blueprint
 
 Before prompt selection, inspect the supplied URL or business brief and create a source inventory. Capture navigation, page hierarchy, whether the source is onepage or multipage, services/products, pricing, guarantees, booking rules, address, phone, opening hours, proof, reviews, images, tone, and operational constraints.
@@ -244,6 +259,8 @@ Before finishing:
 - Confirm every selected `prompt_text` was loaded before coding and followed 1:1.
 - Confirm `lumora-manifest.json` exists and passed `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>`.
 - Confirm no section is merely labeled with `data-prompt-id` without manifest-backed prompt evidence.
+- Confirm `lumora-prompt-fidelity.json` exists and passed `scripts/audit_lumora_prompt_fidelity.py --site-root <site-root>`.
+- Confirm every used prompt id has a `pass` fidelity entry, and no final section is partial, inspired, or structurally changed from its loaded prompt_text.
 - Confirm a site cohesion sheet was created before coding.
 - Confirm all sections and routes share one font system, color token system, and background rhythm.
 - Confirm brand colors were extracted, mapped to global tokens, and applied across CTAs, focus states, section transitions, overlays, icons, and repeated surfaces.

@@ -49,11 +49,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def resolve_inside_repo(path: str | Path, label: str) -> Path:
     resolved = Path(path).resolve()
-    try:
-        resolved.relative_to(ROOT.resolve())
-    except ValueError as exc:
-        raise ValueError(f"{label} must stay inside the LumoraSkill repository") from exc
+    allowed_roots = (ROOT.resolve(), Path.cwd().resolve())
+    if not any(is_relative_to(resolved, root) for root in allowed_roots):
+        raise ValueError(f"{label} must stay inside the skill root or current workspace")
     return resolved
+
+
+def is_relative_to(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
 
 
 def load_json(path: Path) -> Any:
