@@ -1,17 +1,42 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping or inventorying the target business, creating a niche-specific section blueprint, and then selecting a complete landing-page prompt or compatible prompt entries. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero section, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, presentation-like web page, or visually rich frontend using "$lumora" or "Lumora"; Lumora must use selected library prompt_text design, layout, structure, components, section order, and motion 100% 1:1 with no design interpretation, localize visible copy only inside prompt slots, apply one coherent site-wide font/color/background token layer, make every clickable link/button work, preserve multipage source sites as multipage builds, and verify responsive containment for sticky, pinned, stacking, and media-heavy sections.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, make all clickable UI work, preserve multipage source sites, and verify responsive containment.
 ---
 
 # Lumora
 
 Lumora's default workflow is **Locked Verbatim Page + Diverse Section Composition Mode**.
 
-**Prompt bodies copied 1:1. Design locked. Section structure locked. Copy may be localized to the requested language. A single site-wide typography/color/background token layer is mandatory for cohesion. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains structurally exact.**
+**Prompt bodies copied 1:1. Design locked. Section structure locked. No loaded prompt_text, no section. Copy may be localized to the requested language. A single site-wide typography/color/background token layer is mandatory for cohesion. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains structurally exact.**
 
 Use Lumora to build a website by selecting existing prompt entries from `references/motionsites-prompt-library.json`. Prompt bodies live in each entry's `prompt_text` field. Every selected `prompt_text` must be loaded and used **verbatim, byte-for-byte in meaning and whitespace-sensitive content**, as the implementation instruction for its page or section. Lumora may select one complete Landing Page / Website entry as the base when it is the strongest fit. If that base page is incomplete for a real website, add missing sections from other families only when every selected prompt can remain structurally exact without bridging, interpretation, or freeform harmonization. Lumora may also assemble a page from section-level prompts. It does not mean inventing a new design, creating new archetypes, interpreting sections, inventing layout, or merging prompt bodies into a new prompt. Visible website copy may be localized to German or another requested language, but the prompt's text roles, rhythm, hierarchy, section order, and component slots stay locked. When multiple prompts are composed, Lumora must apply the Site-Wide Visual Cohesion Rule so the final website feels like one brand, not a stack of unrelated sections.
 
 The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. During a Lumora build, selected prompt bodies are copied 1:1 into the agent's working instructions and followed exactly. Do not edit, rewrite, summarize, translate, merge, or store prompt bodies in new prompt files.
+
+## Hard Prompt Evidence Gate
+
+Lumora has no fallback mode. A section is valid Lumora output only when it is built directly from a loaded `prompt_text` entry in `references/motionsites-prompt-library.json`.
+
+Before coding any page or section:
+
+- Load every selected prompt with `scripts/load_lumora_prompt.py --id <prompt-id> --sha256`.
+- Read the exact `prompt_text` emitted on stdout and treat it as the immutable build instruction for that page or section.
+- Record the exact SHA256 emitted on stderr.
+- Create a `lumora-manifest.json` in the generated site root before or during implementation.
+- Include one `selected_prompts` entry per selected prompt with at least: `id`, `sha256`, `role`, `source`, and `loaded: true`.
+- Run `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` before reporting a build as Lumora.
+
+The manifest is mandatory evidence, not decoration. A generated site without a valid `lumora-manifest.json` is not a Lumora site.
+
+Hard stops:
+
+- Do not write, scaffold, or implement a section before its exact `prompt_text` has been loaded and inspected.
+- Do not create a section from a prompt ID, title, category, metadata, memory, vibes, previous outputs, or a hand-written approximation.
+- Do not use `data-prompt-id` as proof by itself. `data-prompt-id` is only valid when the same ID exists in the manifest with a matching SHA256.
+- Do not claim a section used a library prompt unless the exact prompt was loaded before coding and the section follows that prompt's structure, layout, components, motion, responsive behavior, and verification requirements.
+- Do not call an output a Lumora test if any section was invented, approximated, rebuilt from taste, or merely inspired by a prompt.
+- If a selected prompt cannot be implemented 1:1 after loading it, discard it and select another loaded prompt. Do not bridge the gap with original design.
+- If time, context, tooling, or compatibility prevents exact prompt loading and implementation, stop and report that Lumora cannot honestly complete the build in that state.
 
 ## Scrape-First Completeness Rule
 
@@ -124,13 +149,17 @@ Responsive containment may adjust breakpoint behavior, container constraints, im
 For every selected library entry:
 
 - Load the entry's exact `prompt_text`.
+- Load it before coding starts, not afterward as documentation.
+- Record its SHA256 in `lumora-manifest.json`.
 - Treat that `prompt_text` as the direct build prompt.
 - Preserve all specified design, layout, stack, component, animation, responsive, asset, and verification instructions exactly.
 - Do not replace the prompt with an archetype summary, Lumora brief, design synthesis, mood board, or interpretation.
+- Do not replace the loaded prompt with a prompt ID, title, report row, fake traceability marker, or `data-prompt-id` label.
 - Do not omit prompt-specified sections, states, interactions, assets, animations, dimensions, or verification steps.
 - Do not alter a prompt because another selected prompt has a nicer style or because the company context suggests a different direction.
 - Do not harmonize multiple selected prompts by inventing new layouts, components, effects, motion, spacing, or arbitrary styles. Use only the required Site-Wide Visual Cohesion Rule for fonts, colors, backgrounds, and repeated visual tokens, plus the Responsive Containment And Sticky Safety Rule only where needed to prevent breakpoint breakage.
 - Do not select a prompt unless its design, layout, structure, components, motion, and section order can be implemented as written.
+- Do not keep a selected prompt in the report if the implementation is not actually built from that loaded `prompt_text`.
 - Prompt-specified typography and color roles may be remapped only through the Site-Wide Visual Cohesion Rule.
 - Prompt-specified responsive behavior must be preserved unless the minimum breakpoint-specific containment adjustment is required to prevent visual overlap, scroll trapping, horizontal overflow, or media breakout.
 - Visible copy, brand names, labels, headings, product names, prices, testimonials, navigation, and CTA text may be localized to the requested language and sourced company facts, but only inside the same text roles and component slots specified by the selected prompt.
@@ -228,6 +257,7 @@ Selection rules:
 - Use one existing entry per section role.
 - Prefer no more than two entries from the same prompt family; never use one family for most sections when other compatible families exist.
 - Copy every selected `prompt_text` 1:1 into the implementation reasoning/context before coding.
+- Generate `lumora-manifest.json` with matching SHA256 values before declaring any output valid.
 - Do not create new prompt entries.
 - Do not create prompt files.
 - Do not use `references/prompts`; it is not the prompt source.
@@ -237,6 +267,8 @@ Selection rules:
 - If selection is uncertain, list plausible existing entries and still choose the technically strongest set with a short reason.
 - If no matching verbatim-compatible section entry exists for an incomplete base, report the missing section role. Do not freely invent a section.
 - In generated test websites, add `data-prompt-id="<id>"` to each section when practical so the source prompt remains traceable.
+
+`data-prompt-id` is never sufficient evidence. It must match an entry in `lumora-manifest.json`, and the manifest SHA256 must match the exact library `prompt_text`. If manifest verification fails, the output is invalid and must not be presented as Lumora-built.
 
 ## Prompt Integrity
 
@@ -321,16 +353,18 @@ Company context must not change:
 6. Filter to entries with `prompt_text`.
 7. Select either a complete Landing Page / Website base, a page base plus missing diverse sections, or a diverse Hero/Main/Closing section assembly that satisfies the coverage matrix. Selected added sections must use distinct prompt IDs and should come from different prompt families when practical.
 8. Record each selected entry's `id`, title, role, prompt family, and why it was selected.
-9. Load the selected `prompt_text` values with `scripts/load_lumora_prompt.py --id <prompt-id>` when exact inspection is needed; otherwise read them directly from JSON without alteration.
+9. Load every selected `prompt_text` with `scripts/load_lumora_prompt.py --id <prompt-id> --sha256` before coding. This is mandatory for every selected prompt, not optional.
 10. Copy each selected `prompt_text` into the working build context exactly as written and treat it as the immutable implementation prompt.
-11. Create the site cohesion sheet for global fonts, type scale, color tokens, background rhythm, and repeated visual tokens.
-12. Implement the website section by section and page by page. Each section remains locked to its selected prompt entry.
-13. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
-14. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
-15. Apply the responsive containment and sticky safety pass to sticky, pinned, stacking, overlapping, and media-heavy sections without changing the selected prompt's structure.
-16. Add `data-prompt-id` to sections when practical.
-17. Verify that the JSON library and prompt bodies did not change.
-18. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, sticky/pinned/media containment, interactions, links/buttons/forms, global font/color/background cohesion, and console errors required by the selected prompt_text.
+11. Create `lumora-manifest.json` in the generated site root with `selected_prompts` entries containing each prompt `id`, `sha256`, `role`, `source`, and `loaded: true`.
+12. Create the site cohesion sheet for global fonts, type scale, color tokens, background rhythm, and repeated visual tokens.
+13. Implement the website section by section and page by page. Each section remains locked to its selected loaded prompt entry.
+14. Localize visible website copy to the requested language and company facts only inside the selected prompt's existing text roles and component slots.
+15. Wire every clickable link, button, form, menu, accordion, carousel, and route to a real target or action.
+16. Apply the responsive containment and sticky safety pass to sticky, pinned, stacking, overlapping, and media-heavy sections without changing the selected prompt's structure.
+17. Add `data-prompt-id` to sections when practical.
+18. Run `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` and treat failure as a failed build.
+19. Verify that the JSON library and prompt bodies did not change.
+20. Verify source coverage, multipage routing when applicable, desktop/mobile layout, copy fit, media loading, responsive behavior, sticky/pinned/media containment, interactions, links/buttons/forms, global font/color/background cohesion, and console errors required by the selected prompt_text.
 
 ## Example Use
 
@@ -343,12 +377,13 @@ Expected behavior:
 - Lumora creates a niche-specific section blueprint and coverage matrix before picking prompts.
 - Lumora opens `references/motionsites-prompt-library.json`.
 - Lumora automatically selects either a complete page base or existing prompt entries for Hero, required content sections, proof, conversion, and Closing.
-- Lumora loads and follows those selected entries' `prompt_text` bodies 1:1.
+- Lumora loads and follows those selected entries' `prompt_text` bodies 1:1 before coding, records hashes in `lumora-manifest.json`, and rejects any section that only has a prompt ID label.
 - Lumora creates one global cohesion sheet so every section shares the same font system, color tokens, and background rhythm.
 - Lumora localizes visible copy to Rheine's Greenhouse in German while preserving the selected prompt's exact design, section order, components, text roles, and layout footprint.
 - Lumora wires every visible link and button to a real target/action and verifies routes, footer links, CTAs, forms, accordions, and carousels.
 - Lumora verifies sticky, pinned, stacking, and media-heavy sections cannot overlap, spill out of their containers, or create horizontal overflow on desktop or mobile.
 - Lumora reports the selected prompt IDs, prompt families, and coverage status.
+- Lumora reports manifest verification status and never presents a fake traceability label as prompt usage.
 - Lumora does not modify prompt bodies or the prompt library.
 
 ## Reference Files
@@ -356,3 +391,4 @@ Expected behavior:
 - Read `references/composition-system.md` for the Lumora system.
 - Use `references/archetype-catalog.md` only as inventory and role orientation for existing library entries.
 - Use `scripts/load_lumora_prompt.py --id <prompt-id>` when an exact `prompt_text` needs to be emitted for inspection or hashing. Keep stdout as prompt text only.
+- Use `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` before reporting any generated site as Lumora-built.

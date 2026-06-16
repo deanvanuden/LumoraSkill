@@ -2,9 +2,29 @@
 
 Use this reference when Lumora builds a website from `references/motionsites-prompt-library.json`.
 
-**Prompt bodies copied 1:1. Design locked. Section structure locked. Copy may be localized to the requested language. A single site-wide typography/color/background token layer is mandatory for cohesion. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains structurally exact.**
+**Prompt bodies copied 1:1. Design locked. Section structure locked. No loaded prompt_text, no section. Copy may be localized to the requested language. A single site-wide typography/color/background token layer is mandatory for cohesion. Complete pages allowed. Incomplete pages get extra compatible sections only when every selected prompt remains structurally exact.**
 
 Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis. When multiple prompts are composed, Lumora must apply a site-wide cohesion layer so the final website feels like one brand instead of unrelated sections.
+
+## Hard Prompt Evidence Gate
+
+Lumora has no fallback mode. A section is valid Lumora output only when it is built directly from a loaded `prompt_text` entry in `references/motionsites-prompt-library.json`.
+
+Before coding any page or section:
+
+- Load every selected prompt with `scripts/load_lumora_prompt.py --id <prompt-id> --sha256`.
+- Read the exact `prompt_text` emitted on stdout and treat it as the immutable build instruction.
+- Record the SHA256 emitted on stderr.
+- Create `lumora-manifest.json` in the generated site root with `selected_prompts` entries containing `id`, `sha256`, `role`, `source`, and `loaded: true`.
+- Run `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>` before reporting a build as Lumora.
+
+Hard stops:
+
+- Do not implement a section before its exact `prompt_text` has been loaded and inspected.
+- Do not create a section from a prompt ID, title, metadata, memory, previous output, or hand-written approximation.
+- Do not use `data-prompt-id` as proof by itself. It is only valid when the same ID exists in the manifest with a matching SHA256.
+- Do not call an output a Lumora test if any section was invented, approximated, rebuilt from taste, or merely inspired by a prompt.
+- If exact prompt loading or implementation is not possible, stop and report that Lumora cannot honestly complete the build.
 
 ## Scrape-First Blueprint
 
@@ -86,6 +106,8 @@ The prompt library is `references/motionsites-prompt-library.json`.
 
 Prompt bodies live in each entry's `prompt_text` field. Select only entries that have `prompt_text`. During a build, copy every selected `prompt_text` 1:1 into the working implementation context and follow it exactly. Do not create prompt files, do not copy prompt bodies into `.md` files, and do not use `references/prompts` as a source.
 
+Every selected prompt must be represented in `lumora-manifest.json` with a SHA256 matching the exact library `prompt_text`. Generated sections may use `data-prompt-id` only as a pointer to that manifest-backed evidence.
+
 ## Composition Shape
 
 Default website assembly chooses one of three shapes:
@@ -151,6 +173,7 @@ Do not:
 - alter design based on company type
 - harmonize designs by inventing new layouts, components, spacing, motion, effects, or arbitrary styles
 - implement from memory, title, category, or metadata when `prompt_text` exists
+- use `data-prompt-id`, a report row, or a selected prompt title as a substitute for loading and following the exact `prompt_text`
 
 Section assembly is allowed only when every selected prompt can remain structurally exact and can share the required site cohesion sheet. Prompt-body remixing is never allowed. A single landing-page prompt is acceptable only when it already satisfies the requested site shape.
 
@@ -183,6 +206,8 @@ Forbidden changes include section structure, spacing logic, typography hierarchy
 
 For generated test websites, add `data-prompt-id="<id>"` to each section when practical. Report selected IDs, titles, roles, and selection reasons at the end.
 
+Traceability is invalid unless `lumora-manifest.json` exists, verifies successfully, and contains matching hashes for every used `data-prompt-id`.
+
 ## Verification
 
 Before finishing:
@@ -193,7 +218,9 @@ Before finishing:
 - Confirm at least 85% of required blueprint sections are covered, or report why coverage is lower.
 - Confirm all selected entries came from `references/motionsites-prompt-library.json`.
 - Confirm every selected entry has `prompt_text`.
-- Confirm every selected `prompt_text` was loaded and followed 1:1.
+- Confirm every selected `prompt_text` was loaded before coding and followed 1:1.
+- Confirm `lumora-manifest.json` exists and passed `scripts/verify_lumora_manifest.py --manifest <site-root>/lumora-manifest.json --output-root <site-root>`.
+- Confirm no section is merely labeled with `data-prompt-id` without manifest-backed prompt evidence.
 - Confirm a site cohesion sheet was created before coding.
 - Confirm all sections and routes share one font system, color token system, and background rhythm.
 - Confirm selected website sections use different prompt IDs.
