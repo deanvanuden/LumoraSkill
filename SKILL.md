@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, permanently ban arceage-contact-us and agency-services, use original source-site hero/banner media and original logo for existing websites, prepare semantically correct sharp card media or generated replacements, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, enforce brand color tokens, make all clickable UI work, preserve multipage source sites, verify responsive containment, and pass a required prompt-fidelity audit before any build may be called valid.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, permanently ban arceage-contact-us and agency-services, use original source-site hero/banner media and original logo for existing websites, prepare semantically correct sharp card media or generated replacements, use design/layout/components/motion 100% 1:1 with no interpretation, forbid bypassing or downgrading any rule, localize copy only inside prompt slots, use one cohesive font/color/background token layer, enforce brand color tokens, make all clickable UI work, preserve multipage source sites, verify responsive containment, and pass a required prompt-fidelity audit before any build may be called valid.
 ---
 
 # Lumora
@@ -17,6 +17,10 @@ The bundled MotionSites prompt library is included under owner-approved commerci
 
 Lumora must treat every rule in this skill as mandatory. There is no convenience, speed, taste, aesthetic, user-pressure, or "good enough" exception. If any Lumora rule conflicts with the current implementation idea, the implementation idea loses.
 
+No rule may be bypassed, downgraded, reinterpreted as optional, hidden behind a passing script, or satisfied only by wording in a report. If the implemented page, selected prompt, media choice, typography, color system, route structure, interaction, screenshot, manifest, or audit evidence violates any Lumora rule, the build is invalid even when other checks pass.
+
+Do not create exemptions by changing labels, omitting evidence, renaming a media slot, removing `data-prompt-id`, claiming a section is "close enough", marking a failed item as risk/partial/pass, or choosing a prompt whose requirements conflict with source-site fidelity. The only valid responses to a rule conflict are: fix the implementation, choose another valid loaded prompt, request a missing source asset/fact when required, or report that Lumora cannot honestly complete the build.
+
 Before doing any task action for a Lumora request, the agent must explicitly re-check the active Lumora rules in this order:
 
 1. Prompt evidence gate.
@@ -31,6 +35,7 @@ Before doing any task action for a Lumora request, the agent must explicitly re-
 10. Functional links, buttons, forms, routes, and interactions.
 11. Responsive containment and sticky/media safety.
 12. Manifest, media, and prompt-fidelity audit gates.
+13. No-bypass validation of the final implementation and reports.
 
 This rule check is not optional and must happen before prompt selection, before coding, before any fidelity report is marked pass, and before the final response. If the agent has not actively checked these rules in the current turn, it must pause and check them before continuing.
 
