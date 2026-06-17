@@ -13,6 +13,49 @@ Use Lumora to build a website by selecting existing prompt entries from `referen
 
 The bundled MotionSites prompt library is included under owner-approved commercial redistribution permission reported by the skill maintainer on 2026-06-12. See `references/permissions.md`. Treat all `prompt_text` values as licensed bundled resources. During a Lumora build, selected prompt bodies are copied 1:1 into the agent's working instructions and followed exactly. Do not edit, rewrite, summarize, translate, merge, or store prompt bodies in new prompt files.
 
+## Absolute Rule Compliance Lock
+
+Lumora must treat every rule in this skill as mandatory. There is no convenience, speed, taste, aesthetic, user-pressure, or "good enough" exception. If any Lumora rule conflicts with the current implementation idea, the implementation idea loses.
+
+Before doing any task action for a Lumora request, the agent must explicitly re-check the active Lumora rules in this order:
+
+1. Prompt evidence gate.
+2. Scrape-first completeness and multipage preservation.
+3. Prompt selection and family diversity.
+4. Site-wide visual cohesion.
+5. Brand token discipline.
+6. Copy/background/media adaptation limits.
+7. Functional links, buttons, forms, routes, and interactions.
+8. Responsive containment and sticky/media safety.
+9. Manifest, media, and prompt-fidelity audit gates.
+
+This rule check is not optional and must happen before prompt selection, before coding, before any fidelity report is marked pass, and before the final response. If the agent has not actively checked these rules in the current turn, it must pause and check them before continuing.
+
+The agent must not claim a Lumora build is valid merely because scripts pass. The scripts are evidence gates, not a substitute for the rule check. If a script passes but the visual result, selected prompts, fonts, backgrounds, colors, section structure, prompt fidelity, or user-visible behavior violates this skill, the build is still invalid and must be reported as invalid.
+
+When in doubt, choose the stricter interpretation:
+
+- Do not soften "must" into "should".
+- Do not use site-wide cohesion as permission to redesign prompt layout, component structure, motion, CTA placement, spacing logic, or visual hierarchy.
+- Do not use prompt fidelity JSON to justify a section that is only inspired by a prompt.
+- Do not keep a visually incoherent section stack just because each section has a `data-prompt-id`.
+- Do not use a prompt family, font, color, background, media effect, or interaction if it makes the whole site violate the cohesion and brand-token rules.
+- Do not invent a workaround when the correct action is to select a different prompt or stop.
+
+Before final delivery, the agent must be able to answer "yes" to all of these:
+
+- Did I read and follow the loaded prompt_text for every used section, not a summary or memory?
+- Did I preserve the selected prompt's structure, layout, components, motion, responsive behavior, and CTA placement?
+- Did I use only allowed adaptations: copy localization, same-role media/background replacement, brand token mapping, shared font/color/background cohesion, and responsive safety fixes?
+- Did I keep the source site multipage when the source was multipage?
+- Did I make one cohesive font/color/background system and apply it across every route?
+- Did I avoid unrelated section-local palettes, fonts, backgrounds, and effects?
+- Did every clickable element work without placeholder or fake targets?
+- Did I verify desktop and mobile containment without horizontal overflow or overlapping content?
+- Did I honestly mark the build invalid if any answer is not yes?
+
+If any answer is "no", "maybe", "not checked", or "the script passed but I am unsure", the agent must not deliver the build as Lumora-valid.
+
 ## Hard Prompt Evidence Gate
 
 Lumora has no fallback mode. A section is valid Lumora output only when it is built directly from a loaded `prompt_text` entry in `references/motionsites-prompt-library.json`.

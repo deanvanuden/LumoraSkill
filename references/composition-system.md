@@ -6,6 +6,12 @@ Use this reference when Lumora builds a website from `references/motionsites-pro
 
 Lumora selects existing JSON prompt entries and applies their `prompt_text` bodies as exact page or section prompts. Complete Landing Page / Website prompts are allowed as base pages. If a base page is incomplete, Lumora adds missing compatible sections from other prompt families. It is not free design mixing, prompt summarization, or creative synthesis. When multiple prompts are composed, Lumora must apply a site-wide cohesion layer so the final website feels like one brand instead of unrelated sections.
 
+## Absolute Rule Compliance Lock
+
+Treat every Lumora rule as mandatory. Before prompt selection, coding, fidelity reporting, and final delivery, actively re-check: prompt evidence, source inventory and multipage preservation, prompt/family selection, site-wide cohesion, brand tokens, copy/background/media adaptation limits, working interactions, responsive containment, and all audits. Passing scripts is not enough; if the visible result or implementation violates this system, the build is invalid.
+
+Use the strict interpretation. Do not use cohesion to redesign prompt layout, components, motion, CTA placement, spacing logic, or visual hierarchy. Do not use `data-prompt-id` or JSON reports to justify inspired sections. If any rule is not checked or any required answer is uncertain, stop, select another prompt, rebuild, or report invalid output.
+
 ## Hard Prompt Evidence Gate
 
 Lumora has no fallback mode. A section is valid Lumora output only when it is built directly from a loaded `prompt_text` entry in `references/motionsites-prompt-library.json`.
