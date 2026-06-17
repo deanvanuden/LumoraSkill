@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, prepare fit-for-slot media or generated assets, enforce brand color tokens, make all clickable UI work, preserve multipage source sites, verify responsive containment, and pass a required prompt-fidelity audit before any build may be called valid.
+description: Lumora builds complete premium websites from exact prompt_text entries in references/motionsites-prompt-library.json after scraping the target business, creating a niche-specific blueprint, and selecting a complete page prompt or compatible section prompts. Use when Codex is asked to build, redesign, improve, or generate a website, landing page, hero, SaaS site, agency site, portfolio, ecommerce page, waitlist, signup page, or rich frontend using "$lumora" or "Lumora"; Lumora must load and hash every selected prompt_text before coding, reject any section not built directly from a loaded prompt_text, permanently ban arceage-contact-us and agency-services, use original source-site hero/banner media and original logo for existing websites, prepare semantically correct sharp card media or generated replacements, use design/layout/components/motion 100% 1:1 with no interpretation, localize copy only inside prompt slots, use one cohesive font/color/background token layer, enforce brand color tokens, make all clickable UI work, preserve multipage source sites, verify responsive containment, and pass a required prompt-fidelity audit before any build may be called valid.
 ---
 
 # Lumora
@@ -20,14 +20,17 @@ Lumora must treat every rule in this skill as mandatory. There is no convenience
 Before doing any task action for a Lumora request, the agent must explicitly re-check the active Lumora rules in this order:
 
 1. Prompt evidence gate.
-2. Scrape-first completeness and multipage preservation.
-3. Prompt selection and family diversity.
-4. Site-wide visual cohesion.
-5. Brand token discipline.
-6. Copy/background/media adaptation limits.
-7. Functional links, buttons, forms, routes, and interactions.
-8. Responsive containment and sticky/media safety.
-9. Manifest, media, and prompt-fidelity audit gates.
+2. Banned prompt IDs.
+3. Scrape-first completeness and multipage preservation.
+4. Original source hero/banner media and original logo requirements.
+5. Prompt selection and family diversity.
+6. Site-wide visual cohesion.
+7. Brand token discipline.
+8. Copy/background/media adaptation limits.
+9. Slot-correct card/gallery media quality.
+10. Functional links, buttons, forms, routes, and interactions.
+11. Responsive containment and sticky/media safety.
+12. Manifest, media, and prompt-fidelity audit gates.
 
 This rule check is not optional and must happen before prompt selection, before coding, before any fidelity report is marked pass, and before the final response. If the agent has not actively checked these rules in the current turn, it must pause and check them before continuing.
 
@@ -47,6 +50,10 @@ Before final delivery, the agent must be able to answer "yes" to all of these:
 - Did I read and follow the loaded prompt_text for every used section, not a summary or memory?
 - Did I preserve the selected prompt's structure, layout, components, motion, responsive behavior, and CTA placement?
 - Did I use only allowed adaptations: copy localization, same-role media/background replacement, brand token mapping, shared font/color/background cohesion, and responsive safety fixes?
+- Did I avoid all banned prompt IDs?
+- Did every existing-site hero/banner use the original source hero/banner media, not prompt demo media or generic generated media?
+- Did every logo shown come from the original source site logo asset, with no invented icon, fake mark, or recreated logo?
+- Did every card/gallery image match the card topic and business, with safe crop/focal point and enough sharpness, or a slot-specific generated replacement when source media was insufficient?
 - Did I keep the source site multipage when the source was multipage?
 - Did I make one cohesive font/color/background system and apply it across every route?
 - Did I avoid unrelated section-local palettes, fonts, backgrounds, and effects?
@@ -55,6 +62,30 @@ Before final delivery, the agent must be able to answer "yes" to all of these:
 - Did I honestly mark the build invalid if any answer is not yes?
 
 If any answer is "no", "maybe", "not checked", or "the script passed but I am unsure", the agent must not deliver the build as Lumora-valid.
+
+## Banned Prompt ID Rule
+
+The following prompt IDs are permanently banned and must never be selected, loaded, implemented, referenced with `data-prompt-id`, included in `lumora-manifest.json`, included in `lumora-prompt-fidelity.json`, or used as a base for any section:
+
+- `arceage-contact-us`
+- `agency-services`
+
+If an older output uses either prompt, treat that output as invalid for future Lumora work. If a prompt search suggests either ID as a good match, discard it immediately and select another compatible prompt. If no compatible alternative exists, stop and report that Lumora cannot honestly complete that section. The helper scripts also enforce this ban.
+
+## Source Hero, Logo, And Card Media Lock
+
+For any request that provides an existing website or source URL, the original source site's identity and first-viewport media are mandatory:
+
+- Hero/banner media in any first-viewport hero must use the original source website's hero/banner image or video asset when one exists. Do not use prompt demo media, generic stock media, generated sports cars, generated Porsches, marketplace videos, or unrelated automotive imagery in the hero.
+- If the selected prompt specifies a demo hero video/image, treat that media as a replaceable placeholder when an existing source site has its own hero/banner media. Preserve the prompt's layout footprint, overlays, object-fit behavior, and text placement, but replace the media with the original source hero/banner asset.
+- If the source hero/banner asset is too small, blurry, or poorly cropped, enhance/upscale or prepare a better crop of that exact source asset first. Do not generate a different hero image for an existing source site unless the user explicitly approves that substitution.
+- If the source site has no usable hero/banner media, select a hero prompt that can work without hero media or stop and ask for/declare the missing asset. Do not silently use prompt demo media.
+- Every visible logo must be the original logo from the source site. Use the exact scraped logo asset whenever it is available. Do not invent, redraw, approximate, stylize, recolor beyond documented monochrome/contrast treatment, or replace it with a generic icon plus text.
+- If the source site has no extractable logo asset, use truthful text branding only when the prompt structure allows it. Do not create a fake logo.
+- Every card, tile, gallery, service, testimonial, process, feature, or image-backed component must use media that semantically matches the card content and the customer's business. Do not use irrelevant rockets, aircraft engines, lab workers, generic SaaS screenshots, unrelated factories, or prompt-demo imagery for a local service business unless the source facts truly justify that subject.
+- Card media must be fit-for-slot: sharp enough for the rendered size, correct aspect ratio or prepared crop, deliberate focal point, no accidental subject cutoff, no stretched tiny source asset, no duplicated prominent image unless the prompt intentionally repeats it.
+- If source images do not fit a card slot sharply and safely, generate or enhance a slot-specific replacement that represents the service category generically and truthfully. Generated card media must not claim to show the exact business premises, employees, vehicles, certificates, or products unless the user provided references or approved that representation.
+- `lumora-media-plan.json` must document `source_evidence` for original hero/banner and logo assets, `original_logo: true` for logo slots, and `semantic_fit` plus `crop_safe: true` for card/gallery media slots.
 
 ## Hard Prompt Evidence Gate
 

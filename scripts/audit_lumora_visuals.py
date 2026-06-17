@@ -242,12 +242,19 @@ def resolve_asset(site_root: Path, src: str) -> Path:
 def audit_media(site_root: Path, plan: Any, min_scale: float) -> list[str]:
     errors: list[str] = []
     seen: dict[str, list[str]] = {}
+    existing_source_site = bool(
+        isinstance(plan, dict)
+        and (plan.get("source_site_exists") or plan.get("existing_source_site") or plan.get("source_url"))
+    )
 
     for index, slot in enumerate(media_slots(plan), start=1):
         label = str(slot.get("id") or f"slot-{index}")
         src = slot.get("src")
         source_type = str(slot.get("source_type", "")).lower()
         role = str(slot.get("role", "")).lower()
+        slot_text = " ".join(
+            str(slot.get(field, "")) for field in ("id", "role", "section_id")
+        ).lower()
 
         for field in ("id", "prompt_id", "section_id", "role", "src", "target_width", "target_height", "aspect_ratio", "fit", "focal_point", "source_type"):
             if slot.get(field) in (None, ""):
@@ -286,6 +293,28 @@ def audit_media(site_root: Path, plan: Any, min_scale: float) -> list[str]:
                 errors.append(
                     f"{label}: generated asset claims exact real-world representation without user approval"
                 )
+
+        if existing_source_site and any(term in slot_text for term in ("hero", "banner", "first-viewport", "first viewport")):
+            if source_type not in {"source", "enhanced"}:
+                errors.append(
+                    f"{label}: existing source sites require original/enhanced source hero media, not {source_type or 'missing'}"
+                )
+            if not slot.get("source_evidence"):
+                errors.append(f"{label}: hero media needs source_evidence for the original source hero/banner asset")
+
+        if existing_source_site and ("logo" in slot_text or source_type == "logo"):
+            if source_type not in {"source", "enhanced", "logo"}:
+                errors.append(f"{label}: logo media must be the original source logo, not {source_type or 'missing'}")
+            if slot.get("original_logo") is not True:
+                errors.append(f"{label}: logo slot must set original_logo=true")
+            if not slot.get("source_evidence"):
+                errors.append(f"{label}: logo slot needs source_evidence for the original logo asset")
+
+        if not skip_prominence and any(term in slot_text for term in ("card", "gallery", "tile", "case image")):
+            if not slot.get("semantic_fit"):
+                errors.append(f"{label}: card/gallery media needs semantic_fit explaining why the image matches the slot")
+            if slot.get("crop_safe") is not True:
+                errors.append(f"{label}: card/gallery media must set crop_safe=true after crop/focal-point verification")
 
         if asset.suffix.lower() not in RASTER_SUFFIXES:
             if not skip_prominence:

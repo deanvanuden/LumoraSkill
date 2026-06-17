@@ -21,6 +21,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LIBRARY = ROOT / "references" / "motionsites-prompt-library.json"
 PROMPT_ID_RE = re.compile(r"""data-prompt-id\s*=\s*["']([^"']+)["']""")
 SCAN_SUFFIXES = {".html", ".htm", ".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte"}
+BANNED_PROMPT_IDS = {
+    "arceage-contact-us": "Banned by Lumora rule: repeated contact-form misuse and stack/cohesion failures.",
+    "agency-services": "Banned by Lumora rule: repeated services-section misuse and cohesion failures.",
+}
 
 
 def fail(message: str) -> int:
@@ -133,6 +137,8 @@ def main(argv: list[str]) -> int:
 
             if not isinstance(prompt_id, str) or not prompt_id:
                 raise ValueError("selected prompt entry missing id")
+            if prompt_id in BANNED_PROMPT_IDS:
+                raise ValueError(f"manifest contains banned prompt id: {prompt_id} ({BANNED_PROMPT_IDS[prompt_id]})")
             if prompt_id in seen:
                 raise ValueError(f"duplicate prompt id in manifest: {prompt_id}")
             seen.add(prompt_id)
@@ -159,6 +165,9 @@ def main(argv: list[str]) -> int:
             unknown = used_ids - manifest_ids
             if unknown:
                 raise ValueError(f"data-prompt-id values missing from manifest: {sorted(unknown)}")
+            banned_used = used_ids & set(BANNED_PROMPT_IDS)
+            if banned_used:
+                raise ValueError(f"data-prompt-id contains banned prompt ids: {sorted(banned_used)}")
             unused = manifest_ids - used_ids
             if unused:
                 raise ValueError(f"manifest ids not found in output root: {sorted(unused)}")

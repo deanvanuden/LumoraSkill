@@ -12,6 +12,14 @@ Treat every Lumora rule as mandatory. Before prompt selection, coding, fidelity 
 
 Use the strict interpretation. Do not use cohesion to redesign prompt layout, components, motion, CTA placement, spacing logic, or visual hierarchy. Do not use `data-prompt-id` or JSON reports to justify inspired sections. If any rule is not checked or any required answer is uncertain, stop, select another prompt, rebuild, or report invalid output.
 
+Hard-banned prompt IDs: `arceage-contact-us` and `agency-services`. Do not select, load, implement, manifest, or report them.
+
+For existing source websites, first-viewport hero/banner media must come from the original source site's hero/banner image or video. Replace prompt demo hero media, including generic automotive/Porsche/marketplace media, with the original source hero asset while preserving the selected prompt's layout footprint. Do not generate a different hero image unless the user explicitly approves because no usable source hero exists.
+
+Every visible logo must use the exact original source-site logo asset when one exists. Do not invent, redraw, approximate, or replace the logo with a generic mark. If no logo asset exists, use truthful text branding only when the prompt structure allows it.
+
+Every card/tile/gallery/service/testimonial/process/feature image must semantically fit the card topic and business, be sharp enough for the rendered size, have a deliberate focal point/crop, and avoid accidental subject cutoff. If source images do not fit, enhance/upscale/crop source media or generate a slot-specific truthful replacement. Do not use irrelevant prompt-demo images such as rockets, aircraft engines, lab workers, unrelated factories, or generic SaaS imagery for a local service business.
+
 ## Hard Prompt Evidence Gate
 
 Lumora has no fallback mode. A section is valid Lumora output only when it is built directly from a loaded `prompt_text` entry in `references/motionsites-prompt-library.json`.

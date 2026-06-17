@@ -35,6 +35,10 @@ REQUIRED_CHECKS = {
     "cta_placement",
     "verification_requirements",
 }
+BANNED_PROMPT_IDS = {
+    "arceage-contact-us": "Banned by Lumora rule: repeated contact-form misuse and stack/cohesion failures.",
+    "agency-services": "Banned by Lumora rule: repeated services-section misuse and cohesion failures.",
+}
 
 
 def fail(message: str) -> int:
@@ -94,6 +98,10 @@ def manifest_ids(manifest: Any) -> set[str]:
         prompt_id = entry.get("id")
         if not isinstance(prompt_id, str) or not prompt_id:
             raise ValueError("selected prompt entry missing id")
+        if prompt_id in BANNED_PROMPT_IDS:
+            raise ValueError(
+                f"manifest contains banned prompt id: {prompt_id} ({BANNED_PROMPT_IDS[prompt_id]})"
+            )
         if prompt_id in ids:
             raise ValueError(f"duplicate prompt id in manifest: {prompt_id}")
         ids.add(prompt_id)
@@ -155,6 +163,11 @@ def audit_report(report: Any, manifest_prompt_ids: set[str], used_prompt_ids: se
         if not isinstance(prompt_id, str) or not prompt_id:
             errors.append(f"{label}: missing prompt_id")
             continue
+        if prompt_id in BANNED_PROMPT_IDS:
+            errors.append(
+                f"{prompt_id}: banned prompt id must not appear in fidelity report "
+                f"({BANNED_PROMPT_IDS[prompt_id]})"
+            )
         covered.add(prompt_id)
 
         status = str(section.get("status", "")).lower()
@@ -216,6 +229,9 @@ def main(argv: list[str]) -> int:
 
         manifest_prompt_ids = manifest_ids(load_json(manifest_path))
         used_prompt_ids = scan_prompt_ids(site_root)
+        banned_used = used_prompt_ids & set(BANNED_PROMPT_IDS)
+        if banned_used:
+            raise ValueError(f"site contains banned data-prompt-id values: {sorted(banned_used)}")
         unknown_used = used_prompt_ids - manifest_prompt_ids
         if unknown_used:
             raise ValueError(f"data-prompt-id values missing from manifest: {sorted(unknown_used)}")

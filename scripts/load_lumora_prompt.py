@@ -17,6 +17,10 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LIBRARY = ROOT / "references" / "motionsites-prompt-library.json"
+BANNED_PROMPT_IDS = {
+    "arceage-contact-us": "Banned by Lumora rule: repeated contact-form misuse and stack/cohesion failures.",
+    "agency-services": "Banned by Lumora rule: repeated services-section misuse and cohesion failures.",
+}
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -57,6 +61,8 @@ def validate_exact_id(ids: list[str]) -> str:
         raise ValueError("prompt id must be an exact library id")
     if "/" in prompt_id or "\\" in prompt_id or "," in prompt_id:
         raise ValueError("prompt id must not contain path separators or comma-separated ids")
+    if prompt_id in BANNED_PROMPT_IDS:
+        raise ValueError(f"prompt id is banned and must not be used: {prompt_id} ({BANNED_PROMPT_IDS[prompt_id]})")
     return prompt_id
 
 
