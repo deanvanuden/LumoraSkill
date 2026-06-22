@@ -1,4 +1,4 @@
 interface:
   display_name: "/lumora"
-  short_description: "Hash-verified 1:1 sites"
-  default_prompt: "Use $lumora to scrape the target business, preserve multipage structure when present, load and hash every selected JSON prompt_text before coding, then build a complete website with design and section structure 100% 1:1, localized copy only inside prompt slots, a verified lumora-manifest.json, cohesive font/color/background tokens, responsive containment, and fully working links/buttons/routes."
+  short_description: "Image-first static websites"
+  default_prompt: "Use $lumora to plan a premium static website from the section library, generate or inspect a visual reference first, then assemble plain HTML/CSS/JS pages with selected MotionSites-derived sections, cohesive styling, fit-for-slot media, working routes/interactions, and desktop/mobile verification."
