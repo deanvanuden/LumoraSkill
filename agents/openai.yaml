@@ -1,4 +1,4 @@
 interface:
   display_name: "/lumora"
-  short_description: "Image-first static websites"
-  default_prompt: "Use $lumora to plan a premium static website from the section library, generate or inspect a visual reference first, then assemble plain HTML/CSS/JS pages with selected MotionSites-derived sections, cohesive styling, fit-for-slot media, working routes/interactions, and desktop/mobile verification."
+  short_description: "Bespoke award-level websites"
+  default_prompt: "Use $lumora to create a company-specific, motion-rich website with traced MotionSites design DNA, generated fit-for-slot media, and a GitHub Pages-ready static build."
