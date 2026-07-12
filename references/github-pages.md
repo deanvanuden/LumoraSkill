@@ -37,6 +37,32 @@ Prefer root-level `.html` routes for simple static sites. Share the same CSS and
 
 Navigation and footer links must resolve from every page. Build `404.html` with the same brand system and a working relative route back home.
 
+### Existing-Site Route Migration
+
+Before copying or generating runtime files, inventory every public source route and record it in `build_contract.source_route_inventory`. Store downloaded source HTML and assets in a sibling archive outside the publishing root, for example:
+
+```text
+project/
+  source-archive/        # inspection only; never published
+  site/                  # exact GitHub Pages root
+    index.html
+    about.html
+    contact.html
+    404.html
+    lumora-plan.json
+```
+
+For every source route choose one disposition:
+
+- `redesigned`: build the route in the new system
+- `consolidated`: move its truthful content into another designed route and update all navigation
+- `redirected`: ship a branded, accessible static redirect with a visible destination link
+- `retired`: remove it for a recorded factual or user-approved reason
+
+Do not leave scraped HTML, legacy CSS/JS, mojibake, or broken asset references in the publishing root. A redesigned homepage beside untouched old pages is not a completed redesign.
+
+Complete `build_contract.route_manifest` after implementation. It must exactly match every `.html` file under the publish root, including legal and system pages. Each route records its purpose, status, shared design system, and browser-verification result.
+
 ## Domains
 
 Add a plain `CNAME` file only when the user supplies the exact domain. The file contains one hostname without protocol or path. The user must still configure and verify the domain in GitHub Pages settings and at their DNS provider.
@@ -55,6 +81,8 @@ Do not guess DNS records or commit a placeholder domain.
 Three.js can run from a CDN import map, but every import must use one exact version and one CDN. Serve locally over HTTP during testing because module imports may not work from `file://`.
 
 Keep art-direction references, rejected generated assets, browser screenshots, and review notes in a project `work/` folder outside the publishing root when practical. Copy only final runtime assets into the site. Do not ship image-generation caches, source prompts, or large unused variants.
+
+Do not create a reduced `work/validation-site` mirror and validate that instead of the real output. Run the strict validator against the exact directory selected in GitHub Pages settings. `lumora-plan.json` belongs in that directory and `build_contract.publishing_root` remains `.`.
 
 ## Forms And Dynamic Features
 
@@ -88,6 +116,7 @@ Use another open port when needed. Test through the server URL, not by double-cl
 At delivery, report:
 
 - the exact folder that should be the repository root
+- the route-manifest count and disposition of any migrated source routes
 - whether Pages should publish from root, `/docs`, or Actions
 - whether `CNAME` is present
 - all external services or CDN dependencies

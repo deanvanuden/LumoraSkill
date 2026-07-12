@@ -5,14 +5,15 @@
 1. Motion as meaning
 2. Interaction hierarchy
 3. Storyboard the dominant interaction
-4. Scroll occupancy
-5. Choosing input and transformation
-6. Film, 3D, canvas, and shader choreography
-7. Structural and micro motion
-8. Implementation strategy
-9. Responsive, touch, and reduced motion
-10. Performance and failure recovery
-11. Motion review gate
+4. Distribute supporting motion
+5. Scroll occupancy
+6. Choosing input and transformation
+7. Film, 3D, canvas, and shader choreography
+8. Structural and micro motion
+9. Implementation strategy
+10. Responsive, touch, and reduced motion
+11. Performance and failure recovery
+12. Motion review gate
 
 ## Motion As Meaning
 
@@ -67,6 +68,8 @@ Use responsive feedback for:
 
 Micro motion should feel made from the same material and tempo as the larger experience.
 
+The hierarchy is a constellation, not a hero demo followed by a static template. The dominant interaction sets the language; supporting, structural, and micro moments echo it with lower intensity through the rest of the journey.
+
 ## Storyboard The Dominant Interaction
 
 Complete `motion_plan` before coding.
@@ -95,6 +98,33 @@ Write at least three visible choreography beats:
 ```
 
 Each beat must have a visible change and a legible settled state. Do not animate continuously without moments the visitor can understand.
+
+## Distribute Supporting Motion
+
+Plan at least two authored supporting moments in distinct later chapters. They are not additional spectacles. Each should reuse one property of the dominant language: subject, material response, crop, registration, camera behavior, depth, route, assembly, scan, focus, or state transition.
+
+Record for every supporting moment:
+
+- section and subject
+- page and stable section ID
+- trigger or user input
+- exact visible change
+- narrative or orientation purpose
+- desktop implementation
+- mobile implementation
+- reduced-motion state
+
+Build a `continuity_map` from entry through orientation, deepening, evidence, decision, and close. It should explain how motion intensity rises, settles, and returns, and how the signature motif remains visible. A generic IntersectionObserver fade-up may reveal ordinary copy, but it does not count as a supporting moment.
+
+Mark each implemented target section with `data-lumora-motion="<meaningful-name>"` so the plan can be traced to shipped code.
+
+Strong distribution examples:
+
+- the hero assembles a product, later ingredient cutouts align to the same joints, and the package selector closes the assembly
+- the entry scans a ticket, later program rows register on the same scan line, and the checkout state prints the final access mark
+- the opening moves through a building plan, later material images focus at plan coordinates, and contact completes the route
+
+Weak distribution includes unrelated countups, magnetic buttons, marquee text, parallax, and cursor effects added only to make the page feel animated.
 
 ## Scroll Occupancy
 
@@ -271,6 +301,18 @@ Recompose rather than shrink:
 - keep controls reachable and content in normal flow
 - avoid fixed UI covering the focal subject or CTA
 
+Complete `motion_plan.mobile_signature` as its own implementation contract. Choose a real input such as scroll, tap, swipe, drag, time, or a bounded hybrid; name the subject and visible change; define implementation, fallback, and browser evidence.
+
+Do not treat mobile as reduced motion. Outside the user's reduced-motion preference, these are failures:
+
+- setting the dominant progress directly to `1`
+- activating every hero state at load
+- replacing the transformation with one static desktop image
+- making the media extremely tall so the entire desktop composition can fit
+- requiring hover or precise pointer input
+
+Use a shorter scroll track, discrete snap states, tap/swipe progression, a safe autoplay sequence with controls, or a mobile-specific crop and camera path. Keep media within deliberate width, aspect-ratio, and viewport-height bounds. The interaction may be simpler, but the company-specific visible change must still occur.
+
 Mobile can use a different interaction if it expresses the same thesis more clearly.
 
 ### Reduced Motion
@@ -302,6 +344,7 @@ Before implementation:
 - structural and micro languages are defined
 - competing donor systems were removed
 - desktop, mobile, reduced-motion, and dependency-failure paths exist
+- at least two distinct supporting moments and the entry-to-close continuity map are written
 
 Before delivery:
 
@@ -310,6 +353,8 @@ Before delivery:
 - no autoplay, drag, marquee, cursor, or secondary scrub competes with it
 - content remains readable during and after animation
 - mobile preserves the thesis
+- the mobile signature actually changes state under touch-sized browser verification and is not forced to its final state
+- at least two later chapters visibly continue the dominant motion language; the rest of the site is not generic reveal-only motion
 - reduced motion exposes the complete experience
 - there are no blank canvases, stuck pins, overlap, layout shift, or failed cleanup
 - performance remains stable across the full page and route transitions

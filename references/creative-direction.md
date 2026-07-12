@@ -161,6 +161,20 @@ Material must influence media, color, edge treatment, transition, typography, an
 
 Define how subjects occupy the viewport: stage, table, corridor, layered sheet, contact sheet, instrument panel, room, map, orbit, assembly, split state, archive rail, or another company-specific relationship.
 
+### Composition Map
+
+Translate the spatial logic into one entry for every major section on every published page. Record:
+
+- page, stable section ID, and narrative role
+- focal subject
+- relationship between HTML copy and media
+- desktop geometry and relative visual weight
+- mobile order, crop, aspect, and viewport-height bounds
+- purpose of negative space
+- one meaningful motion moment or an explicit static reason
+
+This prevents the reference world from dissolving into improvised split sections during implementation. Reject a map entry that merely says "text left, image right." State the actual ratio, anchors, subject position, and why the imbalance belongs to that chapter.
+
 ### Camera Behavior
 
 Define point of view and movement: fixed overhead inspection, slow dolly, macro rack focus, lateral tracking, orbit, handheld documentary, static catalog, architectural elevation, interface zoom, or no camera movement. Use one coherent language across references and assets.

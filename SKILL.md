@@ -19,8 +19,10 @@ A Lumora site is complete only when it:
 - presents one coherent experience world, central subject, and material language
 - uses one dominant prompt anchor and no more than two subordinate donors
 - contains a complete, coherent media campaign rather than one hero image plus filler
-- includes one memorable company-specific interaction or transformation
+- includes one memorable company-specific interaction or transformation that survives as a real mobile interaction
+- carries the same motion and material language through at least two supporting moments beyond the hero
 - integrates conversion into the story instead of attaching a generic CTA section
+- redesigns, consolidates, redirects, or explicitly retires every route discovered on an existing site
 - works as a truthful static GitHub Pages build across desktop, mobile, keyboard, touch, and reduced motion
 - has been rendered, critiqued, revised, and validated with `--strict`
 
@@ -29,16 +31,21 @@ Do not promise awards. Reach award-caliber quality through concept, media, typog
 ## Non-Negotiables
 
 - Start from real company facts, objects, people, products, interfaces, places, processes, language, and routes.
-- Run `scripts/lumora_plan.py` before coding. New work must use `lumora.project_plan.v4`.
+- Run `scripts/lumora_plan.py` before coding. New work must use `lumora.project_plan.v5`.
+- Treat the exact GitHub Pages publishing root as the product. Keep source-site scrapes, references, rejected assets, and validation mirrors outside it.
+- Inventory every public source route before redesigning an existing site. Never silently ship untouched legacy pages beside a redesigned home page.
 - Treat the generated page list as a content inventory, not a section template.
 - Inspect at least three anchor candidates from the library. Read the selected anchor in full.
 - Explore three genuinely different company-specific experience worlds before selecting one.
 - Lock company truth, creative direction, source compatibility, media, motion, and conversion in `lumora-plan.json` before editing website files.
 - When supplied media cannot carry the concept, load the `imagegen` skill and create every major or supporting asset the site needs. Do not stop after generating one hero image.
+- Decompose the visual references into signature, narrative, supporting, and utility asset layers. Generate useful cutouts, textures, masks, props, details, transitions, and responsive variants instead of flattening whole sections into images.
 - Do not replace campaign imagery with CSS blobs, gradient orbs, arbitrary primitives, fake 3D, empty mockups, or unrelated stock media.
 - Do not invent testimonials, awards, clients, statistics, prices, product results, team members, events, or credentials.
 - Build real controls and destinations. No fake submissions, dead CTAs, decorative tabs, or inaccessible hover-only content.
 - Keep the unanimated document complete. Motion is progressive enhancement.
+- Do not disable the signature experience on mobile by jumping it to its final state. Design a shorter scroll, tap, swipe, drag, or timed mobile transformation that preserves the thesis; only reduced-motion may render the complete static state immediately.
+- Never use `overflow-x: hidden` or `overflow-x: clip` on `html`, `body`, or `:root` to conceal a responsive defect.
 - Perform at least one browser-rendered creative-director revision before delivery.
 
 ## Source Architecture
@@ -70,7 +77,9 @@ Inspect the workspace, supplied files, screenshots, URLs, source site, and exist
 
 If the source website exists, inspect its information architecture and working destinations. Preserve truth, not weak presentation.
 
-### 2. Generate The V4 Plan
+Create `build_contract.source_route_inventory` before coding. For every discovered public route, decide whether it will be redesigned, consolidated into another designed page, represented by a branded static redirect, or deliberately retired. Store the source scrape or archive outside the publishing root so old HTML cannot be deployed accidentally.
+
+### 2. Generate The V5 Plan
 
 Run:
 
@@ -79,6 +88,8 @@ python scripts/lumora_plan.py "<complete company and website brief>" --output "<
 ```
 
 The planner selects only the anchor by default and still exposes experience and conversion shortlists. Use `--max-sources 2` or `3` only when the brief already identifies a bounded mechanism that may benefit from a support donor. Use `--pages multi` for a genuinely multipage experience. Use `--seed` only to request an alternate library shortlist, never as a substitute for art direction.
+
+For a redesign, pass `--site-origin existing` when the brief does not make that obvious. Existing-site language such as a source URL, preserved destinations, service pages, or legal pages defaults to a multipage route contract. `--pages one` is valid only when the user explicitly wants a single-page replacement and the route migration plan accounts for every old destination.
 
 Inspect the top three anchor candidates listed in `source_selection.candidate_shortlists`. Read promising prompts, preview evidence when available, and choose the source whose native world, media role, and motion behavior can become the company's world. Do not choose from titles or tags alone.
 
@@ -110,6 +121,7 @@ Complete `creative_direction`:
 - section rhythm and narrative arc
 - company substitution failure
 - entry, signature-state, and decision keyframes
+- a page-and-section `composition_map` defining focal subject, text/media relationship, desktop geometry, mobile geometry, negative-space purpose, and motion moment
 - originality scorecard with visible evidence
 
 Reject any direction that depends only on familiar category styling. Push one deliberate departure while preserving brand truth. A nightclub cannot rely only on black, neon, compressed type, and crowd photos; a SaaS site cannot rely only on dark cards and dashboard crops; luxury cannot be only beige and serif.
@@ -134,6 +146,15 @@ Use the references as design specifications, not loose moodboards. Extract compo
 
 Create a continuity bible, then fill every media slot. Use supplied media where it is truthful and strong. Generate or art-direct the rest as one campaign: hero subjects, product or place scenes, editorial crops, transparent cutouts, macro details, textures, posters, transition frames, gallery images, UI states, video posters, and closing assets as needed.
 
+Decompose the references before final generation:
+
+- `signature`: the one subject or scene that carries the experience
+- `narrative`: distinct scenes or states that advance the story
+- `supporting`: cutouts, fragments, textures, masks, depth maps, props, details, and transition material integrated into HTML/CSS
+- `utility`: marks, icons, posters, thumbnails, social and 404 media, loaders, and fallbacks
+
+Each asset-layer target uses `page.html#section-id`, and the implemented section lists integrated IDs in `data-lumora-assets`. Each media slot must state its relationship to nearby text, desktop frame, mobile frame, and motion role. A beautiful image with an undefined composition is not ready for implementation.
+
 When an exact documentary artifact is unavailable but the concept only needs campaign language, create a clearly conceptual, brand-grounded prop or visual rather than stalling the build. Keep real facts, credentials, product geometry, and identity truthful.
 
 Generate separate compositions for materially different aspect ratios. Keep raster text and logos out of generated imagery. Inspect every generated asset and regenerate weak, malformed, generic, or unusable results.
@@ -150,6 +171,8 @@ Turn content into an experience arc rather than a standard section checklist:
 - close: leave a memorable final state and useful routes
 
 Remove sections that repeat a point. Add pages when separate journeys, projects, products, services, or audiences deserve their own pacing. Maintain one world across routes while giving each page a distinct purpose.
+
+Complete `build_contract.route_manifest` before coding. Every `.html` file in the publishing root must appear in it and be classified as `redesigned`, `redirect`, `legal`, or `system`. Redesigned, legal, and system routes use the same typography, material, navigation, footer, interaction, and responsive discipline. A consolidation uses a branded, accessible static redirect or an updated navigation destination; it never leaves the old page untouched.
 
 Read `references/implementation-craft.md` and `references/github-pages.md` before implementation.
 
@@ -170,17 +193,20 @@ Advanced media is allowed when meaningful. Decorative spinning primitives and ef
 
 Mark every major section with `data-lumora-source`. The anchor may appear across the site; support IDs appear only where their bounded contribution is visible.
 
+Build from the section composition map. Before accepting any image-and-copy chapter, inspect the focal balance at desktop and mobile. A large image paired with a tiny copy block and a broad accidental blank column is a failed composition unless the blank region has a named purpose and survives viewport review.
+
 ### 9. Choreograph Meaning
 
-Read `references/media-motion.md`. Define one dominant interaction hierarchy, not an effect count:
+Read `references/media-motion.md`. Define one motion constellation, not an effect count:
 
 - `dominant`: the memorable company-specific transformation
-- `structural`: one consistent reveal and transition grammar
+- `supporting`: at least two authored moments in later, distinct chapters that continue the dominant material or transformation language
+- `structural`: one consistent reveal and transition grammar; generic fade-up may support content but cannot be the entire post-hero motion system
 - `micro`: responsive feedback for navigation, controls, media, forms, and actions
 
 There is no arbitrary maximum scroll distance or technology limit. Every viewport of travel must create a visible narrative, spatial, or informational change. Avoid spacer-only scroll, competing pinned chapters, automatic carousels that fight user input, and motion that delays access to content.
 
-Storyboard each dominant beat, exit condition, mobile recomposition, reduced-motion state, and library-failure fallback before implementation.
+Storyboard each dominant beat, exit condition, mobile recomposition, reduced-motion state, and library-failure fallback before implementation. Also complete `motion_plan.mobile_signature`, page-and-section targets in `motion_plan.supporting_moments`, and the entry-to-close `continuity_map`. Mark every implemented supporting section with `data-lumora-motion`. On mobile, keep media inside deliberate aspect and viewport-height bounds and use alternate crops or `<picture>` sources when the desktop asset would become a stretched portrait poster.
 
 ### 10. Render, Critique, And Revise
 
@@ -189,9 +215,12 @@ Read `references/quality-gates.md`. Serve the site locally and inspect the actua
 Capture and inspect:
 
 - desktop entry, 25 percent, 50 percent, 75 percent, and closing states
-- mobile entry and full-page flow
+- mobile entry, the live mobile signature state, and full-page flow
+- one tablet state
 - reduced-motion state
 - every route and important open, selected, error, empty, and success state
+
+Measure containment at `320`, `360`, `390`, `430`, `768`, `1024`, and `1440` CSS pixels. Check the home page at all widths and every published route at least at `390` and `1440`. Record `clientWidth`, `scrollWidth`, and the selectors of any overflowing elements in `verification.responsive_review`; fix the element itself instead of clipping the root. Test the longest company name, heading, address, price, label, and CTA string.
 
 Run a creative-director critique after the first complete render. Identify the strongest decision, weakest decision, generic tells, dead areas, mismatches against references, and interactions that compete. Make at least one meaningful revision and record it in the plan.
 
@@ -200,10 +229,10 @@ Run a creative-director critique after the first complete render. Identify the s
 Run:
 
 ```bash
-python scripts/validate_lumora_site.py --site-root "<site-root>" --plan "<site-root>/lumora-plan.json" --strict
+python scripts/validate_lumora_site.py --site-root "<exact-github-pages-publishing-root>" --strict
 ```
 
-Fix all errors and every user-facing warning. Verify navigation, routes, controls, forms, keyboard focus, touch, responsive containment, media loading, console output, reduced motion, 3D/canvas pixels, and GitHub Pages paths.
+Do not validate a reduced mirror, copied subset, or separate work directory. The command must target the directory the user will upload or configure in GitHub Pages, and `lumora-plan.json` must live there. Fix all errors and every user-facing warning. Verify navigation, routes, controls, forms, keyboard focus, touch, responsive containment, media loading, console output, reduced motion, 3D/canvas pixels, and GitHub Pages paths.
 
 Keep the local server running after implementation and provide its URL. Report the output root, pages, generated and supplied assets, anchor and supporting prompt IDs, signature interaction, revision made after critique, verification performed, and any truthful integration gap.
 

@@ -34,6 +34,33 @@ BRIEFS = (
 
 
 def lock_plan(plan: dict) -> None:
+    contract = plan["build_contract"]
+    contract.update(
+        {
+            "site_origin": "new",
+            "publishing_root": ".",
+            "route_strategy": "Ship a redesigned home route and a branded system-consistent not-found route from this exact directory.",
+            "source_route_inventory": [],
+            "route_migrations": [],
+            "source_archive_location": "",
+            "route_manifest": [
+                {
+                    "file": "index.html",
+                    "status": "redesigned",
+                    "purpose": "Primary fixture experience",
+                    "shared_system": "Fixture typography, material, navigation, motion, and footer system",
+                    "verified": True,
+                },
+                {
+                    "file": "404.html",
+                    "status": "system",
+                    "purpose": "Branded not-found route",
+                    "shared_system": "Fixture typography, material, navigation, motion, and footer system",
+                    "verified": True,
+                },
+            ],
+        }
+    )
     plan["company_truth"].update(
         {
             "status": "locked",
@@ -99,6 +126,21 @@ def lock_plan(plan: dict) -> None:
     for item in direction["originality_scorecard"]:
         item["score"] = 2
         item["evidence"] = f"The fixture visibly proves {item['dimension']} through its handoff world."
+    direction["composition_map"] = [
+        {
+            "page": page,
+            "section_id": section_id,
+            "role": role,
+            "focal_subject": "The supplied handoff artifact",
+            "text_media_relationship": "Copy names the state visible in the adjacent artifact without competing with it.",
+            "desktop_geometry": "A 5/7 text-to-artifact grid with a bounded 16:9 media frame.",
+            "mobile_geometry": "A single-column state with copy before a viewport-capped 4:3 artifact crop.",
+            "negative_space_intent": "Space isolates the active registration marks and keeps the next chapter visible.",
+            "motion_moment": "Registration marks align as the chapter enters, then settle before reading begins.",
+        }
+        for page in ("index.html", "404.html")
+        for section_id, role in (("fixture", "entry"), ("proof", "evidence"))
+    ]
 
     plan["source_selection"].update(
         {
@@ -135,9 +177,33 @@ def lock_plan(plan: dict) -> None:
         {
             "status": "locked",
             "asset_strategy": "Use one real artifact as the signature subject and authored detail crops as a coherent supporting family.",
+            "asset_decomposition_review": "The keyframe was decomposed into one signature artifact, two narrative views, two transparent registration details, and one utility mark.",
             "asset_coverage_review": "Every prominent slot has a distinct truthful asset and no hero image is reused as filler.",
         }
     )
+    def asset(asset_id: str, role: str, medium: str, sections: list[str]) -> dict:
+        return {
+            "id": asset_id,
+            "role": role,
+            "medium": medium,
+            "source": "Authored fixture evidence",
+            "target_sections": sections,
+            "integration": "Rendered as a project-local semantic media layer, not a flattened section screenshot.",
+            "responsive_variants": ["desktop crop", "mobile crop"],
+        }
+
+    plan["media_plan"]["asset_layers"] = {
+        "signature": [asset("signature-artifact", "Primary handoff subject", "art-directed raster", ["index.html#fixture"])],
+        "narrative": [
+            asset("input-state", "Unverified process state", "art-directed raster", ["index.html#fixture"]),
+            asset("proof-state", "Verified output state", "art-directed raster", ["index.html#proof"]),
+        ],
+        "supporting": [
+            asset("registration-cutout", "Transparent alignment detail", "transparent raster", ["index.html#fixture"]),
+            asset("paper-grain", "Material continuity texture", "seamless raster texture", ["index.html#fixture", "index.html#proof"]),
+        ],
+        "utility": [asset("fixture-mark", "Navigation and favicon mark", "SVG", ["index.html#fixture", "404.html#fixture"])],
+    }
     plan["media_plan"]["signature_asset"].update(
         {
             "status": "authored",
@@ -165,6 +231,10 @@ def lock_plan(plan: dict) -> None:
             "source": "authored test fixture",
             "truthfulness": "Uses the supplied artifact without adding claims.",
             "reuse": "Hero only",
+            "text_relationship": "The title identifies the visible artifact state and remains outside the media.",
+            "desktop_geometry": "Media occupies seven of twelve columns with a bounded 16:9 frame.",
+            "mobile_geometry": "Media follows copy in a 4:3 crop capped below 62svh.",
+            "motion_role": "The artifact is the subject of the dominant registration transformation.",
         }
     ]
     plan["motion_plan"].update(
@@ -188,6 +258,49 @@ def lock_plan(plan: dict) -> None:
             "reduced_motion": "All three states remain visible without scrub or autoplay.",
         }
     )
+    plan["motion_plan"]["mobile_signature"].update(
+        {
+            "mode": "scroll",
+            "input": "Native vertical scroll through a short bounded chapter",
+            "subject": "The supplied handoff artifact",
+            "visible_change": "Registration marks move from offset input to inspected output in three readable states.",
+            "implementation": "A mobile-specific 4:3 crop advances CSS custom properties while content remains in normal flow.",
+            "fallback": "Reduced motion shows the three complete states as a static vertical sequence.",
+            "verified": True,
+        }
+    )
+    plan["motion_plan"]["supporting_moments"] = [
+        {
+            "page": "index.html",
+            "section": "fixture",
+            "subject": "Registration detail",
+            "trigger": "Section entry",
+            "visible_change": "A small alignment mark resolves into place.",
+            "purpose": "Reinforce the handoff language after the dominant state begins.",
+            "desktop": "Translate and rotate a transparent cutout by a restrained amount.",
+            "mobile": "Use a shorter transform inside the media bounds.",
+            "reduced_motion": "Show the mark in its resolved position.",
+        },
+        {
+            "page": "index.html",
+            "section": "proof",
+            "subject": "Evidence rule",
+            "trigger": "Proof chapter entry",
+            "visible_change": "The rule grows to the exact width of the verified artifact.",
+            "purpose": "Connect proof to the same registration system without another spectacle.",
+            "desktop": "Scale the rule from its left origin once.",
+            "mobile": "Use the same one-shot scale within the content column.",
+            "reduced_motion": "Render the complete rule immediately.",
+        },
+    ]
+    plan["motion_plan"]["continuity_map"] = {
+        "entry": "The artifact arrives offset and visibly unresolved.",
+        "orientation": "Labels and marks establish how its states are read.",
+        "deepening": "A supporting detail reveals the inspection method.",
+        "evidence": "The proof rule resolves to the artifact's verified bounds.",
+        "decision": "The completed artifact becomes the action surface.",
+        "close": "The final mark remains as a quiet system signature.",
+    }
     plan["motion_plan"]["choreography_beats"] = [
         {"beat": f"Beat {index}", "trigger": f"Chapter progress {index}", "visible_change": f"Artifact state {index} becomes visible.", "exit_condition": f"State {index} is fully legible.", "fallback": f"Static state {index}."}
         for index in range(1, 4)
@@ -215,20 +328,57 @@ def lock_plan(plan: dict) -> None:
     plan["verification"]["visual_review"].update(
         {
             "status": "passed",
-            "checked_states": ["desktop-entry", "desktop-25", "desktop-50", "desktop-75", "desktop-close", "mobile-entry", "mobile-full", "reduced-motion"],
+            "checked_states": ["desktop-entry", "desktop-25", "desktop-50", "desktop-75", "desktop-close", "mobile-entry", "mobile-signature", "mobile-full", "tablet", "reduced-motion"],
             "dead_space_review": "Every viewport contains an intentional visible state.",
             "reference_comparison": "The fixture preserves the reference hierarchy and artifact framing.",
             "mobile_recomposition_review": "Mobile uses three explicit states without overlap.",
+            "mobile_signature_review": "The mobile artifact transforms through all three states without becoming a tall static poster.",
+            "motion_continuity_review": "Entry, supporting marks, proof rule, and close use one registration language.",
+            "image_composition_review": "Desktop and mobile media-to-copy ratios remain deliberate with no accidental blank column.",
+            "route_consistency_review": "Home and not-found routes share the same type, material, navigation, and motion system.",
             "interaction_review": "Controls, focus, and fallbacks remain truthful.",
             "revisions_after_review": ["Tightened the proof chapter spacing."],
         }
     )
+    plan["verification"]["publishing_root_review"] = "Validated the exact directory containing every file that will be published by GitHub Pages; no mirror or source scrape is present."
+    required_widths = [320, 360, 390, 430, 768, 1024, 1440]
+    containment_results = [
+        {
+            "page": "index.html",
+            "width": width,
+            "client_width": width,
+            "scroll_width": width,
+            "overflow_elements": [],
+            "pass": True,
+        }
+        for width in required_widths
+    ]
+    containment_results.extend(
+        {
+            "page": "404.html",
+            "width": width,
+            "client_width": width,
+            "scroll_width": width,
+            "overflow_elements": [],
+            "pass": True,
+        }
+        for width in (390, 1440)
+    )
+    plan["verification"]["responsive_review"] = {
+        "status": "passed",
+        "tested_widths": required_widths,
+        "containment_results": containment_results,
+        "longest_content_checks": ["Longest title", "Longest action label", "Longest proof sentence"],
+        "mobile_media_review": "At 320, 360, 390, and 430 pixels the artifact uses its mobile crop, stays within the viewport, and never exceeds 62svh.",
+    }
 
 
 def fixture_html(source_ids: list[str], title: str, home: bool) -> str:
     nav = '<a href="#main">Skip to content</a>' if home else '<a href="./index.html">Home</a>'
     source_attr = ",".join(source_ids)
     anchor_id = source_ids[0]
+    fixture_assets = "signature-artifact,input-state,registration-cutout,paper-grain,fixture-mark" if home else "fixture-mark"
+    proof_assets = "proof-state,paper-grain" if home else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -241,8 +391,8 @@ def fixture_html(source_ids: list[str], title: str, home: bool) -> str:
 <body>
   <nav>{nav}</nav>
   <main id="main">
-    <section id="fixture" data-lumora-source="{source_attr}"><h1>{title}</h1><button type="button">Act</button></section>
-    <section id="proof" data-lumora-source="{anchor_id}"><h2>Proof</h2><p>The fixture exposes its anchor-led evidence.</p></section>
+    <section id="fixture" data-lumora-source="{source_attr}" data-lumora-assets="{fixture_assets}" data-lumora-motion="registration-align"><h1>{title}</h1><button type="button">Act</button></section>
+    <section id="proof" data-lumora-source="{anchor_id}" data-lumora-assets="{proof_assets}" data-lumora-motion="evidence-rule"><h2>Proof</h2><p>The fixture exposes its anchor-led evidence.</p></section>
   </main>
   <script src="./script.js"></script>
 </body>
@@ -259,6 +409,7 @@ def main() -> int:
     source_sets: list[tuple[str, ...]] = []
     for expected_profile, brief in BRIEFS:
         plan = lumora_plan.build_plan(brief, disk_index, prompt_text, "auto", None, 3)
+        assert plan["schema"] == "lumora.project_plan.v5"
         assert plan["profile"]["name"] == expected_profile
         ids = tuple(source["id"] for source in plan["source_mix"])
         assert 1 <= len(ids) <= 3 and len(set(ids)) == len(ids)
@@ -272,6 +423,21 @@ def main() -> int:
     anchor_only = lumora_plan.build_plan(BRIEFS[0][1], disk_index, prompt_text, "auto", None, 1)
     assert len(anchor_only["source_mix"]) == 1 and anchor_only["source_mix"][0]["job"] == "anchor"
     assert set(anchor_only["source_selection"]["candidate_shortlists"]) == {"anchor", "experience", "conversion"}
+
+    existing = lumora_plan.build_plan(
+        "Redesign https://example.com and preserve working destinations for all routes, service pages, and legal pages.",
+        disk_index,
+        prompt_text,
+        "auto",
+        None,
+        1,
+    )
+    assert existing["build_contract"]["site_origin"] == "existing"
+    assert existing["build_contract"]["page_mode"] == "multi"
+    source_url = lumora_plan.build_plan("Redesign https://example.com for the company.", disk_index, prompt_text, "auto", None, 1)
+    assert source_url["build_contract"]["page_mode"] == "multi"
+    homepage_only = lumora_plan.build_plan("Redesign the homepage only for https://example.com.", disk_index, prompt_text, "auto", None, 1)
+    assert homepage_only["build_contract"]["page_mode"] == "one"
 
     first_source = plans[0]["source_mix"][0]["id"]
     prompt = inspect_lumora_prompt.load_prompt(lumora_plan.DEFAULT_LIBRARY, first_source)
@@ -297,20 +463,33 @@ def main() -> int:
         errors = [finding for finding in findings if finding.severity == "error"]
         assert not errors, "validator fixture failed: " + "; ".join(error.message for error in errors)
 
+        (root / "legacy.html").write_text(fixture_html(source_ids, "Unmanaged Legacy Route", False), encoding="utf-8")
+        unmanaged_codes = {finding.code for finding in validate_lumora_site.Auditor(root, root / "lumora-plan.json").run()}
+        assert "plan.route-unmanaged" in unmanaged_codes
+        (root / "legacy.html").unlink()
+
+        (root / "styles.css").write_text(
+            "body{margin:0;overflow-x:hidden} section{min-height:100dvh} @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}\n",
+            encoding="utf-8",
+        )
+        overflow_findings = validate_lumora_site.Auditor(root, root / "lumora-plan.json").run()
+        assert any(finding.code == "responsive.root-overflow-mask" and finding.severity == "error" for finding in overflow_findings)
+
         (root / "styles.css").write_text(
             ".long-track{height:260vh} @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}\n",
             encoding="utf-8",
         )
         (root / "script.js").write_text(
             "const a={scrub:true};const b={scrub:.5};setInterval(()=>{},1000);"
-            "document.addEventListener('pointerdown',()=>document.body.scrollBy({left:1}));\n",
+            "document.addEventListener('pointerdown',()=>document.body.scrollBy({left:1}));"
+            "const compact=matchMedia('(max-width: 820px)');if(compact.matches){document.body.style.setProperty('--p','1');}\n",
             encoding="utf-8",
         )
         warning_auditor = validate_lumora_site.Auditor(root, root / "lumora-plan.json")
         warning_codes = {finding.code for finding in warning_auditor.run() if finding.severity == "warning"}
-        assert {"motion.multiple-scrubs", "motion.competing-systems", "motion.long-scroll"}.issubset(warning_codes)
+        assert {"motion.multiple-scrubs", "motion.competing-systems", "motion.long-scroll", "motion.mobile-final-bypass"}.issubset(warning_codes)
 
-    print("Lumora self-test passed: 254 prompts indexed, 4 profiles planned, prompt excerpts loaded, clean audit verified, motion-risk warnings verified.")
+    print("Lumora self-test passed: 254 prompts indexed, v5 profiles and existing-route inference planned, prompt excerpts loaded, clean audit verified, route and overflow regressions caught, motion-risk warnings verified.")
     return 0
 
 

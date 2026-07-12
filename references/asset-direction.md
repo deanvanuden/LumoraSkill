@@ -6,13 +6,14 @@
 2. Audit supplied media
 3. Direct three connected references
 4. Build the continuity bible
-5. Plan complete asset coverage
-6. Generate final assets
-7. Truth and representation
-8. Slot-specific direction
-9. Image, video, 3D, SVG, and texture roles
-10. Responsive crops and optimization
-11. Asset review gate
+5. Decompose the campaign into asset layers
+6. Plan complete asset coverage
+7. Generate final assets
+8. Truth and representation
+9. Slot-specific direction
+10. Image, video, 3D, SVG, and texture roles
+11. Responsive crops and optimization
+12. Asset review gate
 
 ## Asset Strategy
 
@@ -159,6 +160,41 @@ Define preferred aspect ratios, subject anchor, text-safe area, negative space, 
 
 List recurring failures to exclude: readable text, fake logos, malformed product, extra fingers, impossible architecture, duplicate objects, irrelevant props, stock poses, oversmoothed skin, excessive glow, generic luxury styling, or any concept-specific risk.
 
+## Decompose The Campaign Into Asset Layers
+
+Do not treat a beautiful reference frame as one giant image to place beside copy. It is a system of subjects, materials, depth, crops, and transitions. Record that decomposition in `media_plan.asset_layers` before final generation.
+
+### Signature
+
+One primary object, place, interface, person, process, or film state carries the central idea. It may have responsive and interaction variants, but it remains one recognizable subject.
+
+### Narrative
+
+Distinct scenes or states advance the story. They must change evidence, viewpoint, time, material, use, or outcome rather than repeating the hero crop. A typical visual site needs at least two narrative assets.
+
+### Supporting
+
+Small assets let the world enter the layout instead of remaining trapped inside rectangular media frames. Useful supporting assets include:
+
+- transparent product, ingredient, tool, ticket, material, or architectural cutouts
+- masks, torn or scanned edges, frame fragments, route lines, depth maps, and displacement maps
+- macro details, contact-sheet crops, process fragments, shadow plates, reflections, and foreground occluders
+- material textures, printed marks, interface cursors, labels rendered separately in HTML, and transition frames
+
+Use at least two supporting assets when the concept is visual. Give each a semantic target section, integration method, desktop behavior, mobile behavior, and reduced-motion role. Do not scatter generated fragments as decoration; each one must reinforce subject, evidence, depth, orientation, or transformation.
+
+Write every asset target as `page.html#section-id`. This makes reuse and multipage coverage auditable and prevents ambiguous section names from silently pointing at the wrong route.
+
+List the asset IDs used by an implemented section in `data-lumora-assets="asset-id,second-id"`. The marker is traceability, not decoration; the corresponding raster, video, model, SVG, canvas, or CSS layer must still exist and render in that section.
+
+### Utility
+
+Plan marks, icons, thumbnails, posters, loaders, social previews, 404 media, and static fallbacks. Use supplied vectors or code-native SVG for identity and diagrams; use generated raster media only when the utility role genuinely needs it.
+
+### Decomposition Review
+
+Write `asset_decomposition_review` after comparing the three references. Identify which visual elements become final assets, which are recreated in HTML/CSS/SVG, which are animation states, and which are image-generation artifacts to reject. Final assets never contain surrounding page copy or an entire rendered section.
+
 ## Plan Complete Asset Coverage
 
 Create `media_plan.slots` before final generation. Include major and supporting roles across all pages and states.
@@ -174,7 +210,11 @@ Create `media_plan.slots` before final generation. Include major and supporting 
   "text_safe_area": "top-left 30%",
   "source": "generated from locked continuity bible",
   "truthfulness": "conceptual campaign material; no clinical result claim",
-  "reuse": "ritual chapter and mobile crop only"
+  "reuse": "ritual chapter and mobile crop only",
+  "text_relationship": "the macro crosses behind the section label but leaves the claim in a clear HTML text column",
+  "desktop_geometry": "seven-column media field with the focal thread at the inner grid line",
+  "mobile_geometry": "4:3 crop below the claim, capped at 58svh with the focal thread centered",
+  "motion_role": "the oil thread advances once as the ritual step becomes active"
 }
 ```
 
@@ -204,6 +244,8 @@ For every section ask:
 - Does it continue the selected world?
 - Is it truthful in context?
 - Does mobile have a usable composition?
+- Does nearby copy have enough visual weight to balance the media, or is the layout creating an accidental blank column?
+- Could a decomposed cutout, texture, or state asset integrate the world more naturally than another rectangular image?
 
 Write `asset_coverage_review` after implementation.
 
@@ -297,6 +339,7 @@ Do not add distracting disclaimers to every image. Make role and copy truthful: 
 - copy-safe region derived from layout
 - enough resolution for largest viewport
 - a mobile composition, not an accidental crop
+- a mobile aspect ratio and maximum viewport-height bound; never let a wide desktop image become an excessively tall static poster
 - visible continuation into the next chapter
 
 ### Product
@@ -357,6 +400,7 @@ Use project-specific scans, material maps, grain, paper, ink, noise, displacemen
 ## Responsive Crops And Optimization
 
 - Generate distinct portrait and landscape compositions when crop requirements materially differ.
+- Prefer a mobile-native crop over a portrait stretch. Bound prominent mobile media with an intentional `aspect-ratio`, `max-height`, and focal point; use `<picture>` when the source must change.
 - Set explicit width and height attributes and stable aspect ratios.
 - Use `object-position` or `<picture>` sources based on known focal points.
 - Keep subject scale and text-safe area stable across viewports.

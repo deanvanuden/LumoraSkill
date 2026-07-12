@@ -138,7 +138,13 @@ class Auditor:
         self.plan: dict[str, Any] = {}
         self.used_source_ids: set[str] = set()
         self.section_sources: dict[str, set[str]] = {}
+        self.section_keys: set[tuple[str, str]] = set()
         self.image_usage: Counter[str] = Counter()
+        self.composition_keys: set[tuple[str, str]] = set()
+        self.asset_target_keys: set[tuple[str, str]] = set()
+        self.asset_targets_by_key: dict[tuple[str, str], set[str]] = {}
+        self.motion_target_keys: set[tuple[str, str]] = set()
+        self.route_status: dict[str, str] = {}
 
     def add(self, severity: str, code: str, path: Path, message: str, line: int = 0) -> None:
         try:
@@ -169,6 +175,13 @@ class Auditor:
             return bool(value)
         return value is not None
 
+    @staticmethod
+    def route_path(value: Any) -> str:
+        route = str(value or "").strip().replace("\\", "/")
+        while route.startswith("./"):
+            route = route[2:]
+        return route
+
     def require_text(self, container: dict[str, Any], key: str, code: str, label: str) -> None:
         if not str(container.get(key) or "").strip():
             self.error(code, self.plan_path, f"fill {label}")
@@ -181,18 +194,19 @@ class Auditor:
             if item.get("id") and item.get("prompt_text")
         }
         source_mix = self.plan.get("source_mix") or []
+        modern = schema in {"lumora.project_plan.v4", "lumora.project_plan.v5"}
         if schema == "lumora.project_plan.v3" and len(source_mix) < 3:
             self.error("plan.source-count", self.plan_path, "legacy v3 plans require at least three prompt donors")
-        if schema == "lumora.project_plan.v4" and not 1 <= len(source_mix) <= 3:
-            self.error("plan.source-count", self.plan_path, "v4 requires one anchor and no more than two supporting donors")
+        if modern and not 1 <= len(source_mix) <= 3:
+            self.error("plan.source-count", self.plan_path, "modern plans require one anchor and no more than two supporting donors")
 
         seen_ids: set[str] = set()
         jobs = [source.get("job") for source in source_mix]
-        if schema == "lumora.project_plan.v4":
+        if modern:
             if jobs.count("anchor") != 1 or (jobs and jobs[0] != "anchor"):
                 self.error("plan.anchor", self.plan_path, "source_mix must begin with exactly one anchor donor")
             if any(job not in {"anchor", "experience", "conversion"} for job in jobs):
-                self.error("plan.source-job", self.plan_path, "v4 donor jobs are anchor, experience, and conversion")
+                self.error("plan.source-job", self.plan_path, "donor jobs are anchor, experience, and conversion")
 
         for source in source_mix:
             prompt_id = source.get("id")
@@ -206,15 +220,15 @@ class Auditor:
 
             contributions = [str(value).strip() for value in source.get("implemented_contributions") or [] if str(value).strip()]
             sections = [str(value).strip() for value in source.get("implemented_sections") or [] if str(value).strip()]
-            minimum = 3 if schema == "lumora.project_plan.v4" and source.get("job") == "anchor" else (1 if schema == "lumora.project_plan.v4" else 2)
+            minimum = 3 if modern and source.get("job") == "anchor" else (1 if modern else 2)
             if len(contributions) < minimum:
                 self.error("plan.source-contributions", self.plan_path, f"{prompt_id!r} needs at least {minimum} concrete implemented contribution(s)")
-            minimum_sections = 2 if schema == "lumora.project_plan.v4" and source.get("job") == "anchor" else 1
+            minimum_sections = 2 if modern and source.get("job") == "anchor" else 1
             if len(sections) < minimum_sections:
                 self.error("plan.source-sections", self.plan_path, f"{prompt_id!r} needs at least {minimum_sections} implemented section(s)")
-            if schema == "lumora.project_plan.v4" and source.get("job") != "anchor" and len(sections) > 2:
+            if modern and source.get("job") != "anchor" and len(sections) > 2:
                 self.warning("plan.support-scope", self.plan_path, f"supporting donor {prompt_id!r} controls more than two sections; confirm it remains subordinate")
-            if schema == "lumora.project_plan.v4":
+            if modern:
                 authority = source.get("authority")
                 if source.get("job") == "anchor" and (not isinstance(authority, (int, float)) or authority < 0.70):
                     self.error("plan.anchor-authority", self.plan_path, "anchor authority must remain at least 0.70")
@@ -329,7 +343,7 @@ class Auditor:
         if len(inspected_candidates.intersection(anchor_shortlist_ids)) < 3:
             self.error("plan.source-inspection", self.plan_path, "inspect at least three anchor candidates before choosing the anchor")
         self.require_text(selection, "compatibility_statement", "plan.source-compatibility", "the donor compatibility statement")
-        self.check_source_mix("lumora.project_plan.v4")
+        self.check_source_mix(str(self.plan.get("schema") or "lumora.project_plan.v4"))
         source_mix = self.plan.get("source_mix") or []
         if source_mix and source_mix[0].get("id") not in inspected_candidates:
             self.error("plan.anchor-inspection", self.plan_path, "the selected anchor must appear in inspected_candidates")
@@ -408,6 +422,207 @@ class Auditor:
         if not visual.get("revisions_after_review"):
             self.error("plan.visual-revisions", self.plan_path, "record at least one revision made after visual review")
 
+    def check_v5_plan(self) -> None:
+        self.check_v4_plan()
+
+        if self.plan_path.parent.resolve() != self.site_root:
+            self.error("plan.publish-root", self.plan_path, "lumora-plan.json must live in the exact GitHub Pages publishing root being validated")
+
+        contract = self.plan.get("build_contract") or {}
+        origin = contract.get("site_origin")
+        if origin not in {"new", "existing"}:
+            self.error("plan.site-origin", self.plan_path, "set build_contract.site_origin to 'new' or 'existing'")
+        if contract.get("publishing_root") != ".":
+            self.error("plan.publishing-root", self.plan_path, "publishing_root must be '.' and validation must run against that exact directory")
+        self.require_text(contract, "route_strategy", "plan.route-strategy", "the route redesign, consolidation, and redirect strategy")
+
+        manifest = contract.get("route_manifest") or []
+        if not manifest:
+            self.error("plan.route-manifest", self.plan_path, "list every HTML file shipped in the publishing root")
+        allowed_status = {"redesigned", "redirect", "legal", "system"}
+        manifest_files: set[str] = set()
+        for item in manifest:
+            file = self.route_path(item.get("file"))
+            if not file or file.startswith("../") or not file.lower().endswith(".html"):
+                self.error("plan.route-file", self.plan_path, f"invalid route-manifest file {file!r}")
+                continue
+            if file in manifest_files:
+                self.error("plan.route-duplicate", self.plan_path, f"duplicate route-manifest file {file!r}")
+            manifest_files.add(file)
+            if item.get("status") not in allowed_status:
+                self.error("plan.route-status", self.plan_path, f"route {file!r} must be redesigned, redirect, legal, or system")
+            else:
+                self.route_status[file] = str(item.get("status"))
+            for field in ("purpose", "shared_system"):
+                if not str(item.get(field) or "").strip():
+                    self.error("plan.route-detail", self.plan_path, f"route {file!r} needs {field.replace('_', ' ')}")
+            if item.get("verified") is not True:
+                self.error("plan.route-verified", self.plan_path, f"route {file!r} must be browser-verified")
+
+        actual_html = {
+            path.relative_to(self.site_root).as_posix()
+            for path in self.site_root.rglob("*.html")
+            if path.is_file()
+        }
+        for file in sorted(actual_html - manifest_files):
+            self.error("plan.route-unmanaged", self.site_root / file, "HTML file is shipped but missing from route_manifest")
+        for file in sorted(manifest_files - actual_html):
+            self.error("plan.route-missing-file", self.site_root / file, "route_manifest entry does not exist in the publishing root")
+
+        if origin == "existing":
+            inventory = [self.route_path(value) for value in contract.get("source_route_inventory") or [] if str(value).strip()]
+            if not inventory:
+                self.error("plan.source-routes", self.plan_path, "existing sites need a complete public source-route inventory")
+            migrations = contract.get("route_migrations") or []
+            covered: set[str] = set()
+            for migration in migrations:
+                source = self.route_path(migration.get("source"))
+                target = self.route_path(migration.get("target"))
+                disposition = migration.get("disposition")
+                if not source:
+                    self.error("plan.route-migration-source", self.plan_path, "every route migration needs a source route")
+                    continue
+                covered.add(source)
+                if disposition not in {"redesigned", "consolidated", "redirected", "retired"}:
+                    self.error("plan.route-migration-status", self.plan_path, f"source route {source!r} needs a valid migration disposition")
+                if disposition != "retired" and target not in manifest_files:
+                    self.error("plan.route-migration-target", self.plan_path, f"source route {source!r} targets unmanaged route {target!r}")
+                if not str(migration.get("reason") or "").strip():
+                    self.error("plan.route-migration-reason", self.plan_path, f"source route {source!r} needs a migration reason")
+            for source in sorted(set(inventory) - covered):
+                self.error("plan.route-unmigrated", self.plan_path, f"source route {source!r} has no redesign, consolidation, redirect, or retirement decision")
+
+            archive = str(contract.get("source_archive_location") or "").strip()
+            if not archive:
+                self.error("plan.source-archive", self.plan_path, "record the source scrape/archive location outside the publishing root")
+            else:
+                archive_path = Path(archive)
+                resolved_archive = archive_path.resolve() if archive_path.is_absolute() else (self.site_root / archive_path).resolve()
+                try:
+                    resolved_archive.relative_to(self.site_root)
+                    self.error("plan.source-archive-inside", self.plan_path, "source scrape/archive must remain outside the publishing root")
+                except ValueError:
+                    pass
+
+        direction = self.plan.get("creative_direction") or {}
+        composition_map = direction.get("composition_map") or []
+        if not composition_map:
+            self.error("plan.composition-map", self.plan_path, "map the composition of every major section and page")
+        composition_keys: set[tuple[str, str]] = set()
+        for item in composition_map:
+            page = self.route_path(item.get("page"))
+            section_id = str(item.get("section_id") or "").strip()
+            key = (page, section_id)
+            if key in composition_keys:
+                self.error("plan.composition-duplicate", self.plan_path, f"duplicate composition entry for {page}#{section_id}")
+            composition_keys.add(key)
+            for field in ("page", "section_id", "role", "focal_subject", "text_media_relationship", "desktop_geometry", "mobile_geometry", "negative_space_intent", "motion_moment"):
+                if not str(item.get(field) or "").strip():
+                    self.error("plan.composition-detail", self.plan_path, f"composition {page}#{section_id} needs {field.replace('_', ' ')}")
+        self.composition_keys = composition_keys
+
+        media = self.plan.get("media_plan") or {}
+        layers = media.get("asset_layers") or {}
+        minimum_layers = {"signature": 1, "narrative": 2, "supporting": 2}
+        for layer, minimum in minimum_layers.items():
+            items = layers.get(layer) or []
+            if len(items) < minimum:
+                self.error("plan.asset-layer-count", self.plan_path, f"asset layer {layer!r} needs at least {minimum} authored item(s)")
+            for item in items:
+                for field in ("id", "role", "medium", "source", "target_sections", "integration", "responsive_variants"):
+                    if not self.filled(item.get(field)):
+                        self.error("plan.asset-layer-detail", self.plan_path, f"{layer} asset {item.get('id')!r} needs {field.replace('_', ' ')}")
+                for target in item.get("target_sections") or []:
+                    target_value = str(target or "").strip()
+                    if "#" not in target_value:
+                        self.error("plan.asset-target", self.plan_path, f"asset {item.get('id')!r} target {target_value!r} must use page.html#section-id")
+                        continue
+                    page, section = target_value.split("#", 1)
+                    key = (self.route_path(page), section.strip())
+                    if not key[0] or not key[1]:
+                        self.error("plan.asset-target", self.plan_path, f"asset {item.get('id')!r} has invalid target {target_value!r}")
+                    else:
+                        self.asset_target_keys.add(key)
+                        self.asset_targets_by_key.setdefault(key, set()).add(str(item.get("id") or "").strip())
+        if not isinstance(layers.get("utility"), list):
+            self.error("plan.asset-layer-utility", self.plan_path, "asset_layers.utility must be an explicit list, even when empty")
+        self.require_text(media, "asset_decomposition_review", "plan.asset-decomposition", "the reference-to-final-asset decomposition review")
+        for slot in media.get("slots") or []:
+            for field in ("text_relationship", "desktop_geometry", "mobile_geometry", "motion_role"):
+                if not str(slot.get(field) or "").strip():
+                    self.error("plan.media-composition", self.plan_path, f"media slot {slot.get('id')!r} needs {field.replace('_', ' ')}")
+
+        motion = self.plan.get("motion_plan") or {}
+        mobile = motion.get("mobile_signature") or {}
+        if mobile.get("mode") not in {"scroll", "tap", "swipe", "drag", "time", "pointer", "hybrid"}:
+            self.error("plan.mobile-signature-mode", self.plan_path, "mobile signature must use a real scroll, tap, swipe, drag, time, pointer, or hybrid transformation")
+        for field in ("input", "subject", "visible_change", "implementation", "fallback"):
+            self.require_text(mobile, field, f"plan.mobile-signature-{field}", f"mobile signature: {field.replace('_', ' ')}")
+        if mobile.get("verified") is not True:
+            self.error("plan.mobile-signature-verified", self.plan_path, "browser-verify the mobile-native signature transformation")
+
+        supporting = motion.get("supporting_moments") or []
+        if len(supporting) < 2:
+            self.error("plan.motion-distribution", self.plan_path, "define at least two authored supporting motion moments beyond the dominant sequence")
+        supporting_sections: set[str] = set()
+        for moment in supporting:
+            page = self.route_path(moment.get("page"))
+            section = str(moment.get("section") or "").strip()
+            supporting_sections.add(f"{page}#{section}")
+            for field in ("page", "section", "subject", "trigger", "visible_change", "purpose", "desktop", "mobile", "reduced_motion"):
+                if not str(moment.get(field) or "").strip():
+                    self.error("plan.motion-support-detail", self.plan_path, f"supporting motion moment needs {field.replace('_', ' ')}")
+            if page and section:
+                self.motion_target_keys.add((page, section))
+        if len(supporting_sections - {"#"}) < 2:
+            self.error("plan.motion-support-sections", self.plan_path, "supporting motion moments must reach at least two distinct sections")
+        continuity = motion.get("continuity_map") or {}
+        for field in ("entry", "orientation", "deepening", "evidence", "decision", "close"):
+            self.require_text(continuity, field, f"plan.motion-continuity-{field}", f"motion continuity: {field}")
+
+        verification = self.plan.get("verification") or {}
+        self.require_text(verification, "publishing_root_review", "plan.publish-review", "the exact publishing-root review")
+        responsive = verification.get("responsive_review") or {}
+        if responsive.get("status") != "passed":
+            self.error("plan.responsive-review", self.plan_path, "complete and pass the multi-width responsive containment review")
+        required_widths = {320, 360, 390, 430, 768, 1024, 1440}
+        tested_widths = {int(value) for value in responsive.get("tested_widths") or [] if str(value).isdigit()}
+        if missing_widths := required_widths - tested_widths:
+            self.error("plan.responsive-widths", self.plan_path, f"responsive review is missing widths: {', '.join(map(str, sorted(missing_widths)))}")
+        results = responsive.get("containment_results") or []
+        result_pairs: set[tuple[str, int]] = set()
+        for result in results:
+            page = self.route_path(result.get("page"))
+            try:
+                width = int(result.get("width"))
+                client_width = int(result.get("client_width"))
+                scroll_width = int(result.get("scroll_width"))
+            except (TypeError, ValueError):
+                self.error("plan.containment-result", self.plan_path, f"containment result for {page!r} needs numeric width, client_width, and scroll_width")
+                continue
+            result_pairs.add((page, width))
+            if result.get("pass") is not True or scroll_width > client_width or result.get("overflow_elements"):
+                self.error("plan.containment-failed", self.plan_path, f"route {page!r} fails containment at {width}px")
+        for page in manifest_files:
+            for width in (390, 1440):
+                if (page, width) not in result_pairs:
+                    self.error("plan.containment-route", self.plan_path, f"route {page!r} needs containment evidence at {width}px")
+        if "index.html" in manifest_files:
+            for width in required_widths:
+                if ("index.html", width) not in result_pairs:
+                    self.error("plan.containment-index", self.plan_path, f"index.html needs containment evidence at {width}px")
+        if not responsive.get("longest_content_checks"):
+            self.error("plan.long-content", self.plan_path, "test the longest headings, labels, addresses, prices, and CTA strings")
+        self.require_text(responsive, "mobile_media_review", "plan.mobile-media-review", "mobile media width, crop, aspect, and focal-point review")
+
+        visual = verification.get("visual_review") or {}
+        checked_states = {str(value) for value in visual.get("checked_states") or []}
+        for state in ("mobile-signature", "tablet"):
+            if state not in checked_states:
+                self.error("plan.visual-v5-state", self.plan_path, f"visual review is missing {state}")
+        for field in ("mobile_signature_review", "motion_continuity_review", "image_composition_review", "route_consistency_review"):
+            self.require_text(visual, field, f"plan.visual-{field}", f"visual review: {field.replace('_', ' ')}")
+
     def load_plan(self) -> None:
         if not self.plan_path.is_file():
             self.error("plan.missing", self.plan_path, "lumora-plan.json is required")
@@ -421,9 +636,12 @@ class Auditor:
         if schema == "lumora.project_plan.v3":
             self.check_v3_plan()
         elif schema == "lumora.project_plan.v4":
+            self.warning("plan.legacy-schema", self.plan_path, "v4 plans do not enforce route migration, composition, mobile-signature, or containment evidence; regenerate as v5")
             self.check_v4_plan()
+        elif schema == "lumora.project_plan.v5":
+            self.check_v5_plan()
         else:
-            self.error("plan.schema", self.plan_path, "expected schema lumora.project_plan.v4")
+            self.error("plan.schema", self.plan_path, "expected schema lumora.project_plan.v5")
 
     def check_required_files(self) -> None:
         for name in ("index.html", "404.html", ".nojekyll"):
@@ -491,6 +709,7 @@ class Auditor:
                 self.error("url.missing-anchor", owner, f"missing anchor #{fragment} in {html_target.name}", line)
 
     def check_html_elements(self, path: Path, parser: AuditParser) -> None:
+        route = path.relative_to(self.site_root).as_posix()
         for tag, attr, value, line in parser.urls:
             self.check_url(path, tag, attr, value, line)
         for attrs, line in parser.images:
@@ -524,6 +743,18 @@ class Auditor:
             section_id = attrs.get("id", "").strip()
             if not section_id:
                 self.error("trace.section-id", path, "major section is missing a stable id", line)
+            else:
+                section_key = (route, section_id)
+                self.section_keys.add(section_key)
+                if self.plan.get("schema") == "lumora.project_plan.v5" and section_key not in self.composition_keys:
+                    self.error("trace.composition-missing", path, f"section {route}#{section_id} is missing from creative_direction.composition_map", line)
+                expected_assets = self.asset_targets_by_key.get(section_key, set())
+                declared_assets = {value.strip() for value in attrs.get("data-lumora-assets", "").split(",") if value.strip()}
+                if self.plan.get("schema") == "lumora.project_plan.v5" and expected_assets - declared_assets:
+                    missing_assets = ", ".join(sorted(expected_assets - declared_assets))
+                    self.error("trace.asset-marker", path, f"section {route}#{section_id} must declare planned assets in data-lumora-assets: {missing_assets}", line)
+                if self.plan.get("schema") == "lumora.project_plan.v5" and section_key in self.motion_target_keys and not attrs.get("data-lumora-motion", "").strip():
+                    self.error("trace.motion-marker", path, f"planned supporting motion {route}#{section_id} needs data-lumora-motion", line)
             source_attr = attrs.get("data-lumora-source", "")
             if not source_attr:
                 self.error("trace.section-source", path, "major section is missing data-lumora-source", line)
@@ -535,7 +766,7 @@ class Auditor:
             unknown = section_ids - selected_ids
             if unknown:
                 self.error("trace.unknown-source", path, f"section uses unselected source ids: {', '.join(sorted(unknown))}", line)
-            if self.plan.get("schema") == "lumora.project_plan.v4":
+            if self.plan.get("schema") in {"lumora.project_plan.v4", "lumora.project_plan.v5"}:
                 anchor_id = next((source.get("id") for source in self.plan.get("source_mix", []) if source.get("job") == "anchor"), None)
                 if anchor_id and anchor_id not in section_ids:
                     self.error("trace.anchor-missing", path, f"section must retain anchor source {anchor_id!r}", line)
@@ -554,8 +785,31 @@ class Auditor:
             line = text.count("\n", 0, match.start()) + 1
             self.check_url(path, "css", "url", value, line)
 
+    def check_responsive_css(self, path: Path) -> None:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        schema = self.plan.get("schema")
+        for match in re.finditer(r"([^{}]+)\{([^{}]*)\}", text, re.DOTALL):
+            selector = re.sub(r"/\*.*?\*/", "", match.group(1), flags=re.DOTALL).strip()
+            declarations = match.group(2)
+            root_selector = bool(re.search(r"(?:^|,)\s*(?:html|body|:root)(?=\s|,|$|[.#:\[])", selector, re.IGNORECASE))
+            if not root_selector:
+                continue
+            overflow = re.search(r"\boverflow-x\s*:\s*(hidden|clip)\b", declarations, re.IGNORECASE)
+            if overflow:
+                line = text.count("\n", 0, match.start(2) + overflow.start()) + 1
+                message = "root overflow concealment hides responsive defects; remove it and fix the overflowing element"
+                if schema == "lumora.project_plan.v5":
+                    self.error("responsive.root-overflow-mask", path, message, line)
+                else:
+                    self.warning("responsive.root-overflow-mask", path, message, line)
+            minimum = re.search(r"\bmin-width\s*:\s*([0-9]+(?:\.[0-9]+)?)px\b", declarations, re.IGNORECASE)
+            if minimum and float(minimum.group(1)) > 320:
+                line = text.count("\n", 0, match.start(2) + minimum.start()) + 1
+                self.error("responsive.root-min-width", path, f"root min-width {minimum.group(1)}px prevents 320px containment", line)
+
     def check_motion(self, text_files: list[Path]) -> None:
         aggregate = "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in text_files)
+        javascript = "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in text_files if path.suffix.lower() == ".js")
         has_advanced_motion = bool(re.search(r"\b(?:gsap|ScrollTrigger|requestAnimationFrame|parallax|scroll-progress|data-reveal)\b|@keyframes", aggregate, re.IGNORECASE))
         has_reduced_motion = "prefers-reduced-motion" in aggregate
         if has_advanced_motion and not has_reduced_motion:
@@ -567,6 +821,23 @@ class Auditor:
         has_drag_state = "pointerdown" in aggregate and bool(re.search(r"scrollBy|translateX|drag", aggregate, re.IGNORECASE))
         if scrub_count and has_autoplay_state and has_drag_state:
             self.warning("motion.competing-systems", self.site_root, "scrubbed scroll, autoplay state, and drag behavior all appear; review whether the page has multiple competing interaction centers")
+
+        if self.plan.get("schema") == "lumora.project_plan.v5":
+            mobile_queries = re.findall(
+                r"\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:window\.)?matchMedia\(\s*['\"][^'\"]*max-width[^'\"]*['\"]\s*\)",
+                javascript,
+                re.IGNORECASE,
+            )
+            final_state = r"(?:setProperty\([^,]+,\s*['\"]1['\"]\)|classList\.add\(\s*['\"]is-active['\"]\s*\))"
+            for query in mobile_queries:
+                bypass = re.search(rf"\b{re.escape(query)}\.matches\b[\s\S]{{0,1400}}?{final_state}", javascript, re.IGNORECASE)
+                if bypass:
+                    self.warning(
+                        "motion.mobile-final-bypass",
+                        self.site_root,
+                        f"mobile query {query!r} appears to force the signature to a final/active state; implement and verify the planned mobile transformation",
+                    )
+                    break
 
         long_scroll_justification = str((self.plan.get("motion_plan") or {}).get("long_scroll_justification") or "").strip()
         for path in text_files:
@@ -587,6 +858,38 @@ class Auditor:
                 continue
             self.warning("media.reuse", self.site_root, f"image {src!r} is used {count} times; prominent repeated reuse usually weakens the asset campaign")
 
+    def local_stylesheets(self, path: Path, parser: AuditParser) -> set[Path]:
+        stylesheets: set[Path] = set()
+        for tag, attr, value, _line in parser.urls:
+            if tag != "link" or attr != "href" or self.is_external(value):
+                continue
+            target, _fragment = self.resolve_local(path, value)
+            if target.suffix.lower() == ".css":
+                stylesheets.add(target.resolve())
+        return stylesheets
+
+    def check_route_system(self, html_files: list[Path]) -> None:
+        if self.plan.get("schema") != "lumora.project_plan.v5":
+            return
+        designed_routes = [
+            path
+            for path in html_files
+            if self.route_status.get(path.relative_to(self.site_root).as_posix()) in {"redesigned", "legal", "system"}
+        ]
+        route_styles: dict[Path, set[Path]] = {}
+        for path in designed_routes:
+            parser = self.parse_html(path)
+            if not parser.sections:
+                self.error("trace.route-sections", path, "designed route needs at least one traceable major section")
+            styles = self.local_stylesheets(path, parser)
+            route_styles[path] = styles
+            if not styles:
+                self.error("routes.stylesheet", path, "designed route needs a local stylesheet from the shared design system")
+        if len(route_styles) > 1:
+            shared = set.intersection(*route_styles.values()) if all(route_styles.values()) else set()
+            if not shared:
+                self.error("routes.shared-system", self.site_root, "designed routes do not share any local stylesheet; legacy or disconnected page systems may be shipping")
+
     def run(self) -> list[Finding]:
         if not self.site_root.is_dir():
             self.error("site.missing", self.site_root, "site root does not exist")
@@ -601,6 +904,14 @@ class Auditor:
             parser = self.parse_html(path)
             self.check_html_metadata(path, parser)
             self.check_html_elements(path, parser)
+        self.check_route_system(html_files)
+        if self.plan.get("schema") == "lumora.project_plan.v5":
+            for page, section in sorted(self.composition_keys - self.section_keys):
+                self.error("trace.composition-orphan", self.plan_path, f"composition entry {page}#{section} has no matching HTML section")
+            for page, section in sorted(self.asset_target_keys - self.section_keys):
+                self.error("trace.asset-target", self.plan_path, f"asset target {page}#{section} has no matching HTML section")
+            for page, section in sorted(self.motion_target_keys - self.section_keys):
+                self.error("trace.motion-target", self.plan_path, f"supporting motion target {page}#{section} has no matching HTML section")
         self.check_media_reuse()
         selected_ids = {source.get("id") for source in self.plan.get("source_mix", []) if source.get("id")}
         for missing in sorted(selected_ids - self.used_source_ids):
@@ -628,6 +939,7 @@ class Auditor:
         js_files = sorted(self.site_root.rglob("*.js"))
         for path in css_files:
             self.check_css_urls(path)
+            self.check_responsive_css(path)
         self.check_motion(css_files + js_files)
         return self.findings
 

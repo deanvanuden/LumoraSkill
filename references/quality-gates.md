@@ -31,7 +31,7 @@ Do not treat self-scored plan fields as proof without browser inspection.
 
 ## Gate 1: Company Truth And Direction Exploration
 
-- `lumora-plan.json` uses `lumora.project_plan.v4` for new work.
+- `lumora-plan.json` uses `lumora.project_plan.v5` for new work and lives in the exact publishing root.
 - Company name, offer, audience, difference, place/context, material world, vocabulary, routes, supplied media, proof, and missing facts are recorded.
 - Stale dates, unsupported claims, fake prices, and invented evidence are absent.
 - Three concepts differ in subject, world, transformation, hero scene, and asset strategy.
@@ -67,6 +67,9 @@ Fail when prompt traceability exists only on paper while the rendered site is ge
 - Final assets were produced separately from layout reference frames.
 - Generated assets contain no fake logo, readable raster text, watermark, malformed subject, irrelevant prop, or false documentary evidence.
 - Different prominent slots do not reuse one image as filler.
+- Asset decomposition identifies at least one signature asset, two narrative assets, two supporting assets, and an explicit utility set.
+- Supporting cutouts, textures, masks, depth, props, details, or transition assets are integrated as semantic layers rather than flattened section screenshots.
+- Every media slot defines its text relationship, desktop geometry, mobile geometry, and motion role.
 - Media continues after the hero and reaches the closing state.
 - Desktop and mobile use intentional crops or variants.
 - Local asset dimensions and compression suit the actual render.
@@ -76,6 +79,7 @@ Fail when the concept promises a physical object or world but implementation sub
 ## Gate 4: Composition And Implementation Fidelity
 
 - Rendered states match references in focal point, hierarchy, negative space, grid, crop, material, type character, control language, and section rhythm.
+- Every major section on every route appears in `creative_direction.composition_map`.
 - The first viewport makes the company, product, place, person, or offer a primary signal.
 - One focal subject leads the opening.
 - Hero copy remains readable, concise, and normally within one to three headline lines.
@@ -87,6 +91,7 @@ Fail when the concept promises a physical object or world but implementation sub
 - Text, controls, prices, long words, and labels fit at every tested width.
 - No element overlaps unrelated previous or following content.
 - Blank space reads as composed focus rather than missing content.
+- No oversized image is stranded beside an underweighted copy fragment and an accidental empty column.
 - The closing state advances or completes the world.
 
 Fail when the generated reference is strong but the coded result collapses into centered headings, equal card rows, repeated split sections, generic gradients, or text-heavy filler.
@@ -97,30 +102,35 @@ Fail when the generated reference is strong but the coded result collapses into 
 - Its subject, input, transformation, and narrative purpose derive from company truth.
 - At least three storyboarded beats produce visible changes and settled readable states.
 - Structural and micro motion remain subordinate and use one coherent language.
+- At least two authored supporting moments in distinct later chapters continue the dominant subject, material, crop, state, or transformation language.
+- The entry-to-close continuity map explains where motion intensifies, settles, and returns.
 - Every viewport of a long or pinned chapter contains visible subject, information, or transformation.
 - Long scroll tracks have a written occupancy justification and pass screenshot review.
 - Autoplay, drag, hover, marquee, cursor, and scrub systems do not compete for attention.
 - Motion never hides essential content indefinitely.
 - Controls remain user-directed and truthful.
 - Mobile and reduced-motion versions preserve the thesis.
+- The mobile signature uses real scroll, tap, swipe, drag, time, pointer, or hybrid input and visibly changes state; it is not forced to its final desktop state.
 - Missing motion libraries reveal static content instead of a blank page.
 
 Fail when the experience feels like several donor demos, when the visitor waits through empty scroll, or when effects are memorable but the company is not.
 
 ## Gate 6: Responsive Experience
 
-Test at minimum:
+Test at minimum `320`, `360`, `390`, `430`, `768`, `1024`, and `1440` CSS-pixel widths. Add `1920` for full-bleed, 3D, film, canvas, or fragile pinned framing.
 
-- desktop around 1440 x 1000
-- mobile around 390 x 844
-- wide desktop around 1920 x 1080 for full-bleed, 3D, film, or pinned work
-- one narrower mobile width when names, labels, or controls are long
+- test the home route at every required width
+- test every published route at `390` and `1440`
+- test interaction-heavy routes across the full matrix
+- test longest company names, headings, addresses, prices, labels, and CTA strings
 
 Verify:
 
 - `document.documentElement.scrollWidth <= document.documentElement.clientWidth`
+- root `html`, `body`, and `:root` do not use `overflow-x: hidden` or `clip` to conceal defects
 - first viewport subject and copy remain correctly framed
 - mobile uses deliberate order, crop, and interaction changes
+- prominent mobile media has deliberate aspect, focal point, and viewport-height bounds instead of a stretched desktop composition
 - pinned, sticky, horizontal, and overlapping scenes have stable parents and explicit mobile behavior
 - touch controls do not require hover or precise pointer movement
 - fixed controls respect safe areas and do not cover content
@@ -180,6 +190,11 @@ Fail when the visual story and conversion do not connect or when a beautiful con
 ## Gate 9: GitHub Pages
 
 - Publishing root contains `index.html`, `404.html`, and `.nojekyll`.
+- `lumora-plan.json` is inside that same exact root and `build_contract.publishing_root` is `.`.
+- `build_contract.route_manifest` exactly matches every shipped `.html` file.
+- Existing-site `source_route_inventory` is complete and every source route has a redesign, consolidation, redirect, or retirement decision.
+- Source scrapes, validation mirrors, rejected assets, and legacy runtime files remain outside the publishing root.
+- Every shipped route uses the current shared design system or a branded accessible redirect; no untouched legacy page remains.
 - All local URLs are relative, route-correct, and case-correct.
 - No prompt bodies, secrets, private endpoints, API keys, or protected media are public.
 - The site works from a local static server without a build step unless a retained framework is explicitly configured.
@@ -214,10 +229,10 @@ Capture additional states at exact interaction beats, selected tabs, open menus,
 On mobile capture:
 
 - `mobile-entry`
+- `mobile-signature` while the mobile-native transformation is visibly in progress or changed
 - `mobile-full`
-- any recomposed signature state
 
-Capture `reduced-motion` with the preference emulated.
+Capture one `tablet` state and `reduced-motion` with the preference emulated.
 
 Full-page screenshots are useful for rhythm, but can misrepresent pinned and scrubbed content when capture advances the page faster than animation settles. Always pair a full-page image with viewport screenshots at real narrative states.
 
@@ -247,13 +262,14 @@ Inspect section bounding boxes and viewport intersection. Reject unexplained bla
 
 ### 5. Inspect Containment And Runtime
 
-- measure root scroll width against client width
+- measure root scroll width against client width at every required width and record the actual values
+- when overflow exists, collect the responsible selectors and bounding rectangles before fixing it; never mask the root
 - inspect large section bounding boxes and sticky parents
 - ensure fixed controls do not cover content
 - verify no blank canvas, failed texture, missing poster, or broken crop
 - check that animation cleanup does not duplicate after resize
 
-Record all checked states and review notes in `verification.visual_review`.
+Record all checked states and review notes in `verification.visual_review`. Record per-page containment evidence, longest-content checks, and mobile media review in `verification.responsive_review`.
 
 ## Creative-Director Critique
 
@@ -293,9 +309,11 @@ Run:
 python scripts/validate_lumora_site.py --site-root <site-root> --plan <site-root>/lumora-plan.json --strict
 ```
 
+`<site-root>` must be the exact directory GitHub Pages will publish. Do not validate a smaller copy, a temporary mirror, or a handcrafted subset of the output.
+
 The validator checks:
 
-- v4 company truth, direction exploration, world lock, scorecard, source authority, compatibility, asset plan, motion storyboard, conversion, director revision, and visual-review evidence
+- v5 company truth, route inventory and migration, exact route manifest, direction exploration, world lock, section composition map, scorecard, source authority, compatibility, layered asset plan, mobile and distributed motion storyboard, conversion, director revision, and visual-review evidence
 - prompt IDs and source hashes
 - section traceability
 - GitHub Pages files and relative local targets
@@ -303,7 +321,10 @@ The validator checks:
 - generic copy patterns
 - reduced-motion support
 - repeated image reuse
+- root overflow concealment and root minimum-width defects
+- multi-width containment evidence for all routes
 - multiple scrub systems, competing scrub/autoplay/drag behavior, and unjustified long scroll tracks
+- common mobile-query code paths that force the signature directly to its final state
 
 The validator cannot judge beauty. A passing audit never overrides weak screenshots.
 

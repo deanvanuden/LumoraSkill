@@ -326,8 +326,24 @@ def page_mode(brief: str, requested: str) -> str:
     if requested != "auto":
         return requested
     lower = brief.lower()
-    multipage_terms = ("multi page", "multipage", "multiple pages", "full website", "full company website", "site map", "separate pages", "routes")
-    return "multi" if any(term in lower for term in multipage_terms) else "one"
+    explicit_single_terms = ("homepage only", "home page only", "single page only", "one page only", "landing page only")
+    if any(term in lower for term in explicit_single_terms):
+        return "one"
+    multipage_terms = (
+        "multi page", "multipage", "multiple pages", "full website", "full company website", "site map",
+        "separate pages", "all pages", "all routes", "preserve routes", "preserve working destinations",
+        "service pages", "legal pages", "existing pages", "source routes",
+    )
+    existing_site_terms = ("redesign", "existing site", "current site", "source site", "live site", "http://", "https://")
+    return "multi" if any(term in lower for term in multipage_terms + existing_site_terms) else "one"
+
+
+def site_origin(brief: str, requested: str) -> str:
+    if requested != "auto":
+        return requested
+    lower = brief.lower()
+    existing_terms = ("redesign", "existing site", "current site", "source site", "live site", "scrape", "preserve working", "http://", "https://")
+    return "existing" if any(term in lower for term in existing_terms) else "new"
 
 
 def page_map(profile: Profile, mode: str) -> list[dict[str, Any]]:
@@ -337,6 +353,30 @@ def page_map(profile: Profile, mode: str) -> list[dict[str, Any]]:
         {"file": file, "label": label, "sections": list(sections)}
         for file, label, sections in profile.multi_pages
     ]
+
+
+def initial_route_manifest(pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    manifest = [
+        {
+            "file": page["file"],
+            "status": "must-be-designed",
+            "purpose": page["label"],
+            "shared_system": "",
+            "verified": False,
+        }
+        for page in pages
+    ]
+    if not any(item["file"] == "404.html" for item in manifest):
+        manifest.append(
+            {
+                "file": "404.html",
+                "status": "must-be-designed",
+                "purpose": "Branded not-found route",
+                "shared_system": "",
+                "verified": False,
+            }
+        )
+    return manifest
 
 
 def load_inputs(index_path: Path, library_path: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, str]]:
@@ -740,9 +780,11 @@ def build_plan(
     requested_pages: str,
     seed_value: str | None,
     max_sources: int,
+    requested_origin: str = "auto",
 ) -> dict[str, Any]:
     profile, profile_signals = infer_profile(brief)
     mode = page_mode(brief, requested_pages)
+    origin = site_origin(brief, requested_origin)
     seed_material = "|".join((brief.strip(), seed_value or "", index["source"]["sha256"]))
     seed = int(hashlib.sha256(seed_material.encode("utf-8")).hexdigest()[:16], 16)
     selected, shortlists = select_sources(index, prompt_text, brief, profile, max_sources, seed)
@@ -751,7 +793,7 @@ def build_plan(
     anchor_dna = anchor.get("dna") or {}
     pages = page_map(profile, mode)
     return {
-        "schema": "lumora.project_plan.v4",
+        "schema": "lumora.project_plan.v5",
         "brief": brief,
         "brief_sha256": hashlib.sha256(brief.encode("utf-8")).hexdigest(),
         "creative_seed": seed,
@@ -769,6 +811,19 @@ def build_plan(
             "base_files": ["index.html", "styles.css", "script.js", "404.html", ".nojekyll"],
             "page_mode": mode,
             "pages": pages,
+            "site_origin": origin,
+            "publishing_root": ".",
+            "route_strategy": "",
+            "source_route_inventory": [],
+            "route_manifest": initial_route_manifest(pages),
+            "route_migrations": [],
+            "source_archive_location": "",
+            "route_rules": [
+                "Inventory every public route before implementation when site_origin is existing.",
+                "Keep source scrapes, legacy runtime files, references, and validation mirrors outside this publishing root.",
+                "Every shipped HTML file must appear in route_manifest and use the current shared system or a branded accessible redirect.",
+                "Validate this exact directory, never a reduced copy or handcrafted subset.",
+            ],
         },
         "company_truth": {
             "status": "must-be-completed-before-direction",
@@ -816,6 +871,7 @@ def build_plan(
                 "decision": "",
                 "close": "",
             },
+            "composition_map": [],
             "design_fingerprint": {
                 "composition": "",
                 "typography": "",
@@ -876,6 +932,13 @@ def build_plan(
         "media_plan": {
             "status": "campaign-system-must-be-directed-before-code",
             "asset_strategy": "",
+            "asset_layers": {
+                "signature": [],
+                "narrative": [],
+                "supporting": [],
+                "utility": [],
+            },
+            "asset_decomposition_review": "",
             "signature_asset": {
                 "required": True,
                 "status": "unresolved",
@@ -909,7 +972,11 @@ def build_plan(
                 "Audit all supplied media and keep only assets that can carry their assigned render size and truth role.",
                 "Generate three connected experience references before coding when no complete supplied design direction exists.",
                 "Generate or art-direct a coherent family of final assets for every unresolved prominent slot, including small transition and detail assets when they support the world.",
+                "Decompose references into signature media, narrative scenes, supporting cutouts/textures/masks, and utility assets; never ship a reference comp as a section screenshot.",
                 "Generate final assets per role and aspect ratio; do not crop one image into every role.",
+                "Every media slot must define its text relationship, desktop frame, mobile frame, and motion role before implementation.",
+                "Every asset-layer target uses page.html#section-id and must resolve to a shipped section.",
+                "Each target section declares the integrated asset ids in data-lumora-assets.",
                 "Keep text and logos out of generated raster media.",
                 "Do not portray generated people, premises, outcomes, products, or credentials as documentary evidence.",
                 "Do not hotlink MotionSites example assets.",
@@ -927,13 +994,37 @@ def build_plan(
                 "mobile_recomposition": "",
                 "reduced_motion": "",
             },
+            "mobile_signature": {
+                "mode": "",
+                "input": "",
+                "subject": "",
+                "visible_change": "",
+                "implementation": "",
+                "fallback": "",
+                "verified": False,
+            },
             "structural_language": "",
             "micro_interactions": [],
+            "supporting_moments": [],
+            "continuity_map": {
+                "entry": "",
+                "orientation": "",
+                "deepening": "",
+                "evidence": "",
+                "decision": "",
+                "close": "",
+            },
             "choreography_beats": [],
             "competing_systems_removed": [],
             "scroll_occupancy_rule": "Every viewport of scroll must create a visible narrative, spatial, or informational change; no spacer-only travel.",
             "long_scroll_justification": "",
             "dependency_strategy": "",
+            "rules": [
+                "Mobile is not reduced motion: preserve a real company-specific visible transformation unless the user prefers reduced motion.",
+                "Do not set mobile progress directly to its final state or activate every signature state at load.",
+                "Author at least two lower-intensity supporting moments in distinct later sections and mark them with data-lumora-motion.",
+                "Generic fade-up reveals may support ordinary copy but do not satisfy supporting_moments.",
+            ],
         },
         "conversion_plan": {
             "primary_action": "",
@@ -952,23 +1043,38 @@ def build_plan(
             "revisions_completed": [],
         },
         "verification": {
-            "viewports": ["1440x1000", "390x844", "1920x1080 when full-bleed or canvas framing needs it"],
+            "viewports": ["320x780", "360x800", "390x844", "430x932", "768x1024", "1024x900", "1440x1000", "1920x1080 when full-bleed or canvas framing needs it"],
             "required": [
                 "entry, 25%, 50%, 75%, and closing scroll-state screenshots on desktop",
-                "entry and full-page screenshots for every route on mobile",
+                "entry, signature, and full-page screenshots on mobile plus one tablet state",
+                "every published route tested at 390 and 1440 widths; index and interaction-heavy routes tested across the full viewport matrix",
                 "working navigation, controls, routes, and truthful forms",
                 "no console errors or failed local assets",
                 "no unintended blank viewport, dead scroll, horizontal overflow, or unrelated section overlap",
+                "no overflow-x hidden or clip on html, body, or :root; identify and fix the actual overflowing element",
+                "the exact GitHub Pages publishing root matches the route manifest; no source scrape or validation mirror is shipped",
                 "reduced-motion and touch verification",
                 "reference-to-build comparison and one completed director revision round",
                 "scripts/validate_lumora_site.py --strict passes",
             ],
+            "publishing_root_review": "",
+            "responsive_review": {
+                "status": "required",
+                "tested_widths": [],
+                "containment_results": [],
+                "longest_content_checks": [],
+                "mobile_media_review": "",
+            },
             "visual_review": {
                 "status": "required",
                 "checked_states": [],
                 "dead_space_review": "",
                 "reference_comparison": "",
                 "mobile_recomposition_review": "",
+                "mobile_signature_review": "",
+                "motion_continuity_review": "",
+                "image_composition_review": "",
+                "route_consistency_review": "",
                 "interaction_review": "",
                 "revisions_after_review": [],
             },
@@ -980,6 +1086,7 @@ def print_markdown(plan: dict[str, Any], output: Path | None) -> None:
     print("# Lumora Creative Selection")
     print()
     print(f"Profile: {plan['profile']['name']}")
+    print(f"Site origin: {plan['build_contract']['site_origin']}")
     print(f"Pages: {plan['build_contract']['page_mode']}")
     print(f"Creative seed: {plan['creative_seed']}")
     if output:
@@ -1006,6 +1113,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("brief", help="Complete company and website brief")
     parser.add_argument("--pages", choices=("auto", "one", "multi"), default="auto")
+    parser.add_argument("--site-origin", choices=("auto", "new", "existing"), default="auto")
     parser.add_argument("--seed", help="Optional alternate-direction seed")
     parser.add_argument("--max-sources", type=int, choices=(1, 2, 3), default=1)
     parser.add_argument("--library", type=Path, default=DEFAULT_LIBRARY)
@@ -1016,7 +1124,7 @@ def main() -> int:
 
     try:
         index, _library, prompt_text = load_inputs(args.index.resolve(), args.library.resolve())
-        plan = build_plan(args.brief, index, prompt_text, args.pages, args.seed, args.max_sources)
+        plan = build_plan(args.brief, index, prompt_text, args.pages, args.seed, args.max_sources, args.site_origin)
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(plan, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")

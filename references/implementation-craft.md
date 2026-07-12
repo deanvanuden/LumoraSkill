@@ -44,7 +44,7 @@ Before writing CSS, extract a build specification from the three selected refere
 - dominant and subordinate interaction states
 - desktop-to-mobile changes
 
-Implement these as tokens and stable component rules. Compare browser screenshots against the references during the build, not only at the end.
+Record the result in `creative_direction.composition_map`, with one entry for every major section on every published page. Each entry names the role, focal subject, text/media relationship, desktop geometry, mobile geometry, negative-space intention, and motion moment. Implement these as tokens and stable component rules. Compare browser screenshots against the references during the build, not only at the end.
 
 ## Page Composition And Rhythm
 
@@ -59,6 +59,18 @@ The page should feel like a directed sequence, not repeated content modules.
 - never place cards inside cards or style every section as a floating card
 - avoid repeated equal columns and cloned left-copy/right-image sections
 - let asymmetry serve focus and narrative, not random novelty
+
+### Media-To-Copy Balance
+
+Treat media size, copy weight, and blank space as one composition. A large image does not automatically justify a tiny side list or narrow paragraph. At each viewport inspect:
+
+- which element the eye reaches first
+- whether the copy block has enough scale, density, or anchoring to answer the media
+- whether the image carries the section's actual evidence or merely occupies space
+- whether blank space isolates a focal point or reads as missing content
+- whether the next section enters at a deliberate rhythm
+
+Flag any chapter where media occupies roughly two thirds or more of the viewport while adjacent copy occupies only a small corner and the remaining column is empty. Keep it only when that imbalance is the named idea, not an accident. Fix weak balance by changing geometry, crop, copy hierarchy, supporting assets, or chapter sequence, not by adding decorative shapes.
 
 ### Rhythm
 
@@ -230,6 +242,10 @@ Across routes preserve:
 
 Give each route its own focal subject, purpose, and pacing. Do not clone the home-page hero and swap the heading.
 
+For existing sites, create a route migration decision for every discovered source route. A route may be redesigned, consolidated, redirected, or retired. Never copy a source site into the publishing root and redesign only `index.html`; old HTML, stylesheets, scripts, mojibake, and broken asset paths are release failures even when the new homepage is strong.
+
+Every shipped route must appear in `build_contract.route_manifest` and use the shared system named there. Legal and system pages may be quieter, but they still need the current typography, navigation, footer, spacing, focus states, and responsive containment. Consolidated routes need a branded accessible redirect or updated destination, not an untouched legacy page.
+
 Use real relative `.html` routes for default static builds. Verify links from every page and design `404.html` as part of the same world.
 
 Page transitions may reinforce the world when they remain fast, accessible, and failure-safe. Never delay navigation merely to show an animation.
@@ -250,6 +266,16 @@ For every major chapter decide:
 - how long words, actions, and labels fit
 
 Use dynamic viewport units or robust minimums. Test narrow and tall mobile, not only one screenshot size. Keep the next chapter visible when the first viewport concept allows it.
+
+Test `320`, `360`, `390`, `430`, `768`, `1024`, and `1440` CSS-pixel widths. The home page must pass all seven. Every route must pass at least `390` and `1440`, and interaction-heavy routes need the full matrix. Measure `document.documentElement.clientWidth` and `scrollWidth`, identify every overflowing selector, and fix the actual child. Never declare containment after applying root-level `overflow-x: hidden` or `clip`.
+
+For prominent mobile media:
+
+- define a stable aspect ratio and a maximum height in `svh` or another intentional bound
+- use `object-position` from the planned focal point
+- switch source or crop with `<picture>` when desktop geometry cannot survive
+- keep borders, transforms, shadows, pseudo-elements, and absolute children inside the measured bounds
+- verify the live signature state, not only the initial and full-page screenshots
 
 ## Interaction Completeness
 
