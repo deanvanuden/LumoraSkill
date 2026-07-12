@@ -15,6 +15,8 @@ assets/
   images/
   video/
   fonts/
+  models/
+  textures/
 ```
 
 This shape can be uploaded to GitHub and published from `/<root>` without an npm build. A custom domain can be connected later in repository Pages settings.
@@ -52,6 +54,8 @@ Do not guess DNS records or commit a placeholder domain.
 
 Three.js can run from a CDN import map, but every import must use one exact version and one CDN. Serve locally over HTTP during testing because module imports may not work from `file://`.
 
+Keep art-direction references, rejected generated assets, browser screenshots, and review notes in a project `work/` folder outside the publishing root when practical. Copy only final runtime assets into the site. Do not ship image-generation caches, source prompts, or large unused variants.
+
 ## Forms And Dynamic Features
 
 GitHub Pages has no server runtime. Use one of these truthful patterns:
@@ -87,5 +91,5 @@ At delivery, report:
 - whether Pages should publish from root, `/docs`, or Actions
 - whether `CNAME` is present
 - all external services or CDN dependencies
+- all local video, model, texture, font, and generated-image dependencies
 - any dynamic feature that still needs a real endpoint
-

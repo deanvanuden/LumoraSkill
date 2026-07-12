@@ -1,176 +1,221 @@
 ---
 name: lumora
-description: Create or radically redesign unique, company-specific, award-level websites for GitHub Pages using Lumora's licensed MotionSites prompt library as directly inspected design DNA. Use when the user invokes $lumora or asks for a premium marketing site, product or ecommerce site, SaaS site, portfolio, studio, local-business site, multipage company website, or motion-rich visual redesign. Plans a traceable source mix, generates fit-for-slot imagery when needed, implements static HTML/CSS/JavaScript with advanced motion or 3D only when justified, and verifies responsive behavior, interactions, media, accessibility, and deployment readiness.
+description: Direct, design, build, and radically redesign unique company-specific websites as complete digital experiences, using Lumora's licensed MotionSites prompt library as inspected design DNA. Use when the user invokes $lumora or asks for a premium, highly visual, motion-rich, award-caliber marketing site, company website, product or ecommerce site, SaaS site, portfolio, studio, event, hospitality, local-business, editorial, or multipage GitHub Pages website. Explores multiple creative worlds, selects one dominant prompt anchor with compatible supporting donors, generates a coherent campaign of fit-for-slot images and media, implements static HTML/CSS/JavaScript with film, canvas, GSAP, or Three.js when the concept warrants it, and completes browser-based art direction, responsive, accessibility, interaction, and deployment QA.
 ---
 
 # Lumora
 
-Build a bespoke digital experience around the company, not a decorated template. Use the bundled MotionSites prompts as a creative engineering library: inspect the selected prompt bodies, extract their strongest composition and interaction ideas, then reinterpret those ideas for the current brand and a static GitHub Pages build.
+Operate as a senior digital creative director, art director, interaction designer, frontend engineer, and QA lead. Build an authored world around the company. Do not decorate a standard landing-page outline and call it custom.
 
-The prompt library is distributed under the maintainer-reported permission in `references/permissions.md`. Never place prompt bodies in a generated customer project.
+Lumora has no prescribed aesthetic. It may produce quiet editorial work, expressive culture sites, rigorous product systems, cinematic film-led stories, playful interactions, immersive 3D worlds, dense technical interfaces, or restrained local-business sites. Constraints protect coherence, truth, usability, and craft; they do not cap ambition.
+
+The MotionSites library is licensed under the maintainer-reported permission in `references/permissions.md`. Inspect source bodies inside the skill, but never place paid prompt bodies or MotionSites example media in a generated customer project.
+
+## Definition Of Done
+
+A Lumora site is complete only when it:
+
+- expresses a company truth that a competitor could not reuse unchanged
+- presents one coherent experience world, central subject, and material language
+- uses one dominant prompt anchor and no more than two subordinate donors
+- contains a complete, coherent media campaign rather than one hero image plus filler
+- includes one memorable company-specific interaction or transformation
+- integrates conversion into the story instead of attaching a generic CTA section
+- works as a truthful static GitHub Pages build across desktop, mobile, keyboard, touch, and reduced motion
+- has been rendered, critiqued, revised, and validated with `--strict`
+
+Do not promise awards. Reach award-caliber quality through concept, media, typography, choreography, and exact execution.
 
 ## Non-Negotiables
 
-- Start from company truth: offer, audience, proof, personality, place, product, story, real routes, and real media.
-- Run `scripts/lumora_plan.py` before implementation. Do not select sources from titles alone.
-- Inspect every selected source prompt with `scripts/inspect_lumora_prompt.py`; read the primary composition source in full.
-- Give each donor a defined job. Never average five unrelated styles into one generic result.
-- Establish one company-specific creative thesis, one visual motif, and one signature interaction before coding.
-- Generate or source real visual media when the project lacks it. Do not substitute CSS blobs, gradient orbs, primitive pseudo-art, empty mockups, or placeholder stock imagery.
-- Build plain static HTML, CSS, and JavaScript for new projects by default. Adapt Vite/React prompt concepts rather than reproducing their framework scaffolding.
-- Use motion to explain, reveal, compare, or intensify content. Do not add every available effect.
-- Make all navigation, routes, controls, forms, accordions, tabs, selectors, galleries, and CTAs behave truthfully.
-- Respect reduced motion, coarse pointers, touch, keyboard access, and mobile document flow.
-- Finish with browser screenshots and `scripts/validate_lumora_site.py`; do not hand off an unverified poster.
+- Start from real company facts, objects, people, products, interfaces, places, processes, language, and routes.
+- Run `scripts/lumora_plan.py` before coding. New work must use `lumora.project_plan.v4`.
+- Treat the generated page list as a content inventory, not a section template.
+- Inspect at least three anchor candidates from the library. Read the selected anchor in full.
+- Explore three genuinely different company-specific experience worlds before selecting one.
+- Lock company truth, creative direction, source compatibility, media, motion, and conversion in `lumora-plan.json` before editing website files.
+- When supplied media cannot carry the concept, load the `imagegen` skill and create every major or supporting asset the site needs. Do not stop after generating one hero image.
+- Do not replace campaign imagery with CSS blobs, gradient orbs, arbitrary primitives, fake 3D, empty mockups, or unrelated stock media.
+- Do not invent testimonials, awards, clients, statistics, prices, product results, team members, events, or credentials.
+- Build real controls and destinations. No fake submissions, dead CTAs, decorative tabs, or inaccessible hover-only content.
+- Keep the unanimated document complete. Motion is progressive enhancement.
+- Perform at least one browser-rendered creative-director revision before delivery.
 
-## Source Hierarchy
+## Source Architecture
 
-Use at most five prompt donors, each with a different responsibility:
+Use an anchor-led model:
 
-1. `foundation`: page composition, section cadence, and global spatial logic.
-2. `hero`: first-viewport architecture and dominant media behavior.
-3. `narrative`: one distinctive mechanism for product, service, story, proof, or work.
-4. `motion`: one signature scroll or interaction sequence.
-5. `conversion`: purchase, inquiry, booking, signup, pricing, or closing behavior.
+1. `anchor`, 70 to 80 percent authority: owns the experience world, page silhouette, opening, dominant media behavior, section rhythm, and primary choreography.
+2. `experience`, 10 to 20 percent authority: contributes one bounded mechanism for a product, service, story, proof, program, process, or gallery.
+3. `conversion`, 10 to 15 percent authority: contributes one bounded purchase, booking, inquiry, signup, pricing, or closing behavior when the anchor cannot carry it.
 
-The foundation source wins when donors conflict. The site-wide brand system wins on copy, colors, fonts, and media. The motion source may change choreography but may not reorganize the whole page.
+Use one anchor and zero, one, or two supporting donors. More prompts do not mean more quality. Drop a support donor when it introduces another hero, visual world, dominant scroll system, or component language. A supporting donor should normally affect one or two sections.
 
-Each selected source must contribute at least two concrete decisions recorded in `lumora-plan.json` and mapped to actual sections. Drop a donor that contributes only a mood word.
+The company world outranks every source. The anchor outranks support donors. A donor may provide geometry, state logic, timing, crop behavior, or interaction mechanics, but never its example brand or framework boilerplate.
+
+Read `references/prompt-remix.md` before locking the mix.
 
 ## Required Workflow
 
-### 1. Discover
+### 1. Discover Company Truth
 
-Inspect the workspace and any supplied URL, screenshots, files, brand assets, and media. Build a factual inventory covering:
+Inspect the workspace, supplied files, screenshots, URLs, source site, and existing project before making aesthetic decisions. Record in `company_truth`:
 
-- company, audience, offer, differentiators, and primary conversion
-- real claims, products, services, prices, reviews, credentials, contact details, and locations
-- current pages and routes
-- available logos, photography, product media, video, illustration, type, and color signals
-- facts that are missing and must not be invented
+- offer, audience, decision friction, differentiator, proof, and primary action
+- real products, services, prices, projects, reviews, events, people, credentials, locations, and contact routes
+- material world: physical objects, packaging, tools, ingredients, places, interfaces, rituals, processes, sounds, and recurring actions
+- natural nouns and verbs used by the company
+- supplied logos, fonts, colors, photography, video, 3D, illustrations, documents, UI captures, and brand rules
+- missing or stale facts that must be omitted, labeled, or confirmed
 
-If a source site exists, inspect it with the available browser tooling before selecting prompts.
+If the source website exists, inspect its information architecture and working destinations. Preserve truth, not weak presentation.
 
-### 2. Plan From The Full Library
+### 2. Generate The V4 Plan
 
-Run from the skill directory or with an absolute script path:
+Run:
 
 ```bash
 python scripts/lumora_plan.py "<complete company and website brief>" --output "<site-root>/lumora-plan.json"
 ```
 
-Use `--pages multi` for an explicitly multipage build and `--seed <value>` only when a deliberate alternate direction is wanted.
+The planner selects only the anchor by default and still exposes experience and conversion shortlists. Use `--max-sources 2` or `3` only when the brief already identifies a bounded mechanism that may benefit from a support donor. Use `--pages multi` for a genuinely multipage experience. Use `--seed` only to request an alternate library shortlist, never as a substitute for art direction.
 
-Read `references/prompt-remix.md`, then follow each selected source's inspection command. Use full inspection for `foundation`; use full or focused inspection for the other sources as directed by the plan. Extract visible layout relationships, media roles, component behavior, choreography, responsive behavior, and conversion mechanics. Ignore example-brand copy and framework boilerplate.
+Inspect the top three anchor candidates listed in `source_selection.candidate_shortlists`. Read promising prompts, preview evidence when available, and choose the source whose native world, media role, and motion behavior can become the company's world. Do not choose from titles or tags alone.
 
-### 3. Lock The Creative Direction
+### 3. Explore Three Experience Worlds
 
-Read `references/creative-direction.md`. Before editing website files, update `lumora-plan.json` with:
+Read `references/creative-direction.md`. Write three concepts that differ in central subject, spatial logic, transformation, media strategy, and emotional arc, not merely color or font.
 
-- a one-sentence creative thesis rooted in the company
-- a company-specific signature motif
-- the visual system: composition, type character, palette logic, material, media treatment, shape language, and section rhythm
-- the source-to-section map
-- the media-slot plan
-- the motion map and reduced-motion alternatives
+For each concept define:
 
-Set `creative_direction.status` to `locked` after these decisions are final. For every source, fill at least two `implemented_contributions` and one or more `implemented_sections`. Fill `media_plan.slots`, `motion_plan.desktop_implementation`, and `motion_plan.mobile_recomposition`; the validator treats omissions as blockers.
+- the company truth it expresses
+- the world the visitor enters
+- one signature object, environment, interface, or process
+- the transformation that unfolds
+- the opening scene
+- the asset campaign it requires
+- the main risk
+- why the concept could only belong to this company
 
-Reject a direction if the same art direction could be pasted onto an unrelated company without changing its meaning.
+Select the concept with the strongest combination of specificity, visual potential, narrative clarity, conversion relevance, and feasible execution. Record why the other two were rejected.
 
-### 4. Direct And Create Media
+### 4. Lock The Experience
 
-Read `references/media-motion.md` whenever the site uses prominent imagery, video, canvas, 3D, or scroll choreography.
+Complete `creative_direction`:
 
-- Use supplied company media first when it is strong enough.
-- If no useful visual reference exists, generate one or more implementation-oriented art-direction frames before coding, inspect them, and extract the visible system.
-- Generate separate fit-for-slot assets for hero, product, editorial, gallery, texture, or background roles when the existing media cannot carry them.
-- Keep generated text and logos out of raster images; render brand text in HTML/CSS.
-- Never imply that generated people, premises, results, certifications, or products are real company evidence.
-- Download or generate project-local media. Do not hotlink MotionSites example assets in the final site.
+- creative thesis and experience-world statement
+- signature object and repeated motif
+- material, spatial, camera, crop, shape, and typographic logic
+- transformation, emotional arc, and interaction thesis
+- section rhythm and narrative arc
+- company substitution failure
+- entry, signature-state, and decision keyframes
+- originality scorecard with visible evidence
 
-Use video only when movement is central to the concept. When no suitable video can be created or sourced, redesign that slot as an intentional still-image interaction instead of shipping an unrelated clip.
+Reject any direction that depends only on familiar category styling. Push one deliberate departure while preserving brand truth. A nightclub cannot rely only on black, neon, compressed type, and crowd photos; a SaaS site cannot rely only on dark cards and dashboard crops; luxury cannot be only beige and serif.
 
-### 5. Build For GitHub Pages
+### 5. Lock Compatible Prompt DNA
 
-Read `references/github-pages.md` before implementation.
+Read the selected anchor in full and focused excerpts for support donors. Fill contributions and implemented sections in `lumora-plan.json`.
 
-For a new site, default to:
+Keep source ideas concrete: relative scale, overlap, crop, media role, state change, transition, input, timing, fallback, and conversion behavior. Do not record mood words as contributions.
 
-```text
-index.html
-styles.css
-script.js
-404.html
-.nojekyll
-lumora-plan.json
-assets/images/
-assets/video/
-assets/fonts/
-```
+Resolve every compatibility risk. Prefer dropping a donor to weakening the selected world.
 
-Add real route files such as `about.html`, `work.html`, `product.html`, or `contact.html` when the page map needs them. Use relative URLs so both repository Pages URLs and custom domains work. Add `CNAME` only when the user supplied the domain.
+### 6. Direct The Visual Campaign
 
-Use semantic HTML, a deliberate CSS token system, and project-specific JavaScript. Load GSAP 3.13+ with ScrollTrigger through pinned static scripts when advanced choreography is justified. Use Three.js only when an actual inspectable 3D subject is part of the concept. Smooth scrolling is optional, never a default requirement.
+Read `references/asset-direction.md`. Unless the user supplied a complete and strong design system, create and inspect three connected implementation references before coding:
 
-Mark major sections with `data-lumora-source="<prompt-id>"` so the final implementation remains traceable to `lumora-plan.json`.
+1. `entry`: opening viewport and visible continuation
+2. `signature-state`: the experience at its most transformed or interactive
+3. `decision`: the closing state where narrative and action meet
 
-### 6. Choreograph
+Use the references as design specifications, not loose moodboards. Extract composition, grid, type relationships, negative space, crop system, material, color roles, focal points, controls, and transition logic.
 
-Use three motion layers:
+Create a continuity bible, then fill every media slot. Use supplied media where it is truthful and strong. Generate or art-direct the rest as one campaign: hero subjects, product or place scenes, editorial crops, transparent cutouts, macro details, textures, posters, transition frames, gallery images, UI states, video posters, and closing assets as needed.
 
-- `signature`: one memorable scroll, video, spatial, or narrative interaction unique to this company
-- `structural`: one consistent reveal/transition language across sections
-- `micro`: hover, press, focus, menu, gallery, and form feedback
+When an exact documentary artifact is unavailable but the concept only needs campaign language, create a clearly conceptual, brand-grounded prop or visual rather than stalling the build. Keep real facts, credentials, product geometry, and identity truthful.
 
-Prefer transform and opacity. Bound pinned/sticky effects to stable containers, disable them when mobile flow becomes fragile, and provide a no-motion state that exposes all content immediately.
+Generate separate compositions for materially different aspect ratios. Keep raster text and logos out of generated imagery. Inspect every generated asset and regenerate weak, malformed, generic, or unusable results.
 
-### 7. Verify
+### 7. Architect The Narrative And Pages
 
-Read `references/quality-gates.md`. Serve the site locally, then inspect at minimum:
+Turn content into an experience arc rather than a standard section checklist:
 
-- desktop around 1440 x 1000
-- mobile around 390 x 844
-- one wide desktop viewport when composition or canvas framing depends on width
+- entry: establish world, subject, offer, and invitation
+- orientation: make the visitor understand what this is
+- deepening: reveal product, process, program, place, or story through the signature mechanism
+- evidence: prove claims with real material
+- decision: answer objections and make action feel earned
+- close: leave a memorable final state and useful routes
 
-Test navigation, routes, keyboard focus, touch behavior, forms, controls, asset loading, console errors, reduced motion, and horizontal overflow. For canvas/Three.js, verify nonblank pixels, framing, interaction, and mobile fallback.
+Remove sections that repeat a point. Add pages when separate journeys, projects, products, services, or audiences deserve their own pacing. Maintain one world across routes while giving each page a distinct purpose.
+
+Read `references/implementation-craft.md` and `references/github-pages.md` before implementation.
+
+### 8. Build The Experience
+
+For new projects, default to semantic static HTML, CSS, and JavaScript. Adapt Vite, React, Tailwind, Framer Motion, or R3F source concepts into static equivalents unless the existing project or user explicitly requires a framework.
+
+Use the best medium for the locked concept:
+
+- art-directed raster media for photographic, product, material, and campaign subjects
+- local video for time, atmosphere, performance, transformation, or craft
+- Three.js/WebGL for an inspectable object or spatial world
+- canvas or shaders for a concept-specific generative behavior
+- SVG for diagrams, marks, masks, routes, and code-native vector systems
+- HTML/CSS for layout, typography, UI, masks, lines, and restrained surface treatment
+
+Advanced media is allowed when meaningful. Decorative spinning primitives and effect samplers are not.
+
+Mark every major section with `data-lumora-source`. The anchor may appear across the site; support IDs appear only where their bounded contribution is visible.
+
+### 9. Choreograph Meaning
+
+Read `references/media-motion.md`. Define one dominant interaction hierarchy, not an effect count:
+
+- `dominant`: the memorable company-specific transformation
+- `structural`: one consistent reveal and transition grammar
+- `micro`: responsive feedback for navigation, controls, media, forms, and actions
+
+There is no arbitrary maximum scroll distance or technology limit. Every viewport of travel must create a visible narrative, spatial, or informational change. Avoid spacer-only scroll, competing pinned chapters, automatic carousels that fight user input, and motion that delays access to content.
+
+Storyboard each dominant beat, exit condition, mobile recomposition, reduced-motion state, and library-failure fallback before implementation.
+
+### 10. Render, Critique, And Revise
+
+Read `references/quality-gates.md`. Serve the site locally and inspect the actual experience, not only source code or one full-page screenshot.
+
+Capture and inspect:
+
+- desktop entry, 25 percent, 50 percent, 75 percent, and closing states
+- mobile entry and full-page flow
+- reduced-motion state
+- every route and important open, selected, error, empty, and success state
+
+Run a creative-director critique after the first complete render. Identify the strongest decision, weakest decision, generic tells, dead areas, mismatches against references, and interactions that compete. Make at least one meaningful revision and record it in the plan.
+
+### 11. Validate And Deliver
 
 Run:
 
 ```bash
-python scripts/validate_lumora_site.py --site-root "<site-root>" --plan "<site-root>/lumora-plan.json"
+python scripts/validate_lumora_site.py --site-root "<site-root>" --plan "<site-root>/lumora-plan.json" --strict
 ```
 
-Fix errors and visually meaningful warnings before delivery.
+Fix all errors and every user-facing warning. Verify navigation, routes, controls, forms, keyboard focus, touch, responsive containment, media loading, console output, reduced motion, 3D/canvas pixels, and GitHub Pages paths.
 
-## Anti-Generic Gate
-
-Do not ship any of these unless the company or selected source specifically requires them:
-
-- centered headline over an atmospheric dark image
-- equal three-card feature rows or card-heavy page composition
-- purple/blue glow, gradient text, glass panels, or floating decorative blobs as automatic premium styling
-- fake dashboard panels, fake metrics, generic testimonials, or invented awards
-- repeated left-copy/right-image sections
-- the same generated image reused across unrelated prominent slots
-- motion that merely moves decoration without supporting content
-- copy such as "elevate," "unleash," "revolutionize," "next-gen," or "seamless" without a concrete factual reason
-
-Award-level does not mean maximum effects. It means a clear idea, excellent media, controlled hierarchy, exact execution, and motion that belongs to this company.
-
-## Reporting
-
-Before coding, briefly report the creative thesis, selected source IDs and jobs, page map, signature moment, and media-generation plan.
-
-After implementation, report changed files, generated/source media, prompt IDs used, interactions implemented, validation performed, local preview URL, and any truthful remaining gaps.
+Keep the local server running after implementation and provide its URL. Report the output root, pages, generated and supplied assets, anchor and supporting prompt IDs, signature interaction, revision made after critique, verification performed, and any truthful integration gap.
 
 ## References
 
-- `references/creative-direction.md`: company DNA, originality controls, and visual-system decisions.
-- `references/prompt-remix.md`: how to inspect and translate MotionSites prompts without losing their strongest ideas.
-- `references/media-motion.md`: image direction, video/3D decisions, motion hierarchy, and performance rules.
-- `references/github-pages.md`: static architecture, routes, domains, asset paths, forms, and deployment constraints.
-- `references/quality-gates.md`: browser, responsive, interaction, accessibility, and visual verification.
-- `references/design-dna-index.json`: generated index of every prompt's roles, layouts, styles, motion, media, interactions, and stack.
-- `references/motionsites-prompt-library.json`: licensed source prompt bodies.
-- `references/permissions.md`: reported redistribution permission.
+- `references/creative-direction.md`: company truth, three-world exploration, creative courage, direction lock, and originality scoring.
+- `references/prompt-remix.md`: anchor selection, compatibility, source inspection, authority, and static translation.
+- `references/asset-direction.md`: reference frames, image generation, campaign continuity, media slots, truth, and asset QA.
+- `references/media-motion.md`: interaction hierarchy, scroll choreography, film, 3D, canvas, responsive motion, and performance.
+- `references/implementation-craft.md`: composition, typography, color, navigation, sections, controls, multipage continuity, and anti-drift implementation.
+- `references/github-pages.md`: static architecture, relative paths, routes, forms, domains, and deployment.
+- `references/quality-gates.md`: creative-director review, scroll-state browser QA, accessibility, performance, and strict validation.
+- `references/design-dna-index.json`: generated index of prompt roles, layouts, styles, media, motion, interactions, constraints, and stack.
+- `references/motionsites-prompt-library.json`: licensed prompt bodies for local inspection.
+- `references/permissions.md`: reported library redistribution permission.

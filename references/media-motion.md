@@ -1,138 +1,315 @@
-# Lumora Media And Motion
+# Lumora Motion And Experience Choreography
 
 ## Contents
 
-1. Media hierarchy
-2. Image generation
-3. Video and 3D
-4. Motion hierarchy
-5. Effect selection
-6. Implementation and performance
-7. Responsive and reduced motion
+1. Motion as meaning
+2. Interaction hierarchy
+3. Storyboard the dominant interaction
+4. Scroll occupancy
+5. Choosing input and transformation
+6. Film, 3D, canvas, and shader choreography
+7. Structural and micro motion
+8. Implementation strategy
+9. Responsive, touch, and reduced motion
+10. Performance and failure recovery
+11. Motion review gate
 
-## Media Hierarchy
+## Motion As Meaning
 
-Treat media as content architecture. Define every major slot before generation or sourcing:
+Motion should make a company truth visible. It may explain, inspect, compare, assemble, reveal, intensify, navigate, or transform. It should not exist merely because a donor prompt contains an effect.
 
-```json
-{
-  "id": "hero-product",
-  "role": "dominant product still",
-  "page": "index.html",
-  "aspect_ratio": "4:5",
-  "target_render": "820x1025",
-  "focal_point": "bottle cap at 58% x, 32% y",
-  "text_safe_area": "left 42%",
-  "source": "generated",
-  "truthfulness": "fictional campaign image; no real-person or clinical claim",
-  "reuse": "hero and product detail only"
-}
-```
-
-Use project-local files. Size hero and full-width raster media for roughly twice their largest render dimensions when practical. Use AVIF or WebP for photography with a reasonable fallback when support or source quality requires it. Give every `object-fit: cover` slot an intentional `object-position`.
-
-Do not reuse one non-logo image in adjacent prominent sections. Do not use low-resolution source media as full-bleed content.
-
-## Image Generation
-
-Generate a visual reference before coding when the user provides no strong design reference and visual quality is central. Generate final assets separately from the reference comp.
-
-Each final asset prompt must specify:
-
-- exact subject and its relationship to the company
-- slot role and aspect ratio
-- camera distance, angle, lens character, and focal point
-- lighting, material, palette, and environment
-- text-safe area and crop behavior
-- whether the background should be transparent, isolated, environmental, or full-bleed
-- consistency requirements shared with the other site assets
-- negative constraints: no readable text, no fake logo, no watermark, no extra products, no anatomy errors, no irrelevant props
-
-Generate different compositions for different aspect ratios. Cropping one image into every slot is not art direction.
-
-Prefer real or generated bitmap media over CSS illustrations made from circles, blobs, gradients, or pseudo-elements. CSS is appropriate for interface chrome, layout, masks, lines, and restrained textures, not for pretending to be campaign art.
-
-## Video And 3D
-
-Use video when time, transformation, craft, environment, or product behavior is the subject. A background video must be local, compressed, muted, looping only when appropriate, `playsinline`, and have a useful poster. Do not autoplay audio.
-
-Use Three.js only when the visitor benefits from inspecting or manipulating a real object, spatial scene, product, model, or data relationship. A decorative spinning primitive is not enough. Provide a static poster fallback and verify that the canvas is nonblank and correctly framed.
-
-If video or 3D cannot be sourced or generated credibly, use a strong still-image sequence, before/after control, layered crop reveal, or editorial gallery instead.
-
-## Motion Hierarchy
-
-Budget the page around three layers:
-
-1. Signature motion: one memorable company-specific sequence.
-2. Structural motion: one reveal language reused with restraint.
-3. Micro motion: feedback for actionable elements.
-
-A normal marketing page rarely needs more than one pinned sequence, one marquee or horizontal section, and one reveal system. Do not combine scroll lock, smooth-scroll hijacking, multiple pinned chapters, cursor replacement, particle fields, and perpetual card motion on the same page.
-
-Motion must answer at least one question:
+Every meaningful animation should answer at least one question:
 
 - What changed?
 - What is connected?
 - What should I inspect?
 - What happens next?
-- What is the difference between two states?
+- What is the difference between states?
 - Where am I in the story?
+- How does this mirror the company's product, craft, place, or culture?
 
-Delete motion that answers none of them.
+Delete or subordinate motion that answers none of them.
 
-## Effect Selection
+There is no fixed maximum number of animations. Hierarchy matters more than count. A sophisticated experience may contain many local transitions, material responses, and media states while still having one unmistakable dominant interaction.
 
-| Company/content | Strong candidates | Weak default |
+## Interaction Hierarchy
+
+### Dominant Interaction
+
+One memorable transformation owns the experience. It may span several chapters when they are consecutive beats of the same subject and narrative.
+
+Examples:
+
+- a venue access object is scanned, opens, and becomes the event program
+- product layers assemble while material evidence and configuration become visible
+- a real interface receives input, routes work, and resolves into output
+- a building plan moves from drawing to material detail to inhabited space
+- an ingredient or craft process changes physical state as the story advances
+
+The dominant interaction can use scroll, drag, pointer inspection, typed input, time, camera movement, video, 3D, sound with consent, or a combination. Inputs must cooperate rather than compete.
+
+### Structural Language
+
+Use one family of recurring transitions to connect sections: mask, registration, focus, crop, depth, type baseline, paper edge, camera cut, interface state, or another world-specific behavior.
+
+Structural motion should support rhythm and orientation. It must not become a second spectacle.
+
+### Micro Interactions
+
+Use responsive feedback for:
+
+- navigation and menu state
+- links and buttons
+- selectors, tabs, accordions, filters, and galleries
+- media controls
+- forms, validation, errors, success, and disabled state
+- keyboard focus and active selection
+
+Micro motion should feel made from the same material and tempo as the larger experience.
+
+## Storyboard The Dominant Interaction
+
+Complete `motion_plan` before coding.
+
+Define:
+
+- `name`: a company-specific interaction name, not "scroll animation"
+- `subject`: the object, interface, process, or environment that transforms
+- `input`: what the visitor does
+- `transformation`: the visible state change
+- `narrative_purpose`: why this change matters
+- `desktop_implementation`: exact spatial and technical behavior
+- `mobile_recomposition`: equivalent idea for narrow and touch contexts
+- `reduced_motion`: complete state without movement dependency
+
+Write at least three visible choreography beats:
+
+```json
+{
+  "beat": "The scanner recognizes the access band",
+  "trigger": "Chapter progress reaches the first registration mark",
+  "visible_change": "A narrow scan line reveals the event date inside the band while the surrounding street scene remains stable",
+  "exit_condition": "Date, venue, and ticket state are fully readable before the next beat starts",
+  "fallback": "The band, date, and venue render together as a static editorial frame"
+}
+```
+
+Each beat must have a visible change and a legible settled state. Do not animate continuously without moments the visitor can understand.
+
+## Scroll Occupancy
+
+Long, pinned, sticky, or scrubbed chapters are allowed when every viewport of travel earns its space.
+
+For each viewport-equivalent segment ask:
+
+- What new subject state becomes visible?
+- What information becomes readable?
+- What spatial relationship changes?
+- Has the previous state settled before the next begins?
+- Does the scene still have a focal point?
+- Is the page progressing, or only consuming scroll distance?
+
+Avoid spacer-only travel, hidden text that waits too long to resolve, and pinning that leaves most of the viewport empty.
+
+Record `long_scroll_justification` when a CSS track reaches roughly 240vh or more. This is not a hard limit; it is a requirement to explain and verify the visual beats.
+
+### Pinned Chapters
+
+- use a stable parent with a deliberate height or ScrollTrigger end condition
+- keep one dominant subject visible and framed throughout
+- prevent unrelated next or previous sections from overlapping
+- define exact start, settle, and release states
+- avoid a second pinned narrative elsewhere unless it is visibly part of the same interaction
+- disable or recompose pinning when mobile flow becomes fragile
+
+### Horizontal Movement
+
+Use horizontal movement when sequence, archive, route, comparison, or spatial continuity benefits from it. Maintain orientation, progress, keyboard access, and touch behavior. Do not convert vertical scroll to a long horizontal gallery merely for novelty.
+
+### Text Reveals
+
+Reveal text when its timing supports reading or transformation. Avoid long word-by-word opacity or blur scrubs that create empty pages in full-page captures, hide essential information, or compete with media. Keep semantic text present in the DOM and visible without animation.
+
+## Choosing Input And Transformation
+
+| Company truth | Strong input/behavior candidates | Weak default |
 | --- | --- | --- |
-| Physical product | controlled rotation, material close-up, ingredient/component layers, size or variant selector, scroll-linked assembly | floating product over glow |
-| Service/process | bounded pinned chapters, path progress, before/after comparison, evidence reveal | generic icon cards |
-| Portfolio/studio | project crop transitions, horizontal gallery, hover preview, case-study chapter stack | equal project cards |
-| Hospitality/place | cinematic environmental video, day/night state, map journey, room/menu gallery | atmospheric stock hero only |
-| SaaS/interface | guided real UI state change, feature focus, input-to-output demo, data relationship | fake dashboard bento |
-| Editorial/culture | mask reveals, image cadence, typographic interruption, chapter navigation | endless centered copy |
-| Automotive/spatial | real model inspection, spec scrub, speed-sensitive media, route sequence | decorative 3D sphere |
+| Physical product | inspect, rotate, configure, compare, apply, assemble, reveal material | floating object over glow |
+| Service or process | handoff, route, stamp, sequence, before/after, evidence progression | icon cards with fade-up |
+| SaaS/interface | real typed input, state change, guided workflow, data relationship | fake dashboard parallax |
+| Place/hospitality | day/night, route, room movement, menu ritual, environmental film | generic atmospheric autoplay |
+| Culture/event | access, program, sound or poster behavior, archive navigation, ticket state | endless marquees and giant type |
+| Portfolio/studio | crop transition, project inspection, case-study chapter, process artifact | equal cards and hover gimmicks |
+| Architecture | plan-to-space, material focus, model inspection, route through project | decorative line drawing |
+| Professional trust | evidence chain, clause, decision state, risk comparison, expert process | count-up metrics |
+| Automotive/spatial | real model inspection, engineering assembly, configuration consequence | spinning primitive |
 
-Use the selected prompt body's exact choreography as the technical reference, then adapt its subject and implementation.
+Use the donor prompt's exact choreography as technical evidence only after the semantic relationship fits.
 
-## Implementation And Performance
+## Film, 3D, Canvas, And Shader Choreography
 
-For advanced static choreography, pin GSAP and ScrollTrigger at a known 3.13+ release:
+### Video
+
+Use video when time, environment, performance, transformation, or craft is the subject.
+
+- keep video local and compressed
+- provide a useful poster and still fallback
+- use `muted` and `playsinline` for autoplay
+- provide controls for nonessential or audio media
+- pause when offscreen or the page is hidden
+- avoid looping a moment whose visible jump destroys the world
+- use object position and responsive sources intentionally
+
+A background video must reveal something the still version cannot. Do not use an unrelated mood loop.
+
+### Three.js And WebGL
+
+Use 3D when the user benefits from an inspectable object, material, assembly, environment, model, or spatial relationship.
+
+- make the scene full-bleed or structurally integrated, not a decorative card preview
+- use real geometry or a credible generated model, not default primitives as finished art
+- define camera framing for desktop and mobile
+- use physically coherent material and lighting
+- include loading, error, static-poster, and reduced-motion states
+- pause or lower work when offscreen
+- test that the canvas is nonblank and subject pixels occupy the intended region
+- keep controls purposeful; do not expose orbit controls unless inspection benefits from them
+
+Static GitHub Pages can host Three.js modules, models, textures, and HDR assets. Pin one library version and one import source.
+
+### Canvas And Shaders
+
+Use canvas or shaders for concept-specific material behavior, generative systems, particles derived from real data, image displacement, fluid material, or spatial transition.
+
+- provide a noncanvas fallback
+- avoid high-DPI overdraw and unbounded particle counts
+- stop requestAnimationFrame work when hidden or offscreen
+- respond to resize without reallocating every frame
+- keep pointer behavior optional on touch
+- ensure text and controls remain HTML when accessibility or sharpness requires it
+
+Decorative noise, arbitrary particles, and gradient blobs are not sufficient concepts.
+
+### Sound
+
+Use sound only when central to the company experience and acceptable to the user. Never autoplay audible media. Provide explicit controls, clear state, keyboard access, and a complete silent experience.
+
+## Structural And Micro Motion
+
+### Timing
+
+Derive tempo from the company world. Precision may use short settled transitions; ceremony may use slower reveals; nightlife may use impact and release; a product ritual may use viscous or layered movement.
+
+Use consistent easing families and durations. Do not use a different spring, overshoot, and blur style for every component.
+
+### Hover
+
+Hover may reveal media, preview a route, inspect detail, or intensify a control. Every important hover behavior needs a tap, focus, or always-visible equivalent.
+
+### Buttons And Links
+
+Use transform, color, fill, underline, icon displacement, mask, or material response appropriate to the world. Preserve stable dimensions and at least 44 by 44 CSS-pixel touch targets.
+
+### Menus
+
+Menus may be minimal, spatial, editorial, or immersive. They must still expose current page, close behavior, focus order, escape handling, body-scroll policy, and mobile-safe navigation.
+
+### Forms
+
+Animate state changes only after behavior is truthful. Show loading, inline error, successful external submission, and disabled state without false confirmation.
+
+## Implementation Strategy
+
+For advanced static choreography, GSAP and ScrollTrigger are appropriate:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
 ```
 
-Register plugins explicitly. Use `gsap.matchMedia()` to scope desktop/mobile and reduced-motion setups. Keep all ScrollTriggers in the natural document flow and call cleanup when the page or media query changes.
+Pin exact versions. Register plugins explicitly.
 
-- Animate transform, opacity, clip-path, or shader uniforms; avoid repeatedly animating layout dimensions and positions.
-- Use `requestAnimationFrame` for pointer-following math and update CSS variables or transforms without framework rerenders.
-- Apply `will-change` only while an element is likely to animate.
-- Bound sticky and pinned scenes with stable heights and an explicit end condition.
-- Pause video, canvas, and perpetual loops when offscreen or when the page is hidden.
-- Avoid large backdrop filters on scrolling content.
-- Do not conceal broken overflow at the page root.
-- Keep touch targets at least 44 by 44 CSS pixels.
-- Use familiar icons and visible focus states for controls.
+Use `gsap.matchMedia()` for desktop, mobile, coarse pointer, and reduced-motion setups. Keep teardown functions for timelines, observers, requestAnimationFrame loops, event listeners, and media.
 
-Smooth scrolling is optional. Native scrolling plus ScrollTrigger is preferred unless the concept clearly benefits from interpolation. If Lenis is used, pin its version, integrate its frame loop once, and disable it for reduced motion or when it harms keyboard/touch navigation.
+Prefer:
 
-## Responsive And Reduced Motion
+- transform and opacity for continuous motion
+- clip-path or masks when bounded and tested
+- shader uniforms for canvas effects
+- CSS custom properties updated inside requestAnimationFrame for pointer response
+- IntersectionObserver for simple visibility state
+- native scroll unless interpolation materially improves the concept
 
-Every signature effect needs three implementations in the plan:
+Avoid:
 
-- desktop full effect
-- mobile recomposition
-- reduced-motion state
+- continuous layout animation of top, left, width, height, or expensive filters
+- broad `transition: all`
+- permanent `will-change` on many elements
+- large backdrop filters on scrolling content
+- scroll listeners that force layout on every event
+- multiple libraries controlling the same transform
+- hidden overflow used to conceal layout defects
 
-Do not merely scale desktop overlap down. On mobile, convert fragile pinned, horizontal, layered, or hover-only mechanics into readable vertical flow, swipe controls, tap states, or static sequences. Preserve all information and actions.
+Smooth scrolling is optional. If used, pin the version, integrate one frame loop, preserve anchors and keyboard input, and disable it when it harms touch or reduced motion.
 
-For reduced motion:
+## Responsive, Touch, And Reduced Motion
 
-- reveal all content immediately
-- remove parallax, scrub, autoplay, and large spatial transitions
-- keep short opacity feedback only when useful
-- provide controls for any nonessential moving media
-- never require motion to understand or reach content
+Every dominant interaction needs three intentional implementations.
 
+### Desktop
+
+Use the full spatial, film, 3D, or scroll concept with stable framing and visible settled states.
+
+### Mobile
+
+Recompose rather than shrink:
+
+- convert fragile pinning to explicit vertical states
+- replace hover inspection with tap or swipe
+- simplify camera movement while preserving the subject and transformation
+- use alternate crops or assets
+- keep controls reachable and content in normal flow
+- avoid fixed UI covering the focal subject or CTA
+
+Mobile can use a different interaction if it expresses the same thesis more clearly.
+
+### Reduced Motion
+
+- expose all content immediately
+- remove scrub, parallax, autoplay, large camera movement, and disorienting transitions
+- show a complete representative state for video, canvas, and 3D
+- preserve short opacity or color feedback where useful
+- never require animation to understand or reach content
+
+## Performance And Failure Recovery
+
+- Keep the base document readable before JavaScript initializes.
+- Load advanced libraries after critical structure where practical.
+- Reserve stable dimensions for media, canvas, controls, and dynamic text.
+- Pause video, canvas, 3D, and perpetual loops when offscreen or hidden.
+- Limit texture, model, video, and raster size to the visible role.
+- Avoid loading desktop and mobile media variants simultaneously.
+- Handle missing libraries and failed assets by exposing static content, not blank scenes.
+- Remove dev overlays and console errors.
+- Test CPU and memory behavior during the full scroll, not only at load.
+
+## Motion Review Gate
+
+Before implementation:
+
+- dominant interaction subject, input, transformation, and purpose are locked
+- at least three visible beats have settled states and fallbacks
+- structural and micro languages are defined
+- competing donor systems were removed
+- desktop, mobile, reduced-motion, and dependency-failure paths exist
+
+Before delivery:
+
+- every scroll viewport has visible content or change
+- the dominant interaction is unmistakable
+- no autoplay, drag, marquee, cursor, or secondary scrub competes with it
+- content remains readable during and after animation
+- mobile preserves the thesis
+- reduced motion exposes the complete experience
+- there are no blank canvases, stuck pins, overlap, layout shift, or failed cleanup
+- performance remains stable across the full page and route transitions

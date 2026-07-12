@@ -7,7 +7,6 @@ import argparse
 import hashlib
 import json
 import math
-import random
 import re
 from collections import Counter
 from dataclasses import dataclass
@@ -194,28 +193,21 @@ PROFILES: tuple[Profile, ...] = (
 
 
 SLOT_CONFIG: dict[str, dict[str, Any]] = {
-    "foundation": {
-        "roles": {"complete-page": 75, "hero": 12, "features": 8},
-        "categories": {"landing page", "website", "saas", "agency", "ecommerce", "automotive", "travel"},
-        "focus": "layout,visual,media,responsive",
+    "anchor": {
+        "roles": {"complete-page": 100, "hero": 38, "story-about": 22, "portfolio-gallery": 20, "product-commerce": 20},
+        "categories": {
+            "landing page", "website", "saas", "agency", "ecommerce", "automotive", "travel",
+            "interactive", "3d website", "creative / 3d",
+        },
+        "focus": "layout,visual,media,motion,interaction,responsive",
     },
-    "hero": {
-        "roles": {"hero": 90, "navigation": 16, "complete-page": 12},
-        "categories": {"hero", "hero section", "3d website", "creative / 3d"},
-        "focus": "layout,visual,media,motion,responsive",
-    },
-    "narrative": {
-        "roles": {"features": 40, "story-about": 40, "process": 38, "portfolio-gallery": 38, "product-commerce": 38, "services": 34, "proof": 24},
-        "categories": {"features", "features section", "about", "process", "portfolio", "projects", "product", "products", "services", "benefits", "cards", "tabs"},
-        "focus": "layout,visual,media,interaction,responsive",
-    },
-    "motion": {
-        "roles": {"hero": 10, "complete-page": 8, "portfolio-gallery": 8},
-        "categories": {"interactive", "animation", "3d website", "creative / 3d", "slider", "carousal", "marquee"},
-        "focus": "motion,interaction,media,responsive",
+    "experience": {
+        "roles": {"features": 48, "story-about": 48, "process": 46, "portfolio-gallery": 46, "product-commerce": 46, "services": 42, "proof": 34},
+        "categories": {"features", "features section", "about", "process", "portfolio", "projects", "product", "products", "services", "benefits", "cards", "tabs", "interactive"},
+        "focus": "layout,visual,media,interaction,motion,responsive",
     },
     "conversion": {
-        "roles": {"cta": 65, "pricing": 58, "contact-booking": 55, "footer": 45, "form-auth": 34, "product-commerce": 24},
+        "roles": {"cta": 72, "pricing": 64, "contact-booking": 62, "footer": 46, "form-auth": 42, "product-commerce": 32},
         "categories": {"cta", "cta section", "pricing", "contact us", "footer section", "signup", "waitlist", "form", "ecommerce"},
         "focus": "conversion,interaction,layout,responsive",
     },
@@ -227,6 +219,11 @@ ADVANCED_MOTION = {
     "magnetic", "tilt-depth", "hover-reveal", "page-transition", "morph", "liquid", "video-scrub",
     "image-sequence", "drag-gesture", "count-up", "theme-transition",
 }
+
+DOMINANT_SCROLL_MOTION = {"scroll-scrub", "pinned-scroll", "video-scrub", "image-sequence"}
+DOMINANT_LAYOUTS = {"pinned-sticky", "horizontal-scroll"}
+SPATIAL_SIGNALS = {"spatial-3d", "3d", "webgl", "product-render"}
+GENERIC_STYLES = {"dark", "light", "minimal"}
 
 NARRATIVE_CATEGORIES = {
     "features", "features section", "about", "process", "portfolio", "projects", "product", "products",
@@ -254,43 +251,43 @@ PROFILE_CONVERSION_CATEGORIES: dict[str, set[str]] = {
 
 PROFILE_ROLE_PREFERENCES: dict[str, dict[str, tuple[str, ...]]] = {
     "product-commerce": {
-        "narrative": ("product-commerce", "features", "process", "proof"),
+        "experience": ("product-commerce", "features", "process", "proof"),
         "conversion": ("product-commerce", "pricing", "cta", "contact-booking"),
     },
     "saas-product": {
-        "narrative": ("dashboard-app", "features", "process", "proof"),
+        "experience": ("dashboard-app", "features", "process", "proof"),
         "conversion": ("pricing", "cta", "form-auth", "contact-booking"),
     },
     "creative-studio": {
-        "narrative": ("portfolio-gallery", "services", "process", "story-about"),
+        "experience": ("portfolio-gallery", "services", "process", "story-about"),
         "conversion": ("contact-booking", "cta", "footer", "form-auth"),
     },
     "hospitality-place": {
-        "narrative": ("portfolio-gallery", "story-about", "product-commerce", "proof"),
+        "experience": ("portfolio-gallery", "story-about", "product-commerce", "proof"),
         "conversion": ("contact-booking", "cta", "footer", "form-auth"),
     },
     "architecture-property": {
-        "narrative": ("portfolio-gallery", "story-about", "process", "services"),
+        "experience": ("portfolio-gallery", "story-about", "process", "services"),
         "conversion": ("contact-booking", "cta", "footer", "form-auth"),
     },
     "local-service": {
-        "narrative": ("services", "process", "proof", "story-about"),
+        "experience": ("services", "process", "proof", "story-about"),
         "conversion": ("contact-booking", "form-auth", "cta", "footer"),
     },
     "culture-editorial": {
-        "narrative": ("portfolio-gallery", "story-about", "product-commerce", "process"),
+        "experience": ("portfolio-gallery", "story-about", "product-commerce", "process"),
         "conversion": ("cta", "form-auth", "contact-booking", "footer"),
     },
     "automotive-spatial": {
-        "narrative": ("product-commerce", "features", "portfolio-gallery", "process"),
+        "experience": ("product-commerce", "features", "portfolio-gallery", "process"),
         "conversion": ("product-commerce", "contact-booking", "cta", "footer"),
     },
     "professional-trust": {
-        "narrative": ("services", "proof", "process", "story-about"),
+        "experience": ("services", "proof", "process", "story-about"),
         "conversion": ("contact-booking", "cta", "form-auth", "pricing"),
     },
     "brand-story": {
-        "narrative": ("features", "story-about", "services", "process"),
+        "experience": ("features", "story-about", "services", "process"),
         "conversion": ("cta", "contact-booking", "form-auth", "footer"),
     },
 }
@@ -388,17 +385,96 @@ def lexical_score(
 def deterministic_jitter(seed: int, slot: str, prompt_id: str) -> float:
     digest = hashlib.sha256(f"{seed}|{slot}|{prompt_id}".encode("utf-8")).hexdigest()
     unit = int(digest[:8], 16) / 0xFFFFFFFF
-    amplitude = 3.0 if slot in {"foundation", "hero"} else 12.0
-    return unit * amplitude
+    return unit * 0.75
 
 
 def slot_eligible(record: dict[str, Any], slot: str, profile: Profile) -> bool:
     category = str(record.get("category") or "").lower()
-    if slot == "narrative":
+    if slot == "experience":
         return category in NARRATIVE_CATEGORIES
     if slot == "conversion":
         return category in PROFILE_CONVERSION_CATEGORIES[profile.name]
     return True
+
+
+def source_compatibility(
+    record: dict[str, Any],
+    selected: list[dict[str, Any]],
+    slot: str,
+    brief_tokens: set[str],
+) -> dict[str, Any]:
+    if not selected:
+        return {"score": 0.0, "supports": ["Establishes the primary experience world."], "risks": []}
+
+    anchor = selected[0]
+    anchor_dna = anchor.get("dna") or {}
+    dna = record.get("dna") or {}
+    score = 0.0
+    supports: list[str] = []
+    risks: list[str] = []
+
+    anchor_styles = set(anchor_dna.get("styles") or []) - GENERIC_STYLES
+    styles = set(dna.get("styles") or []) - GENERIC_STYLES
+    shared_styles = anchor_styles.intersection(styles)
+    if shared_styles:
+        score += min(16.0, len(shared_styles) * 6.0)
+        supports.append(f"Shares the anchor's {', '.join(sorted(shared_styles))} material or visual language.")
+    elif anchor_styles and styles:
+        score -= 16.0
+        risks.append("Introduces a separate visual style with no anchor overlap.")
+
+    anchor_media = set(anchor_dna.get("media") or [])
+    media = set(dna.get("media") or [])
+    shared_media = anchor_media.intersection(media)
+    if shared_media:
+        score += min(12.0, len(shared_media) * 4.0)
+        supports.append(f"Can reuse the anchor's {', '.join(sorted(shared_media))} asset language.")
+
+    anchor_motion = set(anchor_dna.get("motion") or [])
+    motion = set(dna.get("motion") or [])
+    if anchor_motion.intersection(DOMINANT_SCROLL_MOTION) and motion.intersection(DOMINANT_SCROLL_MOTION):
+        score -= 44.0
+        risks.append("Competes with the anchor through a second dominant scroll system.")
+    elif anchor_motion.intersection(motion):
+        score += 8.0
+        supports.append("Extends an existing motion language instead of adding another one.")
+
+    anchor_layouts = set(anchor_dna.get("layouts") or [])
+    layouts = set(dna.get("layouts") or [])
+    if anchor_layouts.intersection(DOMINANT_LAYOUTS) and layouts.intersection(DOMINANT_LAYOUTS):
+        score -= 30.0
+        risks.append("Competes for sticky, pinned, or horizontal page authority.")
+    elif anchor_layouts.intersection(layouts):
+        score += 7.0
+        supports.append("Uses a compatible spatial relationship.")
+
+    spatial = set(dna.get("styles") or []).union(media).intersection(SPATIAL_SIGNALS)
+    anchor_spatial = set(anchor_dna.get("styles") or []).union(anchor_media).intersection(SPATIAL_SIGNALS)
+    if spatial and not anchor_spatial and not brief_tokens.intersection({"3d", "spatial", "webgl", "model", "object"}):
+        score -= 28.0
+        risks.append("Adds a 3D or spatial world that the brief and anchor do not support.")
+
+    roles = set(dna.get("roles") or [])
+    if slot != "anchor" and "complete-page" in roles:
+        score -= 14.0
+        risks.append("A complete-page donor must be reduced to one local mechanism.")
+    if slot != "anchor" and str(record.get("category") or "").lower() in {"hero", "hero section"}:
+        score -= 26.0
+        risks.append("A second hero concept would compete with the anchor opening.")
+
+    for existing in selected[1:]:
+        existing_dna = existing.get("dna") or {}
+        if set(existing_dna.get("motion") or []).intersection(DOMINANT_SCROLL_MOTION) and motion.intersection(DOMINANT_SCROLL_MOTION):
+            score -= 24.0
+            risks.append("Duplicates a dominant motion system already introduced by a supporting donor.")
+
+    if record.get("family") == anchor.get("family"):
+        score -= 80.0
+        risks.append("Duplicates the anchor prompt family.")
+
+    if not risks:
+        supports.append("Adds a narrow capability without challenging the anchor's authority.")
+    return {"score": round(score, 2), "supports": supports[:4], "risks": risks[:4]}
 
 
 def slot_score(
@@ -442,32 +518,24 @@ def slot_score(
         elif keyword in lower_body:
             score += 7.0
 
-    if slot == "foundation":
-        score += min(24.0, len(layouts) * 3.0 + len(dna.get("styles") or []) * 1.5)
-        if "complete-page" not in roles and str(record.get("category") or "").lower() not in {"landing page", "website", "saas", "agency", "ecommerce", "automotive", "travel"}:
-            score -= 100.0
-    elif slot == "hero":
-        score += min(22.0, len(media) * 3.0 + len(layouts) * 2.0)
-        score += 8.0 if record.get("preview", {}).get("video") or record.get("preview", {}).get("image") else 0.0
-        if "hero" not in roles:
-            score -= 80.0
-        if str(record.get("category") or "").lower() not in {"hero", "hero section"}:
-            score -= 12.0
-    elif slot == "narrative":
+    if slot == "anchor":
+        score += min(38.0, len(layouts) * 3.0 + len(dna.get("styles") or []) * 2.0 + len(media) * 2.0)
+        score += min(18.0, len(motion.intersection(ADVANCED_MOTION)) * 3.0)
+        if record.get("preview", {}).get("video") or record.get("preview", {}).get("image"):
+            score += 8.0
+        if "complete-page" not in roles and str(record.get("category") or "").lower() not in SLOT_CONFIG["anchor"]["categories"]:
+            score -= 105.0
+        if "complete-page" not in roles and "hero" not in roles:
+            score -= 40.0
+    elif slot == "experience":
         score += min(24.0, len(interactions) * 3.0 + len(layouts) * 1.5)
         if not dynamic_match:
             score -= 70.0
         if "complete-page" in roles:
-            score -= 38.0
+            score -= 26.0
         if str(record.get("category") or "").lower() in {"hero", "hero section", "landing page", "website"}:
-            score -= 28.0
+            score -= 42.0
         score -= max(0, len(roles) - 5) * 4.0
-    elif slot == "motion":
-        score += min(45.0, len(motion.intersection(ADVANCED_MOTION)) * 7.0)
-        score += 12.0 if record.get("preview", {}).get("video") else 0.0
-        score += 7.0 if "reduced-motion-specified" in set(dna.get("constraints") or []) else 0.0
-        if not motion.intersection(ADVANCED_MOTION):
-            score -= 120.0
     elif slot == "conversion":
         score += min(18.0, len(interactions) * 2.0)
         if not dynamic_match:
@@ -486,26 +554,18 @@ def slot_score(
 
     if "responsive-specified" in set(dna.get("constraints") or []):
         score += 4.0
-    if record.get("static_portability") == "complex-adaptation" and slot not in {"hero", "motion"}:
+    if record.get("static_portability") == "complex-adaptation" and slot != "anchor":
         score -= 8.0
 
     selected_families = Counter(item.get("family") for item in selected)
     if selected_families[record.get("family")]:
-        score -= 45.0 * selected_families[record.get("family")]
-    selected_tags = {
-        tag
-        for item in selected
-        for group in ("styles", "layouts", "motion", "media", "interactions")
-        for tag in (item.get("dna", {}).get(group) or [])
-    }
-    novel_tags = set().union(styles := set(dna.get("styles") or []), layouts, motion, media, interactions) - selected_tags
-    score += min(15.0, len(novel_tags) * 1.5)
-    if styles and slot in {"foundation", "hero"}:
+        score -= 60.0 * selected_families[record.get("family")]
+    styles = set(dna.get("styles") or [])
+    if styles and slot == "anchor":
         score += 2.0
-    if slot == "hero" and str(record.get("category") or "").lower() in {"3d website", "creative / 3d"} and not brief_tokens.intersection({"3d", "spatial", "webgl", "model"}):
-        score -= 42.0
-    if slot == "motion" and str(record.get("category") or "").lower() in {"3d website", "creative / 3d"} and not brief_tokens.intersection({"3d", "spatial", "webgl", "model"}):
-        score -= 45.0
+    if slot == "anchor" and str(record.get("category") or "").lower() in {"3d website", "creative / 3d"} and not brief_tokens.intersection({"3d", "spatial", "webgl", "model", "object"}):
+        score -= 38.0
+    score += source_compatibility(record, selected, slot, brief_tokens)["score"]
     score += deterministic_jitter(seed, slot, str(record.get("id") or ""))
     return score
 
@@ -517,18 +577,44 @@ def select_sources(
     profile: Profile,
     max_sources: int,
     seed: int,
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], dict[str, list[dict[str, Any]]]]:
     brief_tokens = set(tokens(brief))
     profile_tokens = set(tokens(" ".join((profile.name, " ".join(profile.expansion)))))
     selected: list[dict[str, Any]] = []
     used_ids: set[str] = set()
+    shortlists: dict[str, list[dict[str, Any]]] = {}
 
-    for slot in list(SLOT_CONFIG)[:max_sources]:
+    for slot_index, slot in enumerate(SLOT_CONFIG):
         ranked = sorted(
             (record for record in index.get("prompts", []) if slot_eligible(record, slot, profile)),
             key=lambda record: slot_score(record, prompt_text.get(record.get("id"), ""), slot, brief_tokens, profile_tokens, profile, selected, seed),
             reverse=True,
         )
+        shortlist: list[dict[str, Any]] = []
+        for record in ranked:
+            if not record.get("available") or record.get("id") in used_ids:
+                continue
+            compatibility = source_compatibility(record, selected, slot, brief_tokens)
+            shortlist.append(
+                {
+                    "id": record.get("id"),
+                    "title": record.get("title"),
+                    "category": record.get("category"),
+                    "family": record.get("family"),
+                    "score": round(slot_score(record, prompt_text.get(record.get("id"), ""), slot, brief_tokens, profile_tokens, profile, selected, seed), 2),
+                    "compatibility": compatibility,
+                    "inspection_command": (
+                        f"python scripts/inspect_lumora_prompt.py --id {record.get('id')} --full"
+                        if slot == "anchor"
+                        else f"python scripts/inspect_lumora_prompt.py --id {record.get('id')} --focus {SLOT_CONFIG[slot]['focus']}"
+                    ),
+                }
+            )
+            if len(shortlist) >= 5:
+                break
+        shortlists[slot] = shortlist
+        if slot_index >= max_sources:
+            continue
         used_families = {source.get("family") for source in selected}
         chosen = next(
             (
@@ -537,35 +623,27 @@ def select_sources(
                 if record.get("id") not in used_ids
                 and record.get("available")
                 and record.get("family") not in used_families
+                and source_compatibility(record, selected, slot, brief_tokens)["score"] >= -8.0
             ),
             None,
         )
-        if chosen is None:
-            chosen = next((record for record in ranked if record.get("id") not in used_ids and record.get("available")), None)
         if chosen is None:
             continue
         source = dict(chosen)
         source["job"] = slot
         source["selection_score"] = round(slot_score(chosen, prompt_text.get(chosen["id"], ""), slot, brief_tokens, profile_tokens, profile, selected, seed), 2)
+        source["compatibility"] = source_compatibility(chosen, selected, slot, brief_tokens)
         selected.append(source)
         used_ids.add(chosen["id"])
-    return selected
-
-
-def choose_tag(rng: random.Random, selected: list[dict[str, Any]], group: str, fallback: tuple[str, ...]) -> str:
-    counter = Counter(tag for source in selected for tag in source.get("dna", {}).get(group, []))
-    candidates = [tag for tag, _ in counter.most_common(4) if tag not in {"centered-stage", "dark", "light"}]
-    return rng.choice(candidates[:3] or list(fallback))
+    return selected, shortlists
 
 
 def atoms_for(source: dict[str, Any]) -> list[str]:
     dna = source.get("dna") or {}
     job = source["job"]
     group_order = {
-        "foundation": ("layouts", "styles", "media"),
-        "hero": ("layouts", "media", "motion"),
-        "narrative": ("layouts", "interactions", "media", "motion", "roles"),
-        "motion": ("motion", "interactions", "layouts"),
+        "anchor": ("layouts", "styles", "media", "motion", "interactions"),
+        "experience": ("layouts", "interactions", "media", "motion", "roles"),
         "conversion": ("interactions", "layouts", "motion", "roles"),
     }[job]
     atoms: list[str] = []
@@ -594,9 +672,7 @@ def evidence_for(source: dict[str, Any], atoms: list[str]) -> list[str]:
 def inspection_for(source: dict[str, Any]) -> dict[str, str]:
     job = source["job"]
     prompt_id = source["id"]
-    if job == "foundation":
-        return {"mode": "full", "command": f"python scripts/inspect_lumora_prompt.py --id {prompt_id} --full"}
-    if job == "hero" and int(source.get("prompt_length") or 0) <= 18000:
+    if job == "anchor":
         return {"mode": "full", "command": f"python scripts/inspect_lumora_prompt.py --id {prompt_id} --full"}
     focus = SLOT_CONFIG[job]["focus"]
     return {"mode": "focused", "command": f"python scripts/inspect_lumora_prompt.py --id {prompt_id} --focus {focus}"}
@@ -620,6 +696,9 @@ def selected_source_payload(source: dict[str, Any], profile: Profile) -> dict[st
         "prompt_length": source.get("prompt_length"),
         "prompt_sha256": source.get("prompt_sha256"),
         "static_portability": source.get("static_portability"),
+        "authority": {"anchor": 0.75, "experience": 0.15, "conversion": 0.10}[source["job"]],
+        "compatibility": source.get("compatibility") or {"score": 0.0, "supports": [], "risks": []},
+        "compatibility_resolution": "",
         "why": source_reason(source, profile),
         "source_atoms": atoms,
         "source_evidence": evidence_for(source, atoms),
@@ -632,16 +711,16 @@ def selected_source_payload(source: dict[str, Any], profile: Profile) -> dict[st
 def source_section_map(sections: tuple[str, ...], selected: list[dict[str, Any]]) -> list[dict[str, Any]]:
     by_job = {source["job"]: source["id"] for source in selected}
     mapping: list[dict[str, Any]] = []
+    experience_index = min(3, max(1, len(sections) // 3))
+    conversion_names = {"pricing", "variants-and-purchase", "booking", "contact", "tickets-or-action", "configure-or-contact", "closing", "newsletter"}
+    conversion_indexes = [index for index, name in enumerate(sections) if name in conversion_names]
+    conversion_index = conversion_indexes[0] if conversion_indexes else len(sections) - 1
     for index, name in enumerate(sections):
-        jobs = ["foundation"] if "foundation" in by_job else []
-        if index == 0 and "hero" in by_job:
-            jobs.append("hero")
-        elif name in {"pricing", "variants-and-purchase", "booking", "contact", "tickets-or-action", "configure-or-contact", "closing"} and "conversion" in by_job:
+        jobs = ["anchor"] if "anchor" in by_job else []
+        if index == experience_index and "experience" in by_job:
+            jobs.append("experience")
+        if index == conversion_index and "conversion" in by_job:
             jobs.append("conversion")
-        elif index in {3, 4} and "motion" in by_job:
-            jobs.extend(["narrative", "motion"] if "narrative" in by_job else ["motion"])
-        elif "narrative" in by_job:
-            jobs.append("narrative")
         mapping.append(
             {
                 "section_id": slug(name),
@@ -666,51 +745,21 @@ def build_plan(
     mode = page_mode(brief, requested_pages)
     seed_material = "|".join((brief.strip(), seed_value or "", index["source"]["sha256"]))
     seed = int(hashlib.sha256(seed_material.encode("utf-8")).hexdigest()[:16], 16)
-    rng = random.Random(seed)
-    selected = select_sources(index, prompt_text, brief, profile, max_sources, seed)
+    selected, shortlists = select_sources(index, prompt_text, brief, profile, max_sources, seed)
     source_payload = [selected_source_payload(source, profile) for source in selected]
-
-    foundation_source = next((source for source in selected if source["job"] == "foundation"), selected[0] if selected else {})
-    foundation_layouts = [
-        tag
-        for tag in foundation_source.get("dna", {}).get("layouts", [])
-        if tag not in {"centered-stage", "tabs", "carousel", "timeline"}
-    ]
-    foundation_styles = [tag for tag in foundation_source.get("dna", {}).get("styles", []) if tag not in {"dark", "light"}]
-    composition = rng.choice(foundation_layouts[:3] or ["editorial-offset", "cinematic-stage", "gallery-cadence"])
-    material = rng.choice(foundation_styles[:3] or ["tactile", "editorial", "minimal"])
-    hero_source = next((source for source in selected if source["job"] == "hero"), selected[0] if selected else {})
-    hero_media = hero_source.get("dna", {}).get("media", [])
-    media_mode = rng.choice(hero_media[:3] or ["photography", "product-render", "gallery"])
-    signature_motion = next(
-        (
-            tag
-            for source in selected
-            if source["job"] == "motion"
-            for tag in source.get("dna", {}).get("motion", [])
-            if tag in ADVANCED_MOTION
-        ),
-        choose_tag(rng, selected, "motion", ("mask-reveal", "parallax", "scroll-trigger")),
-    )
-    structural_motion = next(
-        (tag for tag in ("mask-reveal", "stagger", "scroll-trigger", "hover-reveal", "parallax") if any(tag in source.get("dna", {}).get("motion", []) for source in selected)),
-        "restrained staggered reveal",
-    )
-    hero_atoms = atoms_for(hero_source)[:4] if hero_source else []
-    type_direction = rng.choice(profile.type_directions)
-    palette_direction = rng.choice(profile.palette_directions)
-    rhythm = rng.choice(("cinematic chapters with calm proof intervals", "editorial cadence alternating media and evidence", "dense interactive chapter followed by generous visual pauses", "gallery-led progression with compact conversion moments"))
-
+    anchor = selected[0] if selected else {}
+    anchor_dna = anchor.get("dna") or {}
     pages = page_map(profile, mode)
     return {
-        "schema": "lumora.project_plan.v3",
+        "schema": "lumora.project_plan.v4",
         "brief": brief,
         "brief_sha256": hashlib.sha256(brief.encode("utf-8")).hexdigest(),
         "creative_seed": seed,
         "profile": {
             "name": profile.name,
             "signals": profile_signals,
-            "section_blueprint": list(profile.sections),
+            "content_inventory": list(profile.sections),
+            "note": "This is a content inventory, not a required section order or layout template.",
         },
         "build_contract": {
             "default_stack": "static HTML, CSS, and JavaScript",
@@ -721,70 +770,208 @@ def build_plan(
             "page_mode": mode,
             "pages": pages,
         },
+        "company_truth": {
+            "status": "must-be-completed-before-direction",
+            "name": "",
+            "offer": "",
+            "audience": "",
+            "difference": "",
+            "proof": [],
+            "material_world": [],
+            "place_or_context": "",
+            "vocabulary": [],
+            "real_routes": [],
+            "available_media": [],
+            "missing_facts": [],
+        },
+        "direction_exploration": {
+            "status": "three-distinct-worlds-required",
+            "minimum_concepts": 3,
+            "concepts": [],
+            "selected_concept_id": "",
+            "selection_reason": "",
+            "rejected_concepts": [],
+        },
         "creative_direction": {
             "status": "must-be-refined-before-code",
             "creative_thesis": "",
+            "experience_world": "",
+            "signature_object": "",
             "signature_motif": "",
+            "material_language": "",
+            "spatial_logic": "",
+            "camera_behavior": "",
+            "transformation": "",
+            "emotional_arc": "",
+            "interaction_thesis": "",
             "company_specificity_test": "",
-            "design_fingerprint": {
-                "composition": composition,
-                "hero_source_atoms": hero_atoms,
-                "typography": type_direction,
-                "palette_logic": palette_direction,
-                "material": material,
-                "media_mode": media_mode,
-                "section_rhythm": rhythm,
-                "signature_motion": signature_motion,
-                "structural_motion": structural_motion,
+            "substitution_failure": "",
+            "category_conventions": [],
+            "deliberate_departure": "",
+            "narrative_arc": {
+                "entry": "",
+                "orientation": "",
+                "deepening": "",
+                "evidence": "",
+                "decision": "",
+                "close": "",
             },
-            "signature_moment_prompt": f"Turn a real company subject or process into a {signature_motion.replace('-', ' ')} sequence; define the exact subject and narrative before coding.",
+            "design_fingerprint": {
+                "composition": "",
+                "typography": "",
+                "palette_logic": "",
+                "material": "",
+                "media_mode": "",
+                "shape_language": "",
+                "section_rhythm": "",
+                "signature_motion": "",
+                "structural_motion": "",
+                "library_signals": {
+                    "anchor_layouts": list(anchor_dna.get("layouts") or []),
+                    "anchor_styles": list(anchor_dna.get("styles") or []),
+                    "anchor_media": list(anchor_dna.get("media") or []),
+                    "anchor_motion": list(anchor_dna.get("motion") or []),
+                    "type_candidates": list(profile.type_directions),
+                    "palette_candidates": list(profile.palette_directions),
+                },
+            },
+            "experience_keyframes": [
+                {"id": "entry", "purpose": "First-viewport world, subject, and invitation", "description": "", "reference_asset": ""},
+                {"id": "signature-state", "purpose": "The experience at its most transformed or interactive", "description": "", "reference_asset": ""},
+                {"id": "decision", "purpose": "Closing state where story and conversion become one", "description": "", "reference_asset": ""},
+            ],
+            "originality_scorecard": [
+                {"dimension": "company-specificity", "score": 0, "evidence": ""},
+                {"dimension": "concept-unity", "score": 0, "evidence": ""},
+                {"dimension": "hero-memorability", "score": 0, "evidence": ""},
+                {"dimension": "asset-authorship", "score": 0, "evidence": ""},
+                {"dimension": "section-rhythm", "score": 0, "evidence": ""},
+                {"dimension": "motion-relevance", "score": 0, "evidence": ""},
+                {"dimension": "typographic-character", "score": 0, "evidence": ""},
+                {"dimension": "conversion-integration", "score": 0, "evidence": ""},
+                {"dimension": "mobile-recomposition", "score": 0, "evidence": ""},
+                {"dimension": "category-departure", "score": 0, "evidence": ""},
+            ],
             "anti_generic_constraints": [
                 "No decorative CSS blobs, gradient orbs, primitive pseudo-art, or empty mockups.",
-                "No equal three-card feature row unless a selected source and the content both require it.",
+                "No fixed aesthetic, section formula, or effect checklist may replace company-specific art direction.",
+                "No equal card row or repeated split section unless the content and experience world require it.",
                 "No invented reviews, awards, clients, metrics, people, prices, or product claims.",
-                "No generic centered dark hero unless the hero source makes it company-specific.",
-                "No donor may remain in the plan without two implemented contributions.",
+                "No familiar category styling may be the entire concept; define a deliberate departure.",
+                "No supporting donor may introduce a second page world, hero, or dominant scroll system.",
+                "Ambition is allowed: film, 3D, canvas, shaders, spatial sound, unconventional navigation, and nonlinear layouts are available when the locked concept requires them and fallbacks remain usable.",
             ],
+        },
+        "source_selection": {
+            "status": "provisional-until-candidates-are-inspected",
+            "model": "one anchor plus zero to two narrow supporting donors",
+            "authority_budget": {"anchor": 0.75, "experience": 0.15, "conversion": 0.10},
+            "candidate_shortlists": shortlists,
+            "inspected_candidates": [],
+            "compatibility_statement": "",
+            "rejected_candidates": [],
         },
         "source_mix": source_payload,
         "source_to_section_map": source_section_map(profile.sections, selected),
         "media_plan": {
-            "status": "slots-must-be-specified-before-code",
-            "art_direction_prompt": (
-                f"Create an implementation-oriented website art-direction frame for: {brief}. "
-                f"Use {composition.replace('-', ' ')} composition, {type_direction}, {palette_direction}, "
-                f"and a {media_mode.replace('-', ' ')} media system. Show a clean first viewport plus visible continuation, "
-                "clear media frames, varied section rhythm, and one company-specific focal idea. "
-                "No readable raster text, no fake logo, no generic gradient orbs, no decorative primitive shapes, and no stock-looking filler."
-            ),
+            "status": "campaign-system-must-be-directed-before-code",
+            "asset_strategy": "",
+            "signature_asset": {
+                "required": True,
+                "status": "unresolved",
+                "role": "",
+                "subject": "",
+                "medium": "",
+                "company_reason": "",
+                "source_or_generation_method": "",
+            },
+            "continuity_bible": {
+                "subjects": "",
+                "camera_and_lens": "",
+                "lighting": "",
+                "materials": "",
+                "environment": "",
+                "palette_and_grade": "",
+                "texture_and_finish": "",
+                "crop_behavior": "",
+                "negative_constraints": "",
+            },
+            "reference_set": [
+                {"id": "entry", "status": "required", "prompt": "", "analysis": ""},
+                {"id": "signature-state", "status": "required", "prompt": "", "analysis": ""},
+                {"id": "decision", "status": "required", "prompt": "", "analysis": ""},
+            ],
             "required_roles": list(profile.media_slots),
             "slots": [],
+            "generated_assets": [],
+            "asset_coverage_review": "",
             "rules": [
-                "Use strong supplied company media first.",
-                "Generate an implementation-oriented visual reference when no useful reference exists.",
-                "Generate final assets per slot and aspect ratio; do not crop one image into every role.",
+                "Audit all supplied media and keep only assets that can carry their assigned render size and truth role.",
+                "Generate three connected experience references before coding when no complete supplied design direction exists.",
+                "Generate or art-direct a coherent family of final assets for every unresolved prominent slot, including small transition and detail assets when they support the world.",
+                "Generate final assets per role and aspect ratio; do not crop one image into every role.",
                 "Keep text and logos out of generated raster media.",
+                "Do not portray generated people, premises, outcomes, products, or credentials as documentary evidence.",
                 "Do not hotlink MotionSites example assets.",
             ],
         },
         "motion_plan": {
-            "signature": signature_motion,
-            "structural": structural_motion,
-            "micro_interactions": ["action hover and press feedback", "menu and control state transitions", "focus and form feedback"],
-            "desktop_implementation": "",
-            "mobile_recomposition": "",
-            "reduced_motion": "Expose all content immediately; remove scrub, parallax, autoplay, and large spatial movement.",
+            "status": "storyboard-required-before-implementation",
+            "dominant_interaction": {
+                "name": "",
+                "subject": "",
+                "input": "",
+                "transformation": "",
+                "narrative_purpose": "",
+                "desktop_implementation": "",
+                "mobile_recomposition": "",
+                "reduced_motion": "",
+            },
+            "structural_language": "",
+            "micro_interactions": [],
+            "choreography_beats": [],
+            "competing_systems_removed": [],
+            "scroll_occupancy_rule": "Every viewport of scroll must create a visible narrative, spatial, or informational change; no spacer-only travel.",
+            "long_scroll_justification": "",
+            "dependency_strategy": "",
+        },
+        "conversion_plan": {
+            "primary_action": "",
+            "truthful_destination": "",
+            "readiness_moment": "",
+            "story_integration": "",
+            "secondary_actions": [],
+        },
+        "director_review": {
+            "status": "required-after-first-browser-render",
+            "revision_rounds": 0,
+            "strongest_decision": "",
+            "weakest_decision": "",
+            "generic_risks": [],
+            "revisions_required": [],
+            "revisions_completed": [],
         },
         "verification": {
             "viewports": ["1440x1000", "390x844", "1920x1080 when full-bleed or canvas framing needs it"],
             "required": [
-                "full-page screenshots for every route",
+                "entry, 25%, 50%, 75%, and closing scroll-state screenshots on desktop",
+                "entry and full-page screenshots for every route on mobile",
                 "working navigation, controls, routes, and truthful forms",
                 "no console errors or failed local assets",
-                "no horizontal overflow or unrelated section overlap",
+                "no unintended blank viewport, dead scroll, horizontal overflow, or unrelated section overlap",
                 "reduced-motion and touch verification",
-                "scripts/validate_lumora_site.py passes",
+                "reference-to-build comparison and one completed director revision round",
+                "scripts/validate_lumora_site.py --strict passes",
             ],
+            "visual_review": {
+                "status": "required",
+                "checked_states": [],
+                "dead_space_review": "",
+                "reference_comparison": "",
+                "mobile_recomposition_review": "",
+                "interaction_review": "",
+                "revisions_after_review": [],
+            },
         },
     }
 
@@ -798,20 +985,21 @@ def print_markdown(plan: dict[str, Any], output: Path | None) -> None:
     if output:
         print(f"Plan: {output.resolve()}")
     print()
-    print("## Source hierarchy")
+    print("## Provisional anchor-led source mix")
     for source in plan["source_mix"]:
         print(f"- {source['job']}: {source['id']} ({source['title']})")
         print(f"  Inspect: {source['inspection']['command']}")
         print(f"  Atoms: {', '.join(source['source_atoms'])}")
+        if source["job"] != "anchor":
+            print(f"  Compatibility: {source['compatibility']['score']}")
     print()
-    fingerprint = plan["creative_direction"]["design_fingerprint"]
-    print("## Candidate fingerprint")
-    print(f"- Composition: {fingerprint['composition']}")
-    print(f"- Typography: {fingerprint['typography']}")
-    print(f"- Palette: {fingerprint['palette_logic']}")
-    print(f"- Signature motion: {fingerprint['signature_motion']}")
+    print("## Required direction work")
+    print("- Complete the company-truth inventory.")
+    print("- Inspect at least three anchor candidates and write three genuinely different experience worlds.")
+    print("- Select one world, lock the anchor, and add a support donor only for a concrete unsolved need.")
+    print("- Direct three connected visual keyframes and the complete asset campaign before coding.")
     print()
-    print("Before coding, inspect the listed source bodies and fill the empty creative, contribution, media, and motion fields in lumora-plan.json.")
+    print("Do not code until the company truth, selected world, source compatibility, asset system, motion storyboard, and conversion plan are locked in lumora-plan.json.")
 
 
 def main() -> int:
@@ -819,7 +1007,7 @@ def main() -> int:
     parser.add_argument("brief", help="Complete company and website brief")
     parser.add_argument("--pages", choices=("auto", "one", "multi"), default="auto")
     parser.add_argument("--seed", help="Optional alternate-direction seed")
-    parser.add_argument("--max-sources", type=int, choices=(3, 4, 5), default=5)
+    parser.add_argument("--max-sources", type=int, choices=(1, 2, 3), default=1)
     parser.add_argument("--library", type=Path, default=DEFAULT_LIBRARY)
     parser.add_argument("--index", type=Path, default=DEFAULT_INDEX)
     parser.add_argument("--output", type=Path, help="Write JSON plan to this path")

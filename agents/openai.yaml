@@ -1,4 +1,4 @@
 interface:
-  display_name: "/lumora"
-  short_description: "Bespoke award-level websites"
-  default_prompt: "Use $lumora to create a company-specific, motion-rich website with traced MotionSites design DNA, generated fit-for-slot media, and a GitHub Pages-ready static build."
+  display_name: "Lumora"
+  short_description: "Agency-grade bespoke web experiences"
+  default_prompt: "Use $lumora to direct and build a unique company-specific website as a complete visual and interactive experience."
