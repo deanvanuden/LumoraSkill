@@ -301,7 +301,7 @@ Recompose rather than shrink:
 - keep controls reachable and content in normal flow
 - avoid fixed UI covering the focal subject or CTA
 
-Complete `motion_plan.mobile_signature` as its own implementation contract. Choose a real input such as scroll, tap, swipe, drag, time, or a bounded hybrid; name the subject and visible change; define implementation, fallback, and browser evidence.
+Complete `motion_plan.mobile_signature` as its own implementation contract. Choose a real input such as scroll, tap, swipe, drag, time, or a bounded hybrid; name the subject and visible change; define implementation, fallback, and terminal-headless evidence.
 
 Do not treat mobile as reduced motion. Outside the user's reduced-motion preference, these are failures:
 
@@ -353,7 +353,7 @@ Before delivery:
 - no autoplay, drag, marquee, cursor, or secondary scrub competes with it
 - content remains readable during and after animation
 - mobile preserves the thesis
-- the mobile signature actually changes state under touch-sized browser verification and is not forced to its final state
+- the mobile signature actually changes state under touch-sized terminal-headless verification and is not forced to its final state
 - at least two later chapters visibly continue the dominant motion language; the rest of the site is not generic reveal-only motion
 - reduced motion exposes the complete experience
 - there are no blank canvases, stuck pins, overlap, layout shift, or failed cleanup

@@ -1,4 +1,4 @@
 interface:
   display_name: "Lumora"
   short_description: "Agency-grade bespoke web experiences"
-  default_prompt: "Use $lumora to direct and build a unique company-specific website as a complete visual and interactive experience."
+  default_prompt: "Use $lumora to direct and build a unique company-specific website as a complete visual and interactive experience. Use terminal-only headless Playwright for rendered QA and never invoke or attach Codex's in-app Browser connector."

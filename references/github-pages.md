@@ -61,7 +61,7 @@ For every source route choose one disposition:
 
 Do not leave scraped HTML, legacy CSS/JS, mojibake, or broken asset references in the publishing root. A redesigned homepage beside untouched old pages is not a completed redesign.
 
-Complete `build_contract.route_manifest` after implementation. It must exactly match every `.html` file under the publish root, including legal and system pages. Each route records its purpose, status, shared design system, and browser-verification result.
+Complete `build_contract.route_manifest` after implementation. It must exactly match every `.html` file under the publish root, including legal and system pages. Each route records its purpose, status, shared design system, and terminal-headless-render verification result.
 
 ## Domains
 
@@ -80,7 +80,7 @@ Do not guess DNS records or commit a placeholder domain.
 
 Three.js can run from a CDN import map, but every import must use one exact version and one CDN. Serve locally over HTTP during testing because module imports may not work from `file://`.
 
-Keep art-direction references, rejected generated assets, browser screenshots, and review notes in a project `work/` folder outside the publishing root when practical. Copy only final runtime assets into the site. Do not ship image-generation caches, source prompts, or large unused variants.
+Keep art-direction references, rejected generated assets, terminal-headless screenshots, and review notes in a project `work/` folder outside the publishing root when practical. Copy only final runtime assets into the site. Do not ship image-generation caches, source prompts, or large unused variants.
 
 Do not create a reduced `work/validation-site` mirror and validate that instead of the real output. Run the strict validator against the exact directory selected in GitHub Pages settings. `lumora-plan.json` belongs in that directory and `build_contract.publishing_root` remains `.`.
 
@@ -109,7 +109,7 @@ Serve the site from its root before verification:
 python -m http.server 8000
 ```
 
-Use another open port when needed. Test through the server URL, not by double-clicking HTML, especially when modules, fetch, video, canvas, or route checks are involved.
+Use another open port when needed. Test the server URL through terminal-headless Playwright, not by double-clicking HTML or connecting an in-app site preview, especially when modules, fetch, video, canvas, or route checks are involved.
 
 ## Publishing Handoff
 

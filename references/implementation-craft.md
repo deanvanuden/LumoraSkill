@@ -44,7 +44,7 @@ Before writing CSS, extract a build specification from the three selected refere
 - dominant and subordinate interaction states
 - desktop-to-mobile changes
 
-Record the result in `creative_direction.composition_map`, with one entry for every major section on every published page. Each entry names the role, focal subject, text/media relationship, desktop geometry, mobile geometry, negative-space intention, and motion moment. Implement these as tokens and stable component rules. Compare browser screenshots against the references during the build, not only at the end.
+Record the result in `creative_direction.composition_map`, with one entry for every major section on every published page. Each entry names the role, focal subject, text/media relationship, desktop geometry, mobile geometry, negative-space intention, and motion moment. Implement these as tokens and stable component rules. Compare terminal-headless screenshots against the references during the build, not only at the end.
 
 ## Page Composition And Rhythm
 

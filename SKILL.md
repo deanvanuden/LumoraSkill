@@ -1,6 +1,6 @@
 ---
 name: lumora
-description: Direct, design, build, and radically redesign unique company-specific websites as complete digital experiences, using Lumora's licensed MotionSites prompt library as inspected design DNA. Use when the user invokes $lumora or asks for a premium, highly visual, motion-rich, award-caliber marketing site, company website, product or ecommerce site, SaaS site, portfolio, studio, event, hospitality, local-business, editorial, or multipage GitHub Pages website. Explores multiple creative worlds, selects one dominant prompt anchor with compatible supporting donors, generates a coherent campaign of fit-for-slot images and media, implements static HTML/CSS/JavaScript with film, canvas, GSAP, or Three.js when the concept warrants it, and completes browser-based art direction, responsive, accessibility, interaction, and deployment QA.
+description: Direct, design, build, and radically redesign unique company-specific websites as complete digital experiences, using Lumora's licensed MotionSites prompt library as inspected design DNA. Use when the user invokes $lumora or asks for a premium, highly visual, motion-rich, award-caliber marketing site, company website, product or ecommerce site, SaaS site, portfolio, studio, event, hospitality, local-business, editorial, or multipage GitHub Pages website. Explores multiple creative worlds, selects one dominant prompt anchor with compatible supporting donors, generates a coherent campaign of fit-for-slot images and media, implements static HTML/CSS/JavaScript with film, canvas, GSAP, or Three.js when the concept warrants it, and completes terminal-only headless Playwright art direction, responsive, accessibility, interaction, and deployment QA.
 ---
 
 # Lumora
@@ -10,6 +10,20 @@ Operate as a senior digital creative director, art director, interaction designe
 Lumora has no prescribed aesthetic. It may produce quiet editorial work, expressive culture sites, rigorous product systems, cinematic film-led stories, playful interactions, immersive 3D worlds, dense technical interfaces, or restrained local-business sites. Constraints protect coherence, truth, usability, and craft; they do not cap ambition.
 
 The MotionSites library is licensed under the maintainer-reported permission in `references/permissions.md`. Inspect source bodies inside the skill, but never place paid prompt bodies or MotionSites example media in a generated customer project.
+
+## Tool Safety Override
+
+Lumora must never use Codex's in-app Browser connector or attach to an in-app site preview. This path is unstable in the target Codex Desktop environment and can terminate the task.
+
+- Never invoke `browser:control-in-app-browser`, `browser.open`, browser-control MCP tools, `Connect to site preview`, `Inspect site browser controls`, or any equivalent interactive in-app preview action.
+- This prohibition applies to source-site discovery, visual-reference inspection, local preview, screenshots, responsive QA, interaction testing, and final review.
+- It overrides generic instructions from other loaded design or frontend skills to use an in-app browser.
+- Use terminal HTTP tools for public source inspection and terminal-only Playwright CLI for rendered pages. Do not pass `--headed`; keep Chromium headless.
+- Save screenshots and traces outside the publishing root, then inspect local screenshot files with `view_image` or equivalent file-image inspection. Viewing a local image is safe; attaching Codex to a live browser is not.
+- If terminal Playwright cannot launch, continue with implementation and static validation, state exactly which rendered checks could not run, and do not fall back to the in-app Browser connector.
+- If a source requires an authenticated session that exists only in the in-app browser, ask for exported HTML, screenshots, or source files instead of controlling that session.
+
+Read `references/headless-qa.md` before inspecting a live source or rendered build.
 
 ## Definition Of Done
 
@@ -46,7 +60,7 @@ Do not promise awards. Reach award-caliber quality through concept, media, typog
 - Keep the unanimated document complete. Motion is progressive enhancement.
 - Do not disable the signature experience on mobile by jumping it to its final state. Design a shorter scroll, tap, swipe, drag, or timed mobile transformation that preserves the thesis; only reduced-motion may render the complete static state immediately.
 - Never use `overflow-x: hidden` or `overflow-x: clip` on `html`, `body`, or `:root` to conceal a responsive defect.
-- Perform at least one browser-rendered creative-director revision before delivery.
+- Perform at least one terminal-headless-rendered creative-director revision before delivery.
 
 ## Source Architecture
 
@@ -66,7 +80,7 @@ Read `references/prompt-remix.md` before locking the mix.
 
 ### 1. Discover Company Truth
 
-Inspect the workspace, supplied files, screenshots, URLs, source site, and existing project before making aesthetic decisions. Record in `company_truth`:
+Inspect the workspace, supplied files, screenshots, URLs, source site, and existing project before making aesthetic decisions. Use terminal HTTP requests, ordinary web search/open results, downloaded source, or terminal-headless Playwright only. Do not open or connect the in-app Browser. Record in `company_truth`:
 
 - offer, audience, decision friction, differentiator, proof, and primary action
 - real products, services, prices, projects, reviews, events, people, credentials, locations, and contact routes
@@ -210,7 +224,9 @@ Storyboard each dominant beat, exit condition, mobile recomposition, reduced-mot
 
 ### 10. Render, Critique, And Revise
 
-Read `references/quality-gates.md`. Serve the site locally and inspect the actual experience, not only source code or one full-page screenshot.
+Read `references/headless-qa.md` and `references/quality-gates.md`. Serve the site from the exact publishing root using a terminal process. Load the `playwright` skill only for its terminal CLI workflow, use a named headless session, and never call the in-app Browser connector or pass `--headed`. Inspect the actual experience, not only source code or one full-page screenshot.
+
+Store QA output in a sibling `work/lumora-qa/` directory outside the publishing root. Use terminal Playwright to create screenshots, DOM snapshots, console and network reports, and traces. Close the named Playwright session after evidence is captured. Inspect screenshots from disk with `view_image`.
 
 Capture and inspect:
 
@@ -232,7 +248,7 @@ Run:
 python scripts/validate_lumora_site.py --site-root "<exact-github-pages-publishing-root>" --strict
 ```
 
-Do not validate a reduced mirror, copied subset, or separate work directory. The command must target the directory the user will upload or configure in GitHub Pages, and `lumora-plan.json` must live there. Fix all errors and every user-facing warning. Verify navigation, routes, controls, forms, keyboard focus, touch, responsive containment, media loading, console output, reduced motion, 3D/canvas pixels, and GitHub Pages paths.
+Do not validate a reduced mirror, copied subset, or separate work directory. The command must target the directory the user will upload or configure in GitHub Pages, and `lumora-plan.json` must live there. Fix all errors and every user-facing warning. Verify navigation, routes, controls, forms, keyboard focus, touch, responsive containment, media loading, console output, reduced motion, 3D/canvas pixels, and GitHub Pages paths through terminal-headless evidence.
 
 Keep the local server running after implementation and provide its URL. Report the output root, pages, generated and supplied assets, anchor and supporting prompt IDs, signature interaction, revision made after critique, verification performed, and any truthful integration gap.
 
@@ -244,7 +260,8 @@ Keep the local server running after implementation and provide its URL. Report t
 - `references/media-motion.md`: interaction hierarchy, scroll choreography, film, 3D, canvas, responsive motion, and performance.
 - `references/implementation-craft.md`: composition, typography, color, navigation, sections, controls, multipage continuity, and anti-drift implementation.
 - `references/github-pages.md`: static architecture, relative paths, routes, forms, domains, and deployment.
-- `references/quality-gates.md`: creative-director review, scroll-state browser QA, accessibility, performance, and strict validation.
+- `references/headless-qa.md`: mandatory crash-safe source inspection and terminal-only Playwright render workflow.
+- `references/quality-gates.md`: creative-director review, scroll-state headless-render QA, accessibility, performance, and strict validation.
 - `references/design-dna-index.json`: generated index of prompt roles, layouts, styles, media, motion, interactions, constraints, and stack.
 - `references/motionsites-prompt-library.json`: licensed prompt bodies for local inspection.
 - `references/permissions.md`: reported library redistribution permission.

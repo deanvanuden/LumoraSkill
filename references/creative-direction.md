@@ -287,7 +287,7 @@ Score each dimension from 0 to 2 after visual references and again after impleme
 | Mobile recomposition | Desktop stack | Adapted | Purpose-built equivalent experience |
 | Category departure | Pure convention | One variation | Truthful and memorable departure |
 
-Require at least 16/20 and no zero before delivery. Every score needs visible evidence. Self-scoring does not replace browser critique.
+Require at least 16/20 and no zero before delivery. Every score needs visible evidence. Self-scoring does not replace terminal-headless render critique.
 
 ## Rejection Conditions
 

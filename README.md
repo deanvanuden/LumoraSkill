@@ -1,6 +1,6 @@
 # Lumora
 
-Lumora is a Codex skill for directing and building company-specific, highly visual websites as complete static GitHub Pages projects. It combines a licensed MotionSites prompt library with a strict creative-direction, asset-generation, interaction-design, implementation, browser-review, and release-validation workflow.
+Lumora is a Codex skill for directing and building company-specific, highly visual websites as complete static GitHub Pages projects. It combines a licensed MotionSites prompt library with a strict creative-direction, asset-generation, interaction-design, implementation, terminal-headless render review, and release-validation workflow.
 
 Lumora does not choose a template and replace its copy. It researches the company, explores distinct experience worlds, selects one prompt as the dominant design-DNA anchor, generates a coherent media campaign, plans desktop and mobile choreography, redesigns every required route, and verifies the real published output.
 
@@ -42,7 +42,15 @@ Typical uses include:
 5. **Motion with narrative purpose.** One dominant company-specific transformation is supported by authored moments later in the site. Mobile receives a real recomposed interaction, not a disabled hero.
 6. **Every route is intentional.** Existing routes are redesigned, consolidated, redirected, or retired. Untouched legacy pages cannot ship beside a new homepage.
 7. **The publish root is the product.** Validation runs against the exact directory GitHub Pages will publish, never against a smaller mirror.
-8. **Browser evidence is required.** Lumora renders, critiques, revises, measures, and validates the result before handoff.
+8. **Crash-safe render evidence is required.** Lumora uses terminal-only headless Playwright, critiques local screenshots, revises, measures, and validates the result before handoff.
+
+## Crash-Safe Tool Policy
+
+Lumora never invokes or attaches Codex's in-app Browser connector. It does not use `Connect to site preview`, browser-control MCP actions, or visible `--headed` Playwright windows. This avoids a known Codex Desktop crash path.
+
+Public source sites are inspected through terminal HTTP tools, ordinary noninteractive web results, downloaded source, or terminal-headless Playwright. Local sites are served by a terminal process and rendered with Playwright CLI in headless mode. Screenshots and traces stay outside the publishing root and screenshots are inspected directly from disk.
+
+If terminal Playwright is unavailable, Lumora reports which render checks could not run. It never falls back to the in-app Browser connector. See [`references/headless-qa.md`](references/headless-qa.md).
 
 ## Install For Codex
 
@@ -239,9 +247,11 @@ The default runtime is semantic HTML, CSS, and JavaScript. Lumora may use local 
 
 All essential content exists without animation. Controls are real, routes work, forms use a truthful endpoint or destination, and local URLs remain compatible with GitHub project pages and custom domains.
 
-### 9. Browser Review And Revision
+### 9. Terminal-Headless Review And Revision
 
-Lumora serves the exact publish directory and inspects:
+Lumora serves the exact publish directory through a terminal process, uses a named headless Playwright CLI session, and inspects local screenshot files. It never connects the in-app Browser or passes `--headed`.
+
+The review covers:
 
 - desktop entry, 25 percent, 50 percent, 75 percent, and close
 - mobile entry, live signature state, and full page
@@ -288,7 +298,8 @@ references/prompt-remix.md            Anchor and donor authority model
 references/asset-direction.md         Reference and final-asset campaign
 references/media-motion.md            Motion hierarchy and choreography
 references/implementation-craft.md    Composition and frontend craft
-references/quality-gates.md            Browser and release gates
+references/headless-qa.md              Crash-safe terminal rendering workflow
+references/quality-gates.md            Headless render and release gates
 references/github-pages.md            Static publishing contract
 references/design-dna-index.json      Searchable prompt metadata
 references/motionsites-prompt-library.json
@@ -320,7 +331,7 @@ Before publishing skill changes, verify:
 
 - `python scripts/self_test.py` passes
 - the installed `~/.codex/skills/lumora` copy matches the repository
-- no generated customer project, source scrape, browser cache, key, or temporary output was committed
+- no generated customer project, source scrape, render cache, key, or temporary output was committed
 - permission and attribution notes remain intact
 
 ## Permission And Content Boundaries

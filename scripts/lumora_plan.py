@@ -1034,7 +1034,7 @@ def build_plan(
             "secondary_actions": [],
         },
         "director_review": {
-            "status": "required-after-first-browser-render",
+            "status": "required-after-first-terminal-headless-render",
             "revision_rounds": 0,
             "strongest_decision": "",
             "weakest_decision": "",
@@ -1043,10 +1043,20 @@ def build_plan(
             "revisions_completed": [],
         },
         "verification": {
+            "render_transport": "terminal-headless-playwright",
+            "in_app_browser_used": False,
+            "render_artifact_root": "",
+            "tool_policy": [
+                "Never use Codex's in-app Browser connector, site-preview connection, or browser-control MCP tools.",
+                "Use terminal Playwright CLI with headless true and never pass --headed.",
+                "Store screenshots, snapshots, traces, and reports outside the publishing root; inspect screenshots from local files.",
+                "If terminal rendering is unavailable, report the missing checks and do not fall back to the in-app Browser connector.",
+            ],
             "viewports": ["320x780", "360x800", "390x844", "430x932", "768x1024", "1024x900", "1440x1000", "1920x1080 when full-bleed or canvas framing needs it"],
             "required": [
                 "entry, 25%, 50%, 75%, and closing scroll-state screenshots on desktop",
                 "entry, signature, and full-page screenshots on mobile plus one tablet state",
+                "all rendered evidence captured through terminal-only headless Playwright and inspected from local files",
                 "every published route tested at 390 and 1440 widths; index and interaction-heavy routes tested across the full viewport matrix",
                 "working navigation, controls, routes, and truthful forms",
                 "no console errors or failed local assets",

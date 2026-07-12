@@ -403,7 +403,7 @@ class Auditor:
         if review.get("status") != "passed":
             self.error("plan.director-review", self.plan_path, "complete and pass the post-render creative-director review")
         if int(review.get("revision_rounds") or 0) < 1:
-            self.error("plan.revision-round", self.plan_path, "complete at least one browser-rendered revision round")
+            self.error("plan.revision-round", self.plan_path, "complete at least one terminal-headless-rendered revision round")
         for field in ("strongest_decision", "weakest_decision"):
             self.require_text(review, field, f"plan.review-{field}", f"director review: {field.replace('_', ' ')}")
         if not review.get("revisions_completed"):
@@ -411,7 +411,7 @@ class Auditor:
 
         visual = (self.plan.get("verification") or {}).get("visual_review") or {}
         if visual.get("status") != "passed":
-            self.error("plan.visual-review", self.plan_path, "complete and pass the visual browser review")
+            self.error("plan.visual-review", self.plan_path, "complete and pass the terminal-headless visual review")
         required_states = {"desktop-entry", "desktop-25", "desktop-50", "desktop-75", "desktop-close", "mobile-entry", "mobile-full", "reduced-motion"}
         checked_states = {str(value) for value in visual.get("checked_states") or []}
         missing_states = required_states - checked_states
@@ -457,7 +457,7 @@ class Auditor:
                 if not str(item.get(field) or "").strip():
                     self.error("plan.route-detail", self.plan_path, f"route {file!r} needs {field.replace('_', ' ')}")
             if item.get("verified") is not True:
-                self.error("plan.route-verified", self.plan_path, f"route {file!r} must be browser-verified")
+                self.error("plan.route-verified", self.plan_path, f"route {file!r} must be terminal-headless-render verified")
 
         actual_html = {
             path.relative_to(self.site_root).as_posix()
@@ -559,7 +559,7 @@ class Auditor:
         for field in ("input", "subject", "visible_change", "implementation", "fallback"):
             self.require_text(mobile, field, f"plan.mobile-signature-{field}", f"mobile signature: {field.replace('_', ' ')}")
         if mobile.get("verified") is not True:
-            self.error("plan.mobile-signature-verified", self.plan_path, "browser-verify the mobile-native signature transformation")
+            self.error("plan.mobile-signature-verified", self.plan_path, "verify the mobile-native signature transformation in terminal-headless rendering")
 
         supporting = motion.get("supporting_moments") or []
         if len(supporting) < 2:
@@ -581,6 +581,21 @@ class Auditor:
             self.require_text(continuity, field, f"plan.motion-continuity-{field}", f"motion continuity: {field}")
 
         verification = self.plan.get("verification") or {}
+        if verification.get("render_transport") != "terminal-headless-playwright":
+            self.error("plan.render-transport", self.plan_path, "render_transport must be terminal-headless-playwright; the in-app Browser connector is prohibited")
+        if verification.get("in_app_browser_used") is not False:
+            self.error("plan.in-app-browser", self.plan_path, "in_app_browser_used must remain false; never use or attach the Codex in-app Browser connector")
+        artifact_root = str(verification.get("render_artifact_root") or "").strip()
+        if not artifact_root:
+            self.error("plan.render-artifacts", self.plan_path, "record the terminal-headless screenshot and trace directory outside the publishing root")
+        else:
+            artifact_path = Path(artifact_root)
+            resolved_artifacts = artifact_path.resolve() if artifact_path.is_absolute() else (self.site_root / artifact_path).resolve()
+            try:
+                resolved_artifacts.relative_to(self.site_root)
+                self.error("plan.render-artifacts-inside", self.plan_path, "render screenshots and traces must remain outside the publishing root")
+            except ValueError:
+                pass
         self.require_text(verification, "publishing_root_review", "plan.publish-review", "the exact publishing-root review")
         responsive = verification.get("responsive_review") or {}
         if responsive.get("status") != "passed":

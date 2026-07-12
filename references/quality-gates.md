@@ -12,7 +12,7 @@
 8. Gate 7: content, conversion, and behavior
 9. Gate 8: accessibility, performance, and resilience
 10. Gate 9: GitHub Pages
-11. Browser review protocol
+11. Terminal-headless render review protocol
 12. Creative-director critique
 13. Automated audit
 14. Rebuild conditions
@@ -27,7 +27,7 @@ Lumora therefore uses three forms of evidence:
 2. `render evidence`: screenshots and interaction states across scroll, routes, desktop, mobile, and reduced motion
 3. `revision evidence`: a recorded creative-director critique and at least one meaningful completed revision
 
-Do not treat self-scored plan fields as proof without browser inspection.
+Do not treat self-scored plan fields as proof without terminal-headless render inspection.
 
 ## Gate 1: Company Truth And Direction Exploration
 
@@ -203,13 +203,13 @@ Fail when the visual story and conversion do not connect or when a beautiful con
 - External libraries use pinned versions.
 - Forms and commerce use real external services or truthful gaps.
 
-## Browser Review Protocol
+## Terminal-Headless Render Review Protocol
 
-Use Playwright or available browser tooling. Serve the site over HTTP from its publishing root.
+Follow `references/headless-qa.md`. Serve the site over HTTP from its exact publishing root and use terminal-only Playwright CLI with `headless: true`. Never use Codex's in-app Browser connector, site-preview connection, browser-control MCP actions, or `--headed`. Store evidence outside the publishing root and inspect screenshot files with `view_image`.
 
 ### 1. Load And Settle
 
-- open each route
+- open each route in a named terminal Playwright session
 - wait for fonts, hero media, 3D/model loading, and initialization
 - inspect console and failed requests
 - do not capture before the intended opening state settles
@@ -269,7 +269,7 @@ Inspect section bounding boxes and viewport intersection. Reject unexplained bla
 - verify no blank canvas, failed texture, missing poster, or broken crop
 - check that animation cleanup does not duplicate after resize
 
-Record all checked states and review notes in `verification.visual_review`. Record per-page containment evidence, longest-content checks, and mobile media review in `verification.responsive_review`.
+Record all checked states and review notes in `verification.visual_review`. Record per-page containment evidence, longest-content checks, and mobile media review in `verification.responsive_review`. Record `render_transport: terminal-headless-playwright`, `in_app_browser_used: false`, and the external render-artifact directory. Close every named session when capture is complete.
 
 ## Creative-Director Critique
 

@@ -341,6 +341,9 @@ def lock_plan(plan: dict) -> None:
         }
     )
     plan["verification"]["publishing_root_review"] = "Validated the exact directory containing every file that will be published by GitHub Pages; no mirror or source scrape is present."
+    plan["verification"]["render_transport"] = "terminal-headless-playwright"
+    plan["verification"]["in_app_browser_used"] = False
+    plan["verification"]["render_artifact_root"] = "../work/lumora-qa"
     required_widths = [320, 360, 390, 430, 768, 1024, 1440]
     containment_results = [
         {
@@ -463,6 +466,15 @@ def main() -> int:
         errors = [finding for finding in findings if finding.severity == "error"]
         assert not errors, "validator fixture failed: " + "; ".join(error.message for error in errors)
 
+        unsafe_plan = json.loads(json.dumps(plan))
+        unsafe_plan["verification"]["render_transport"] = "in-app-browser"
+        unsafe_plan["verification"]["in_app_browser_used"] = True
+        unsafe_plan["verification"]["render_artifact_root"] = "work/lumora-qa"
+        (root / "lumora-plan.json").write_text(json.dumps(unsafe_plan, indent=2), encoding="utf-8")
+        unsafe_codes = {finding.code for finding in validate_lumora_site.Auditor(root, root / "lumora-plan.json").run()}
+        assert {"plan.render-transport", "plan.in-app-browser", "plan.render-artifacts-inside"}.issubset(unsafe_codes)
+        (root / "lumora-plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
         (root / "legacy.html").write_text(fixture_html(source_ids, "Unmanaged Legacy Route", False), encoding="utf-8")
         unmanaged_codes = {finding.code for finding in validate_lumora_site.Auditor(root, root / "lumora-plan.json").run()}
         assert "plan.route-unmanaged" in unmanaged_codes
@@ -489,7 +501,7 @@ def main() -> int:
         warning_codes = {finding.code for finding in warning_auditor.run() if finding.severity == "warning"}
         assert {"motion.multiple-scrubs", "motion.competing-systems", "motion.long-scroll", "motion.mobile-final-bypass"}.issubset(warning_codes)
 
-    print("Lumora self-test passed: 254 prompts indexed, v5 profiles and existing-route inference planned, prompt excerpts loaded, clean audit verified, route and overflow regressions caught, motion-risk warnings verified.")
+    print("Lumora self-test passed: 254 prompts indexed, v5 profiles and existing-route inference planned, prompt excerpts loaded, clean audit verified, in-app browser use rejected, route and overflow regressions caught, motion-risk warnings verified.")
     return 0
 
 
